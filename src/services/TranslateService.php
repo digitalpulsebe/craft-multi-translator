@@ -228,7 +228,7 @@ class TranslateService extends Component
             }
         }
 
-        return $serialized;
+        return ['blocks' => $serialized];
     }
 
     public function translateLinkField(Element $element, FieldInterface $field, Site $sourceSite, Site $targetSite): ?array
