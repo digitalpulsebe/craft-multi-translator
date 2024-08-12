@@ -1,5 +1,15 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- added support for verbb\hyper\fields\HyperField
+
+### Fixed
+
+- fix js syntax when registering action trigger
+
 ## 1.11.0 - 2024-07-09
 
 ### Added
