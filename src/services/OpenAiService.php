@@ -61,7 +61,7 @@ class OpenAiService extends ApiService
                     'content' => $prompt,
                 ],
             ],
-            'temperature' => 0.5,
+            'temperature' => floatval($this->getSettings()->openAiTemperature),
         ];
 
         $response = $this->getClient()->post('https://api.openai.com/v1/chat/completions', ['json' => $body]);

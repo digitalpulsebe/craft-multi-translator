@@ -1,5 +1,20 @@
 # Release Notes for Multi Translator
 
+## 2.7.0 - 2024-08-13
+
+### Added
+
+- added support for verbb\hyper\fields\HyperField
+- more openai models in settings list
+- translate alt fields for assets
+
+### Fixed
+
+- fix js syntax when registering action trigger
+- only translate title when translatable
+- use temperature setting in openai body
+- fix special case to avoid neo overwriting blocks in all languages, reported by @lenvanessen in issue #16
+
 ## 2.6.0 - 2024-07-09
 
 ### Added
@@ -68,6 +83,19 @@
 
 ### Updated
 - Craft 5 support
+
+## 1.12.0 - 2024-08-13
+
+### Added
+
+- added support for verbb\hyper\fields\HyperField
+- more openai models in settings list
+
+### Fixed
+
+- fix js syntax when registering action trigger
+- only translate title when translatable
+- use temperature setting in openai body
 
 ## 1.11.0 - 2024-07-09
 

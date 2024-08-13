@@ -49,6 +49,7 @@ class TranslateService extends Component
         $targetElement = $this->findTargetElement($source, $targetSite->id);
 
         if (isset($translatedValues['title'])) {
+            // title is not a custom field
             $targetElement->title = $translatedValues['title'];
 
             if (MultiTranslator::getInstance()->getSettings()->resetSlug) {
@@ -58,7 +59,13 @@ class TranslateService extends Component
             unset($translatedValues['title']);
         }
 
-        // set field values
+        if (isset($translatedValues['alt'])) {
+            // alt is not a custom field
+            $targetElement->alt = $translatedValues['alt'];
+            unset($translatedValues['alt']);
+        }
+
+        // set field values for custom fields
         $targetElement->setFieldValues($translatedValues);
 
         if ($targetElement instanceof Entry && $targetElement->getIsDraft()) {
@@ -112,15 +119,19 @@ class TranslateService extends Component
      * @param Element $source
      * @param Site $sourceSite
      * @param Site $targetSite
-     * @param bool $translate set false for copy only
      * @return array
      */
     public function translateElementFields(Element $source, Site $sourceSite, Site $targetSite): array
     {
         $target = [];
 
-        if ($source->title) {
+        if ($source->title && $source->getIsTitleTranslatable()) {
             $target['title'] = $this->translateText($sourceSite->language, $targetSite->language, $source->title);
+        }
+
+        if ($source instanceof Asset && $source->alt && !in_array($source->getVolume()->altTranslationMethod, ['none', 'custom'])) {
+            // assets can have a translatable alt field
+            $target['alt'] = $this->translateText($sourceSite->language, $targetSite->language, $source->alt);
         }
 
         foreach ($source->fieldLayout->getCustomFields() as $field) {
@@ -140,6 +151,9 @@ class TranslateService extends Component
             } elseif (get_class($field) == 'lenz\linkfield\fields\LinkField' && $processField) {
                 // translate linkfield custom label
                 $translatedValue = $this->translateLinkField($source, $field, $sourceSite, $targetSite);
+            } elseif (get_class($field) == 'verbb\hyper\fields\HyperField' && $processField) {
+                // translate hyper linkText
+                $translatedValue = $this->translateHyperField($source, $field, $sourceSite, $targetSite);
             } elseif (get_class($field) == 'ether\seo\fields\SeoField' && $processField) {
                 // translate Ether Seo title and description
                 $translatedValue = $this->translateEtherSeoField($source, $field, $sourceSite, $targetSite);
@@ -228,6 +242,11 @@ class TranslateService extends Component
             }
         }
 
+        if (get_class($field) == 'benf\neo\Field' && $field->translationMethod == 'all') {
+            // special case to avoid neo overwriting blocks in all languages
+            return ['blocks' => $serialized];
+        }
+
         return $serialized;
     }
 
@@ -248,6 +267,25 @@ class TranslateService extends Component
             }
         }
         return null;
+    }
+
+    public function translateHyperField(Element $element, FieldInterface $field, Site $sourceSite, Site $targetSite): ?array
+    {
+        $values = $element->getSerializedFieldValues()[$field->handle];
+        foreach ($values as $i => $value) {
+            try {
+                if (!empty($value['linkText'])) {
+                    $values[$i]['linkText'] = $this->translateText($sourceSite->language, $targetSite->language, $value['linkText']);
+                }
+            } catch (\Throwable $throwable) {
+                // might fail, but we still want to continue
+                MultiTranslator::error([
+                    'message' => 'Error translating Hyper field',
+                    'error' => $throwable->getMessage(),
+                ]);
+            }
+        }
+        return $values;
     }
 
     public function translateEtherSeoField(Element $element, FieldInterface $field, Site $sourceSite, Site $targetSite): ?array
