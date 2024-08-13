@@ -112,14 +112,13 @@ class TranslateService extends Component
      * @param Element $source
      * @param Site $sourceSite
      * @param Site $targetSite
-     * @param bool $translate set false for copy only
      * @return array
      */
     public function translateElementFields(Element $source, Site $sourceSite, Site $targetSite): array
     {
         $target = [];
 
-        if ($source->title) {
+        if ($source->title && $source->getIsTitleTranslatable()) {
             $target['title'] = $this->translateText($sourceSite->language, $targetSite->language, $source->title);
         }
 
