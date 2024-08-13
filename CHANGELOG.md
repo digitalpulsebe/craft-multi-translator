@@ -5,6 +5,7 @@
 ### Added
 
 - added support for verbb\hyper\fields\HyperField
+- translate alt fields for assets
 
 ### Fixed
 

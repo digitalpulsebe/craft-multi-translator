@@ -49,6 +49,7 @@ class TranslateService extends Component
         $targetElement = $this->findTargetElement($source, $targetSite->id);
 
         if (isset($translatedValues['title'])) {
+            // title is not a custom field
             $targetElement->title = $translatedValues['title'];
 
             if (MultiTranslator::getInstance()->getSettings()->resetSlug) {
@@ -58,7 +59,13 @@ class TranslateService extends Component
             unset($translatedValues['title']);
         }
 
-        // set field values
+        if (isset($translatedValues['alt'])) {
+            // alt is not a custom field
+            $targetElement->alt = $translatedValues['alt'];
+            unset($translatedValues['alt']);
+        }
+
+        // set field values for custom fields
         $targetElement->setFieldValues($translatedValues);
 
         if ($targetElement instanceof Entry && $targetElement->getIsDraft()) {
@@ -120,6 +127,11 @@ class TranslateService extends Component
 
         if ($source->title && $source->getIsTitleTranslatable()) {
             $target['title'] = $this->translateText($sourceSite->language, $targetSite->language, $source->title);
+        }
+
+        if ($source instanceof Asset && $source->alt && !in_array($source->getVolume()->altTranslationMethod, ['none', 'custom'])) {
+            // assets can have a translatable alt field
+            $target['alt'] = $this->translateText($sourceSite->language, $targetSite->language, $source->alt);
         }
 
         foreach ($source->fieldLayout->getCustomFields() as $field) {
