@@ -10,6 +10,7 @@
 
 - fix js syntax when registering action trigger
 - only translate title when translatable
+- use temperature setting in openai body
 
 ## 1.11.0 - 2024-07-09
 
