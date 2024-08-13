@@ -5,6 +5,7 @@
 ### Added
 
 - added support for verbb\hyper\fields\HyperField
+- more openai models in settings list
 
 ### Fixed
 
