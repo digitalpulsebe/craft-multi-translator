@@ -9,6 +9,7 @@
 ### Fixed
 
 - fix js syntax when registering action trigger
+- only translate title when translatable
 
 ## 1.11.0 - 2024-07-09
 
