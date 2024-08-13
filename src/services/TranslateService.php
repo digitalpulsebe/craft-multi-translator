@@ -112,14 +112,13 @@ class TranslateService extends Component
      * @param Element $source
      * @param Site $sourceSite
      * @param Site $targetSite
-     * @param bool $translate set false for copy only
      * @return array
      */
     public function translateElementFields(Element $source, Site $sourceSite, Site $targetSite): array
     {
         $target = [];
 
-        if ($source->title) {
+        if ($source->title && $source->getIsTitleTranslatable()) {
             $target['title'] = $this->translateText($sourceSite->language, $targetSite->language, $source->title);
         }
 
@@ -140,6 +139,9 @@ class TranslateService extends Component
             } elseif (get_class($field) == 'lenz\linkfield\fields\LinkField' && $processField) {
                 // translate linkfield custom label
                 $translatedValue = $this->translateLinkField($source, $field, $sourceSite, $targetSite);
+            } elseif (get_class($field) == 'verbb\hyper\fields\HyperField' && $processField) {
+                // translate hyper linkText
+                $translatedValue = $this->translateHyperField($source, $field, $sourceSite, $targetSite);
             } elseif (get_class($field) == 'ether\seo\fields\SeoField' && $processField) {
                 // translate Ether Seo title and description
                 $translatedValue = $this->translateEtherSeoField($source, $field, $sourceSite, $targetSite);
@@ -244,6 +246,25 @@ class TranslateService extends Component
             }
         }
         return null;
+    }
+
+    public function translateHyperField(Element $element, FieldInterface $field, Site $sourceSite, Site $targetSite): ?array
+    {
+        $values = $element->getSerializedFieldValues()[$field->handle];
+        foreach ($values as $i => $value) {
+            try {
+                if (!empty($value['linkText'])) {
+                    $values[$i]['linkText'] = $this->translateText($sourceSite->language, $targetSite->language, $value['linkText']);
+                }
+            } catch (\Throwable $throwable) {
+                // might fail, but we still want to continue
+                MultiTranslator::error([
+                    'message' => 'Error translating Hyper field',
+                    'error' => $throwable->getMessage(),
+                ]);
+            }
+        }
+        return $values;
     }
 
     public function translateEtherSeoField(Element $element, FieldInterface $field, Site $sourceSite, Site $targetSite): ?array
