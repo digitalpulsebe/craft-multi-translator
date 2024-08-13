@@ -9,6 +9,7 @@
 ### Fixed
 
 - fix js syntax when registering action trigger
+- fix special case to avoid neo overwriting blocks in all languages, reported by @lenvanessen in issue #16
 
 ## 2.6.0 - 2024-07-09
 
