@@ -11,6 +11,7 @@ use craft\commerce\elements\Product;
 use craft\commerce\elements\Variant;
 use craft\elements\Asset;
 use craft\elements\Entry;
+use craft\enums\PropagationMethod;
 use craft\fields\Table;
 use craft\models\Section;
 use craft\models\Site;
@@ -242,7 +243,7 @@ class TranslateService extends Component
             }
         }
 
-        if (get_class($field) == 'benf\neo\Field' && $field->translationMethod == 'all') {
+        if (get_class($field) == 'benf\neo\Field' && $field->propagationMethod == PropagationMethod::All) {
             // special case to avoid neo overwriting blocks in all languages
             return ['blocks' => $serialized];
         }
