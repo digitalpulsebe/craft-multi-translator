@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- read neo propagationMethod instead of translationMethod (fixes #23)
+
 ## 2.7.0 - 2024-08-13
 
 ### Added
