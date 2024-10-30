@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- fix overwriting neo blocks for all propagation methods
+
 ## 2.7.1 - 2024-10-21
 
 ### Fixed

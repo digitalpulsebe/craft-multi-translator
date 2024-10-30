@@ -243,7 +243,7 @@ class TranslateService extends Component
             }
         }
 
-        if (get_class($field) == 'benf\neo\Field' && $field->propagationMethod == PropagationMethod::All) {
+        if (get_class($field) == 'benf\neo\Field' && $field->propagationMethod != PropagationMethod::None) {
             // special case to avoid neo overwriting blocks in all languages
             return ['blocks' => $serialized];
         }
