@@ -90,6 +90,18 @@
 ### Updated
 - Craft 5 support
 
+## 1.12.2 - 2024-10-30
+
+### Fixed
+
+- fix overwriting neo blocks for all propagation methods
+
+## 1.12.1 - 2024-10-23
+
+### Fixed
+
+- read neo propagationMethod instead of translationMethod (fixes #23)
+
 ## 1.12.0 - 2024-08-13
 
 ### Added
