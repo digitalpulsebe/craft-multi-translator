@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-### Fixed
+### 2.7.2 - 2024-10-30
 
 - fix overwriting neo blocks for all propagation methods
 
