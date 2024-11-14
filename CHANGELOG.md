@@ -1,8 +1,14 @@
 # Release Notes for Multi Translator
 
-## Unreleased
+## 2.7.3 - 2024-11-14
 
-### 2.7.2 - 2024-10-30
+### Fixed
+
+- check against PropagationMethod enum instead of constant
+
+## 2.7.2 - 2024-10-30
+
+### Fixed
 
 - fix overwriting neo blocks for all propagation methods
 
