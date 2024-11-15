@@ -61,10 +61,16 @@ class TranslateService extends Component
         // set field values
         $targetElement->setFieldValues($translatedValues);
 
+        $revisionNotes = 'Translated by Multi Translator from "'.$sourceSite->name.'" ('.$sourceSite->getLocale()->getLanguageID().')';
+
         if ($targetElement instanceof Entry && $targetElement->getIsDraft()) {
             // only Entries can have drafts
-            \Craft::$app->drafts->saveElementAsDraft($targetElement);
+            \Craft::$app->drafts->saveElementAsDraft($targetElement, null, 'Translated Draft', $revisionNotes);
+        } elseif ($targetElement instanceof Entry && $this->getProviderSettings()->getSaveAsDraft()) {
+            // only Entries can have drafts
+            $targetElement = \Craft::$app->drafts->createDraft($targetElement, null, 'Translated Draft', $revisionNotes);
         } else {
+            $targetElement->setRevisionNotes($revisionNotes);
             \Craft::$app->elements->saveElement($targetElement);
         }
 

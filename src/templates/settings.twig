@@ -148,6 +148,15 @@
                 </legend>
 
                 {{ forms.lightswitchField({
+                    label: "Save as draft",
+                    instructions: "Always create a new draft when translating entries",
+                    id: "saveAsDraft",
+                    name: "saveAsDraft",
+                    on: settings.saveAsDraft,
+                    errors: settings.getErrors("saveAsDraft"),
+                }) }}
+
+                {{ forms.lightswitchField({
                     label: "Reset slug",
                     instructions: "Reset slug after translation, in order for a new slug to be generated from the translated title.",
                     id: "resetSlug",

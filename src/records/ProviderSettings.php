@@ -135,6 +135,15 @@ class ProviderSettings extends ActiveRecord
         return $this->getSetting('updateInternalLinks', true);
     }
 
+    /**
+     * Save translated result always as a Draft
+     * @return bool
+     */
+    public function getSaveAsDraft(): bool
+    {
+        return $this->getSetting('saveAsDraft', false);
+    }
+
     public function getSetting($key, $default = null): mixed
     {
         return ArrayHelper::getValue($this->settings, $key, $default);
