@@ -21,6 +21,7 @@ use digitalpulsebe\craftmultitranslator\models\Settings;
 use digitalpulsebe\craftmultitranslator\services\DeeplService;
 use digitalpulsebe\craftmultitranslator\services\GoogleService;
 use digitalpulsebe\craftmultitranslator\services\OpenAiService;
+use digitalpulsebe\craftmultitranslator\services\SettingsService;
 use digitalpulsebe\craftmultitranslator\services\TranslateService;
 use digitalpulsebe\craftmultitranslator\variables\Variable;
 use Monolog\Formatter\LineFormatter;
@@ -37,13 +38,14 @@ use yii\log\Logger;
  * @property OpenAiService $openai
  * @property GoogleService $google
  * @property TranslateService $translate
+ * @property SettingsService $settingsService
  * @author Digital Pulse nv <support@digitalpulse.be>
  * @copyright Digital Pulse nv
  * @license https://craftcms.github.io/license/ Craft License
  */
 class MultiTranslator extends Plugin
 {
-    public string $schemaVersion = '1.1.0';
+    public string $schemaVersion = '1.2.0';
     public bool $hasCpSettings = true;
     public bool $hasCpSection = true;
     public ?string $name = 'Multi Translator';
@@ -56,6 +58,7 @@ class MultiTranslator extends Plugin
                 'google' => GoogleService::class,
                 'openai' => OpenAiService::class,
                 'translate' => TranslateService::class,
+                'settingsService' => SettingsService::class,
             ],
         ];
     }
@@ -180,8 +183,11 @@ class MultiTranslator extends Plugin
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             function (RegisterUserPermissionsEvent $event) {
                 $event->permissions[] = [
-                    'heading' => 'DeepL Translator',
+                    'heading' => 'Multi Translator',
                     'permissions' => [
+                        'multiTranslateSettings' => [
+                            'label' => 'Manage settings',
+                        ],
                         'multiTranslateContent' => [
                             'label' => 'Translate Content',
                         ],
@@ -200,7 +206,7 @@ class MultiTranslator extends Plugin
         $nav['subnav']['dashboard'] = ['label' => 'Dashboard', 'url' => 'multi-translator'];
         $nav['subnav']['glossaries'] = ['label' => 'Glossaries', 'url' => 'multi-translator/glossaries'];
 
-        if (Craft::$app->getConfig()->getGeneral()->allowAdminChanges) {
+        if (Craft::$app->user->checkPermission('multiTranslateSettings')) {
             $nav['subnav']['settings'] = ['label' => 'Settings', 'url' => 'multi-translator/settings'];
         }
 

@@ -102,6 +102,16 @@
 ### Updated
 - Craft 5 support
 
+## 1.13.0 - 2024-11-15
+
+### Added
+
+- setting: save as draft, to always create a new draft
+
+### Changed
+
+- moved settings to database
+
 ## 1.12.2 - 2024-10-30
 
 ### Fixed
