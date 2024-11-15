@@ -3,178 +3,19 @@
 
 {% import '_includes/forms.twig' as forms %}
 
-<fieldset>
-    <legend>
-        <h2>API Provider</h2>
-    </legend>
+{{ forms.lightswitchField({
+    label: "Debug",
+    instructions: "Creates log files",
+    id: "debug",
+    name: "debug",
+    on: settings.debug,
+    errors: settings.getErrors("debug"),
+}) }}
 
-    {{ forms.selectField({
-        label: 'Provider',
-        instructions: '',
-        name: 'translationProvider',
-        value: settings.translationProvider ?? 'deepl',
-        options: [{
-            value: 'deepl',
-            label: 'Deepl',
-        }, {
-            value: 'google',
-            label: 'Google Cloud Translations',
-        }, {
-            value: 'openai',
-            label: 'OpenAI API (ChatGPT)',
-        }],
-        toggle: true,
-        targetPrefix: 'translation-provider-'
-    }) }}
-</fieldset>
-
-<fieldset id="translation-provider-deepl"{% if settings.translationProvider != 'deepl' %} class="hidden"{% endif %}>
-    <legend>
-        <h2>Deepl</h2>
-    </legend>
-
-    {{ forms.autosuggestfield({
-        label: 'DeepL API Key',
-        name: 'deeplApiKey',
-        instructions: 'Copy the API Key from your DeepL [account settings page](https://www.deepl.com/account/summary)',
-        suggestEnvVars: true,
-        value: settings.deeplApiKey,
-    }) }}
-
-    {{ forms.lightswitchField({
-        label: "Preserve formatting",
-        instructions: "Controls automatic-formatting-correction. Set to true to prevent automatic-correction of formatting. [See docs](https://github.com/DeepLcom/deepl-php#text-translation-options)",
-        id: "deeplPreserveFormatting",
-        name: "deeplPreserveFormatting",
-        on: settings.deeplPreserveFormatting,
-        errors: settings.getErrors("deeplPreserveFormatting"),
-    }) }}
-
-    {{ forms.selectField({
-        label: "Formality",
-        instructions: "Controls whether translations should lean toward informal or formal language. This option is only available for some target languages. [See docs](https://github.com/DeepLcom/deepl-php#text-translation-options)",
-        id: "deeplFormality",
-        name: "deeplFormality",
-        value: settings.deeplFormality,
-        options: [
-            {'label': 'Default', 'value': 'default'},
-            {'label': 'Less formal', 'value': 'prefer_less'},
-            {'label': 'More formal', 'value': 'prefer_more'},
-        ],
-        errors: settings.getErrors("deeplFormality"),
-    }) }}
-</fieldset>
-
-<fieldset id="translation-provider-google"{% if settings.translationProvider != 'google' %} class="hidden"{% endif %}>
-    <legend>
-        <h2>Google Cloud Translation</h2>
-    </legend>
-
-    {{ forms.autosuggestfield({
-        label: 'Google API Key',
-        name: 'googleApiKey',
-        instructions: 'Create an API Key from the [Google Cloud Console](https://console.cloud.google.com/)',
-        suggestEnvVars: true,
-        value: settings.googleApiKey,
-    }) }}
-</fieldset>
-
-<fieldset id="translation-provider-openai"{% if settings.translationProvider != 'openai' %} class="hidden"{% endif %}>
-    <legend>
-        <h2>OpenAI API</h2>
-    </legend>
-
-    {{ forms.autosuggestfield({
-        label: 'Open AI API Key',
-        name: 'openAiKey',
-        instructions: 'Create an API Key from your [OpenAI platform](https://platform.openai.com/api-keys)',
-        suggestEnvVars: true,
-        value: settings.openAiKey,
-    }) }}
-
-    <p>
-        Warning: The OpenAI API can take a long time to respond.
-        It may require several seconds for each request.
-        Each field and each field within each matrix block are sent separately.
-    </p>
-
-    <p>
-        Warning: The OpenAI API occasionally fails to translate and instead returns the original text.
-        You can attempt again later or adjust the temperature setting for better results.
-    </p>
-
-    {{ forms.selectField({
-        label: "API model",
-        instructions: "",
-        id: "openAiModel",
-        name: "openAiModel",
-        value: settings.openAiModel,
-        options: [
-            {'label': 'GPT 3.5 Turbo', 'value': 'gpt-3.5-turbo'},
-            {'label': 'GPT 4', 'value': 'gpt-4'},
-            {'label': 'GPT 4 Turbo', 'value': 'gpt-4-turbo'},
-            {'label': 'GPT 4o Mini', 'value': 'gpt-4o-mini'},
-            {'label': 'GPT 4o', 'value': 'gpt-4o'},
-        ],
-        errors: settings.getErrors("openAiModel"),
-    }) }}
-
-    {{ forms.textfield({
-        label: 'API temperature',
-        name: 'openAiTemperature',
-        instructions: 'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.',
-        suggestEnvVars: true,
-        type: 'number', min: 0, max: 2, step: 0.1,
-        value: settings.openAiTemperature,
-    }) }}
-</fieldset>
-
-<hr>
-
-<fieldset>
-    <legend>
-        <h2>General Options</h2>
-    </legend>
-
-    {{ forms.lightswitchField({
-        label: "Reset slug",
-        instructions: "Reset slug after translation, in order for a new slug to be generated from the translated title.",
-        id: "resetSlug",
-        name: "resetSlug",
-        on: settings.resetSlug,
-        errors: settings.getErrors("resetSlug"),
-    }) }}
-
-    {{ forms.selectField({
-        label: "Default English",
-        instructions: "Default English for translating to English.",
-        id: "defaultEnglish",
-        name: "defaultEnglish",
-        value: settings.defaultEnglish,
-        options: [
-            {'label': 'American English (en-US)', 'value': 'en-US'},
-            {'label': 'British English (en-GB)', 'value': 'en-GB'},
-        ],
-        errors: settings.getErrors("defaultEnglish"),
-    }) }}
-
-    {{ forms.lightswitchField({
-        label: "Detect Source Language",
-        instructions: "Don't send the source language to the API and let Deepl/Google detect the source language.",
-        id: "detectSourceLanguage",
-        name: "detectSourceLanguage",
-        on: settings.detectSourceLanguage,
-        errors: settings.getErrors("detectSourceLanguage"),
-    }) }}
-
-    {{ forms.lightswitchField({
-        label: "Update internal links",
-        instructions: "Update internal links in CKeditor and point them to target site element.",
-        id: "updateInternalLinks",
-        name: "updateInternalLinks",
-        on: settings.updateInternalLinks,
-        errors: settings.getErrors("updateInternalLinks"),
-    }) }}
-
-</fieldset>
-
+{{ forms.textfield({
+    label: 'Queue Jobs TTR',
+    name: 'queueJobTtr',
+    instructions: 'Time to reserve for the queue jobs when translating in bulk',
+    type: 'number', min: 60, step: 1,
+    value: settings.queueJobTtr,
+}) }}

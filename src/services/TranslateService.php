@@ -53,7 +53,7 @@ class TranslateService extends Component
             // title is not a custom field
             $targetElement->title = $translatedValues['title'];
 
-            if (MultiTranslator::getInstance()->getSettings()->resetSlug) {
+            if (MultiTranslator::getInstance()->settingsService->getProviderSettings()->getResetSlug()) {
                 $targetElement->slug = null;
             }
 
@@ -69,10 +69,16 @@ class TranslateService extends Component
         // set field values for custom fields
         $targetElement->setFieldValues($translatedValues);
 
+        $revisionNotes = 'Translated by Multi Translator from "'.$sourceSite->name.'" ('.$sourceSite->getLocale()->getLanguageID().')';
+
         if ($targetElement instanceof Entry && $targetElement->getIsDraft()) {
             // only Entries can have drafts
-            \Craft::$app->drafts->saveElementAsDraft($targetElement);
+            \Craft::$app->drafts->saveElementAsDraft($targetElement, null, 'Translated Draft', $revisionNotes);
+        } elseif ($targetElement instanceof Entry && $this->getProviderSettings()->getSaveAsDraft()) {
+            // only Entries can have drafts
+            $targetElement = \Craft::$app->drafts->createDraft($targetElement, null, 'Translated Draft', $revisionNotes);
         } else {
+            $targetElement->setRevisionNotes($revisionNotes);
             \Craft::$app->elements->saveElement($targetElement);
         }
 
@@ -86,11 +92,13 @@ class TranslateService extends Component
         if (MultiTranslator::getInstance()->getSettings()->debug) {
             MultiTranslator::log([
                 'settings' => MultiTranslator::getInstance()->getSettings(),
+                'providerSettings' => MultiTranslator::getInstance()->settingsService->getProviderSettings()->asArrayForLogs(),
                 'fields' => array_map(function (FieldInterface $field) {
                     return [
                         'handle' => $field->handle,
                         'class' => get_class($field),
                         'translationMethod' => $field->translationMethod,
+                        'propagationMethod' => $field->propagationMethod ?? null,
                     ];
                 }, $source->fieldLayout->getCustomFields()),
                 'sourceSiteLanguage' => $sourceSite->language,
@@ -420,18 +428,16 @@ class TranslateService extends Component
 
     public function translateText(string $sourceLocale = null, string $targetLocale = null, string $text = null): ?string
     {
-        if (MultiTranslator::getInstance()->getSettings()->detectSourceLanguage) {
-            $sourceLanguage = null;
+        if ($this->getProviderSettings()->getDetectSourceLanguage()) {
+            $sourceLocale = null;
         }
-
-        $provider = MultiTranslator::getInstance()->getSettings()->translationProvider;
 
         return $this->getApiService()->translate($sourceLocale, $targetLocale, $text);
     }
 
     public function getApiService(): ?ApiService
     {
-        $provider = MultiTranslator::getInstance()->getSettings()->translationProvider;
+        $provider = $this->getProviderSettings()->getTranslationProvider();
 
         if ($provider == 'google') {
             return MultiTranslator::getInstance()->google;
@@ -446,7 +452,7 @@ class TranslateService extends Component
 
     public function translateLinks(string $translatedValue = null, Site $sourceSite, Site $targetSite): ?string
     {
-        if (!MultiTranslator::getInstance()->getSettings()->updateInternalLinks) {
+        if (!$this->getProviderSettings()->getUpdateInternalLinks()) {
             return $translatedValue;
         }
 
@@ -484,5 +490,10 @@ class TranslateService extends Component
         }
 
         return $translatedValue;
+    }
+
+    protected function getProviderSettings(): \digitalpulsebe\craftmultitranslator\records\ProviderSettings
+    {
+        return MultiTranslator::getInstance()->settingsService->getProviderSettings();
     }
 }

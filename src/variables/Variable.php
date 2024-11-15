@@ -5,6 +5,7 @@ use DeepL\Translator;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\models\Settings;
 use digitalpulsebe\craftmultitranslator\records\Glossary;
+use digitalpulsebe\craftmultitranslator\records\ProviderSettings;
 use digitalpulsebe\craftmultitranslator\services\ApiService;
 
 class Variable
@@ -12,6 +13,11 @@ class Variable
     public function getSettings(): Settings
     {
         return MultiTranslator::getInstance()->getSettings();
+    }
+
+    public function getProviderSettings(): ProviderSettings
+    {
+        return MultiTranslator::getInstance()->settingsService->getProviderSettings();
     }
 
     public function getService(): ApiService

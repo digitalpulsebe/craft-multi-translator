@@ -29,14 +29,14 @@ abstract class ApiService extends Component implements TranslateApiService
         $locale = substr($raw, 0, 2);
 
         if ($locale == 'en') {
-            return MultiTranslator::getInstance()->getSettings()->defaultEnglish;
+            return $this->getProviderSettings()->getDefaultEnglish();
         }
 
         return $locale;
     }
 
-    protected function getSettings(): \digitalpulsebe\craftmultitranslator\models\Settings
+    protected function getProviderSettings(): \digitalpulsebe\craftmultitranslator\records\ProviderSettings
     {
-        return MultiTranslator::getInstance()->getSettings();
+        return MultiTranslator::getInstance()->settingsService->getProviderSettings();
     }
 }
