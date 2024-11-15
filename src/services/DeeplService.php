@@ -32,7 +32,7 @@ class DeeplService extends ApiService
     public function getClient()
     {
         if (!$this->_client) {
-            $apiKey = App::parseEnv($this->getSettings()->deeplApiKey);
+            $apiKey = App::parseEnv($this->getProviderSettings()->getDeeplApiKey());
             $this->_client = new Translator($apiKey);;
         }
 
@@ -48,8 +48,8 @@ class DeeplService extends ApiService
 
         $defaultOptions = [
             'tag_handling' => 'html',
-            'formality' => $this->getSettings()->deeplFormality,
-            'preserve_formatting' => $this->getSettings()->deeplPreserveFormatting,
+            'formality' => $this->getProviderSettings()->getDeeplFormality(),
+            'preserve_formatting' => $this->getProviderSettings()->getDeeplPreserveFormatting(),
         ];
 
         if ($glossary) {
@@ -97,7 +97,7 @@ class DeeplService extends ApiService
         $locale = substr($raw, 0, 2);
 
         if ($locale == 'en') {
-            return MultiTranslator::getInstance()->getSettings()->defaultEnglish;
+            return $this->getProviderSettings()->getDefaultEnglish();
         }
 
         if ($locale == 'pt') {
@@ -110,10 +110,5 @@ class DeeplService extends ApiService
     public function getUsage(): \DeepL\Usage
     {
         return $this->getClient()->getUsage();
-    }
-
-    protected function getSettings(): \digitalpulsebe\craftmultitranslator\models\Settings
-    {
-        return MultiTranslator::getInstance()->getSettings();
     }
 }
