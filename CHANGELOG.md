@@ -1,5 +1,15 @@
 # Release Notes for Multi Translator
 
+## 2.8.0 - 2024-11-15
+
+### Added
+
+- setting: save as draft, to always create a new draft
+
+### Changed
+
+- moved settings to database
+
 ## 2.7.3 - 2024-11-14
 
 ### Fixed
