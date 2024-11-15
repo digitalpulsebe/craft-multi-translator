@@ -27,7 +27,7 @@ class OpenAiService extends ApiService
     public function getClient()
     {
         if (!$this->_client) {
-            $apiKey = App::parseEnv($this->getSettings()->openAiKey);
+            $apiKey = App::parseEnv($this->getProviderSettings()->getOpenAiKey());
             $this->_client = new Client([
                 'headers' => [
                     'Authorization' => "Bearer $apiKey",
@@ -54,14 +54,14 @@ class OpenAiService extends ApiService
         $prompt .= "to $targetLanguage, keep html: " . $text;
 
         $body = [
-            'model' => $this->getSettings()->openAiModel,
+            'model' => $this->getProviderSettings()->getOpenAiModel(),
             'messages' => [
                 [
                     'role' => 'user',
                     'content' => $prompt,
                 ],
             ],
-            'temperature' => floatval($this->getSettings()->openAiTemperature),
+            'temperature' => floatval($this->getProviderSettings()->getOpenAiTemperature()),
         ];
 
         $response = $this->getClient()->post('https://api.openai.com/v1/chat/completions', ['json' => $body]);
