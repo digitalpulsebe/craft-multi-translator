@@ -28,7 +28,7 @@ class GoogleService extends ApiService
     public function getClient()
     {
         if (!$this->_client) {
-            $apiKey = App::parseEnv(MultiTranslator::getInstance()->getSettings()->googleApiKey);
+            $apiKey = App::parseEnv($this->getProviderSettings()->getGoogleApiKey());
             $this->_client = new TranslateClient([
                 'key' => $apiKey
             ]);
