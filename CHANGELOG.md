@@ -1,5 +1,12 @@
 # Release Notes for Multi Translator
 
+## 1.14.0 - 2024-11-27
+
+### Added
+
+- on the fly settings override with "more options" button in the sidebar
+- translate to another target site from the sidebar
+
 ## 1.13.0 - 2024-11-15
 
 ### Added
