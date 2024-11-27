@@ -146,6 +146,7 @@ class MultiTranslator extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['multi-translator/glossaries/edit/<id:\d+>'] = 'multi-translator/glossaries/edit';
                 $event->rules['multi-translator/glossaries/new'] = 'multi-translator/glossaries/new';
+                $event->rules['multi-translator/translate/review'] = 'multi-translator/translate/review';
             }
         );
     }

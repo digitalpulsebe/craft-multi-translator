@@ -1,40 +1,76 @@
 {% if currentUser.can('multiTranslateContent') %}
     <fieldset>
-        <div class="heading">
-            <label class="h6">
-                Multi Translator
-            </label>
-        </div>
+        <legend class="h6">Multi Translator</legend>
         <div class="meta">
             {% if element.id != element.canonicalId %}
                 <div class="field">Warning: revision changes will apply on top of the translated Entry</div>
             {% endif %}
-            {% set existingSites = create('craft\\helpers\\ElementHelper').siteStatusesForElement(element)|keys %}
-            {% if existingSites|length > 1 %}
-                <div class="field">
-                    Translate this (and replace content) from
+            {% set existingSiteIds = create('craft\\helpers\\ElementHelper').siteStatusesForElement(element)|keys %}
+            {% set supportedSiteIds = create('craft\\helpers\\ElementHelper').supportedSitesForElement(element, true)|map(site => site.siteId) %}
+            {% set sites = craft.app.sites.allSites %}
+
+            <div class="field">
+                {% if existingSiteIds|length > 1 %}
+                <button type="button" class="btn menubtn" aria-label="Translate">Translate from...</button>
+                <div class="menu">
+                    <ul>
+                        {% for site in sites %}
+                            {% if site.id in existingSiteIds %}
+                                <li>
+                                    <a class=""
+                                       href="{{ actionUrl('multi-translator/sidebar/translate', {
+                                           'elementId': element.canonicalId,
+                                           'elementType': element.className,
+                                           'sourceSiteId': site.id,
+                                           'targetSiteId': element.siteId
+                                       }) }}">
+                                        {{ site.name }} ({{ site.locale }})
+                                        {%- if element.siteId == site.id %} (self){% endif %}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
                 </div>
-                {% for siteId in existingSites %}
-                    {% if siteId in existingSites and element.siteId != siteId %}
-                        {% set site = craft.app.sites.getSiteById(siteId) %}
-                        <div class="field">
-                            <a class="btn"
-                               href="{{ actionUrl('multi-translator/sidebar/translate', {
-                                   'elementId': element.canonicalId,
-                                   'elementType': element.className,
-                                   'sourceSiteId': site.id,
-                                   'targetSiteId': element.siteId
-                               }) }}">
-                                {{ site.name }} ({{ site.locale }})
-                            </a>
-                        </div>
-                    {% endif %}
-                {% endfor %}
-            {% else %}
-                <div class="field">
-                    This entry has no linked entries in other sites.
+                {% else %}
+                    <p>
+                        This entry has no other translations yet.
+                    </p>
+                {% endif %}
+            </div>
+            <div class="field">
+                <button type="button" class="btn menubtn" aria-label="Translate">Translate to...</button>
+                <div class="menu">
+                    <ul>
+                        {% for site in sites %}
+                            {% if site.id in supportedSiteIds %}
+                                <li>
+                                    <a class=""
+                                       href="{{ actionUrl('multi-translator/sidebar/translate', {
+                                           'elementId': element.canonicalId,
+                                           'elementType': element.className,
+                                           'sourceSiteId': element.siteId,
+                                           'targetSiteId': site.id
+                                       }) }}">
+                                        {{ site.name }} ({{ site.locale }})
+                                        {%- if element.siteId == site.id %} (self){% endif %}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
                 </div>
-            {% endif %}
+            </div>
+
+            <div class="field">
+                <a href="{{ url('multi-translator/translate/review', {
+                    'elementId': element.canonicalId,
+                    'elementType': element.className,
+                    'sourceSiteId': element.siteId,
+                }) }}">
+                    More options
+                </a>
+            </div>
         </div>
     </fieldset>
 {% endif %}
