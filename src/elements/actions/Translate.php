@@ -4,6 +4,7 @@ namespace digitalpulsebe\craftmultitranslator\elements\actions;
 
 use Craft;
 use craft\base\ElementAction;
+use craft\helpers\UrlHelper;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\jobs\BulkTranslateJob;
 use yii\web\UnauthorizedHttpException;
@@ -31,7 +32,7 @@ class Translate extends ElementAction
         // Return whether the action should be available depending on which elements are selected
         validateSelection: (selectedItems) => {
           return true;
-        },
+        }
     });
 })();
 JS, [static::class]);
