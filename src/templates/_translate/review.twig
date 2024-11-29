@@ -25,14 +25,13 @@
                 <tbody>
                     <tr>
                         <td>
-                            {% include "_elements/element" with {
-                                element: element,
+                            {{ elementChip(element, {
                                 siteId: sourceSiteId,
                                 size: 'small',
-                            } %}
+                            }) }}
                         </td>
                         <td>{{ element.section.name }}</td>
-                        <td>{{ element.section.propagationMethod }}</td>
+                        <td>{{ element.section.propagationMethod.value }}</td>
                     </tr>
                 </tbody>
             </table>
