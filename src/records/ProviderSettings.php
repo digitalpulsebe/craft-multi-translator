@@ -144,6 +144,15 @@ class ProviderSettings extends ActiveRecord
         return $this->getSetting('saveAsDraft', false);
     }
 
+    /**
+     * Ignore these fields
+     * @return string[] of handles
+     */
+    public function getDisabledFields(): array
+    {
+        return $this->getSetting('disabledFields', []);
+    }
+
     public function getSetting($key, $default = null): mixed
     {
         return ArrayHelper::getValue($this->settings, $key, $default);
@@ -159,5 +168,10 @@ class ProviderSettings extends ActiveRecord
             }
         }
         return $settings;
+    }
+
+    public function overrideWithConfig(array $config): void
+    {
+        $this->settings = array_merge($this->settings, $config);
     }
 }

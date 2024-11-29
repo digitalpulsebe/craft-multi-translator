@@ -1,0 +1,168 @@
+{% requirePermission 'multiTranslateSettings' %}
+{% extends "_layouts/cp" %}
+{% import '_includes/forms.twig' as forms %}
+
+{% set title = 'Translate Entry' %}
+
+{% set crumbs = [
+    { label: 'Multi Translator', url: url('multi-translator') },
+] %}
+
+{% set settings = craft.multiTranslator.providerSettings %}
+
+{% block content %}
+    <h2>Elements</h2>
+    <div class="elements">
+        <div class="tableview">
+            <table class="data fullwidth">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Section</th>
+                        <th>Propagation method</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            {{ elementChip(element, {
+                                siteId: sourceSiteId,
+                                size: 'small',
+                            }) }}
+                        </td>
+                        <td>{{ element.section.name }}</td>
+                        <td>{{ element.section.propagationMethod.value }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <hr>
+
+    {% set existingSiteIds = create('craft\\helpers\\ElementHelper').siteStatusesForElement(element)|keys %}
+    {% set supportedSiteIds = create('craft\\helpers\\ElementHelper').supportedSitesForElement(element, true)|map(site => site.siteId) %}
+    {% set sites = craft.app.sites.allSites %}
+
+    {% set existingSiteOptions = sites|filter(site => site.id in existingSiteIds)|map(site => {label: site.name, value: site.id}) %}
+    {% set supportedSiteOptions = [{label: '- select target -', value: ''}] %}
+    {% set supportedSiteOptions = supportedSiteOptions
+        |merge(sites|filter(site => site.id in supportedSiteIds)
+        |map(site => {label: site.name, value: site.id})) %}
+
+    <form method="post">
+        <fieldset class="flex-fields">
+            <legend>
+                <h2>Source and target</h2>
+            </legend>
+
+            {{ forms.selectField({
+                label: "Source site",
+                instructions: "Only sites with existing entry are shown",
+                id: "sourceSiteId",
+                name: "sourceSiteId",
+                value: sourceSiteId,
+                options: existingSiteOptions,
+                fieldAttributes: {class: 'field width-50'},
+                inputAttributes: {required: 1},
+                errors: settings.getErrors("sourceSiteId"),
+            }) }}
+
+            {{ forms.selectField({
+                label: "Target site",
+                instructions: "Only sites enabled for this section are shown",
+                id: "targetSiteId",
+                name: "targetSiteId",
+                value: null,
+                options: supportedSiteOptions,
+                fieldAttributes: {class: 'field width-50'},
+                inputAttributes: {required: 1},
+                errors: settings.getErrors("targetSiteId"),
+            }) }}
+        </fieldset>
+
+        {% namespace 'config' %}
+        <fieldset>
+                <legend>
+                    <h2>Ignore Fields</h2>
+                </legend>
+
+                {% set fields = element.type.fieldLayout.customFields %}
+                {% set fieldsOptions = [{label: "Title", value: "title"}]
+                    |merge(fields|map(field => {label: "#{field.name} (#{field.handle})", value: field.handle})) %}
+
+                {{ forms.checkboxGroup({
+                    label: "Disabled fields",
+                    instructions: "Select the fields to ignore",
+                    id: "disabledFields",
+                    name: "disabledFields",
+                    options: fieldsOptions,
+                }) }}
+            </fieldset>
+            <fieldset>
+                <legend>
+                    <h2>General Options</h2>
+                </legend>
+
+                {{ forms.lightswitchField({
+                    label: "Save as draft",
+                    instructions: "Always create a new draft when translating entries",
+                    id: "saveAsDraft",
+                    name: "saveAsDraft",
+                    on: settings.saveAsDraft,
+                    errors: settings.getErrors("saveAsDraft"),
+                }) }}
+
+                {{ forms.lightswitchField({
+                    label: "Reset slug",
+                    instructions: "Reset slug after translation, in order for a new slug to be generated from the translated title.",
+                    id: "resetSlug",
+                    name: "resetSlug",
+                    on: settings.resetSlug,
+                    errors: settings.getErrors("resetSlug"),
+                }) }}
+
+                {{ forms.selectField({
+                    label: "Default English",
+                    instructions: "Default English for translating to English.",
+                    id: "defaultEnglish",
+                    name: "defaultEnglish",
+                    value: settings.defaultEnglish,
+                    options: [
+                        {'label': 'American English (en-US)', 'value': 'en-US'},
+                        {'label': 'British English (en-GB)', 'value': 'en-GB'},
+                    ],
+                    errors: settings.getErrors("defaultEnglish"),
+                }) }}
+
+                {{ forms.lightswitchField({
+                    label: "Detect Source Language",
+                    instructions: "Don't send the source language to the API and let Deepl/Google detect the source language.",
+                    id: "detectSourceLanguage",
+                    name: "detectSourceLanguage",
+                    on: settings.detectSourceLanguage,
+                    errors: settings.getErrors("detectSourceLanguage"),
+                }) }}
+
+                {{ forms.lightswitchField({
+                    label: "Update internal links",
+                    instructions: "Update internal links in CKeditor and point them to target site element.",
+                    id: "updateInternalLinks",
+                    name: "updateInternalLinks",
+                    on: settings.updateInternalLinks,
+                    errors: settings.getErrors("updateInternalLinks"),
+                }) }}
+            </fieldset>
+        {% endnamespace %}
+
+        <hr>
+
+        <fieldset>
+            {{ csrfInput() }}
+            {{ hiddenInput('elementId', element.id) }}
+            {{ hiddenInput('elementType', elementType) }}
+            {{ actionInput('multi-translator/translate/confirm') }}
+            <button class="btn submit">Confirm</button>
+        </fieldset>
+    </form>
+{% endblock %}

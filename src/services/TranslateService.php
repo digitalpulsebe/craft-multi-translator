@@ -44,7 +44,7 @@ class TranslateService extends Component
     public function translateElement(Element $source, Site $sourceSite, Site $targetSite): Element
     {
         // translate inside of Element, get serialized data
-        $translatedValues = $this->translateElementFields($source, $sourceSite, $targetSite);
+        $translatedValues = $this->translateElementFields($source, $sourceSite, $targetSite, true);
 
         // find or create target (destination)
         $targetElement = $this->findTargetElement($source, $targetSite->id);
@@ -130,11 +130,13 @@ class TranslateService extends Component
      * @param Site $targetSite
      * @return array
      */
-    public function translateElementFields(Element $source, Site $sourceSite, Site $targetSite): array
+    public function translateElementFields(Element $source, Site $sourceSite, Site $targetSite, bool $isRootElement = false): array
     {
         $target = [];
 
-        if ($source->title && $source->getIsTitleTranslatable()) {
+        $disabledFields = $isRootElement ? $this->getProviderSettings()->getDisabledFields() : [];
+
+        if ($source->title && $source->getIsTitleTranslatable() && !in_array('title', $disabledFields)) {
             $target['title'] = $this->translateText($sourceSite->language, $targetSite->language, $source->title);
         }
 
@@ -147,6 +149,10 @@ class TranslateService extends Component
             $translatedValue = null;
             $fieldTranslatable = $field->translationMethod != Field::TRANSLATION_METHOD_NONE;
             $processField = boolval($fieldTranslatable); // if translatable
+
+            if (in_array($field->handle, $disabledFields)) {
+                continue;
+            }
 
             if (in_array(get_class($field), static::$textFields) && $processField) {
                 // normal text fields
