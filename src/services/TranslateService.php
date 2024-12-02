@@ -292,9 +292,8 @@ class TranslateService extends Component
         $value = $element->getFieldValue($field->handle);
         if ($field->allowCustomText && $value->customText != null) {
             $value->customText = $this->translateText($sourceSite->language, $targetSite->language, $value->customText);
-            return $field->serializeValue($value, $element);
         }
-        return $value;
+        return $field->serializeValue($value, $element);
     }
 
     public function translateHyperField(Element $element, FieldInterface $field, Site $sourceSite, Site $targetSite): ?array
