@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.10.1 - 2024-12-03
+
+### Changed
+
+- update legend title in review template
+
 ## 2.10.0 - 2024-12-03
 
 ### Added
@@ -124,6 +130,12 @@
 
 ### Updated
 - Craft 5 support
+
+## 1.15.1 - 2024-12-03
+
+### Changed
+
+- update legend title in review template
 
 ## 1.15.0 - 2024-12-03
 
