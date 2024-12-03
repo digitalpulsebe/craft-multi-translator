@@ -153,6 +153,9 @@ class TranslateService extends Component
             } elseif (get_class($field) == 'lenz\linkfield\fields\LinkField' && $processField) {
                 // translate linkfield custom label
                 $translatedValue = $this->translateLinkField($source, $field, $sourceSite, $targetSite);
+            } elseif (get_class($field) == 'presseddigital\linkit\fields\LinkitField' && $processField) {
+                // translate Linkit custom text
+                $translatedValue = $this->translateLinkitField($source, $field, $sourceSite, $targetSite);
             } elseif (get_class($field) == 'verbb\hyper\fields\HyperField' && $processField) {
                 // translate hyper linkText
                 $translatedValue = $this->translateHyperField($source, $field, $sourceSite, $targetSite);
@@ -265,6 +268,15 @@ class TranslateService extends Component
             }
         }
         return null;
+    }
+
+    public function translateLinkitField(Element $element, FieldInterface $field, Site $sourceSite, Site $targetSite): ?array
+    {
+        $value = $element->getFieldValue($field->handle);
+        if ($field->allowCustomText && $value->customText != null) {
+            $value->customText = $this->translateText($sourceSite->language, $targetSite->language, $value->customText);
+        }
+        return $field->serializeValue($value, $element);
     }
 
     public function translateHyperField(Element $element, FieldInterface $field, Site $sourceSite, Site $targetSite): ?array
