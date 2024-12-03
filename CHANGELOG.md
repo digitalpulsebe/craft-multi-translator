@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 1.15.0 - 2024-12-03
+
+### Added
+
+- Add Linkit field support (Merged PR #28)
+
 ## 1.14.0 - 2024-11-27
 
 ### Added
