@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 1.15.1 - 2024-12-03
+
+### Changed
+
+- update legend title in review template
+
 ## 1.15.0 - 2024-12-03
 
 ### Added
