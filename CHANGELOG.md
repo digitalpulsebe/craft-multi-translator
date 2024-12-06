@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- update existing glossaries name and language pair
+
 ## 1.15.1 - 2024-12-03
 
 ### Changed
