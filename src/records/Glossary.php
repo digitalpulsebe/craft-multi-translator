@@ -76,13 +76,13 @@ class Glossary extends ActiveRecord
         if (empty($item)) {
             $isExisting = false;
             $item = new self();
-            $item->name = $data['name'];
-            $item->sourceLanguage = $data['sourceLanguage'];
-            $item->targetLanguage = $data['targetLanguage'];
+        }
+        $item->name = $data['name'];
+        $item->sourceLanguage = $data['sourceLanguage'];
+        $item->targetLanguage = $data['targetLanguage'];
 
-            if(!$item->validate()) {
-                return $item;
-            }
+        if(!$item->validate()) {
+            return $item;
         }
 
         if (is_array($data['rows']) && count($data['rows']) > 0) {

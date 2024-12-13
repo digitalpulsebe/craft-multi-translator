@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.10.2 - 2024-12-13
+
+### Fixed
+
+- update existing glossaries name and language pair
+
 ## 2.10.1 - 2024-12-03
 
 ### Changed
@@ -130,6 +136,12 @@
 
 ### Updated
 - Craft 5 support
+
+## 1.15.2 - 2024-12-13
+
+### Fixed
+
+- update existing glossaries name and language pair
 
 ## 1.15.1 - 2024-12-03
 
