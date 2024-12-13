@@ -1,7 +1,6 @@
 {% extends "_layouts/cp" %}
 
-{% set isNew = not glossary.id %}
-{% set title = isNew ? 'New glossary' : 'Edit glossary' %}
+{% set title = glossary.id ? 'Edit glossary' : 'New glossary' %}
 {% set selectedSubnavItem = 'glossaries' %}
 
 {% set crumbs = [
@@ -42,24 +41,21 @@
                     label: 'Name',
                     name: 'name',
                     value: glossary.name,
-                    errors: glossary.getErrors('name'),
-                    disabled: not isNew
+                    errors: glossary.getErrors('name')
                 }) }}
                 {{ forms.selectfield({
                     label: 'Source Language',
                     name: 'sourceLanguage',
                     value: glossary.sourceLanguage,
                     options: supportedLanguages,
-                    errors: glossary.getErrors('sourceLanguage'),
-                    disabled: not isNew
+                    errors: glossary.getErrors('sourceLanguage')
                 }) }}
                 {{ forms.selectfield({
                     label: 'Target Language',
                     name: 'targetLanguage',
                     value: glossary.targetLanguage,
                     options: supportedLanguages,
-                    errors: glossary.getErrors('targetLanguage'),
-                    disabled: not isNew
+                    errors: glossary.getErrors('targetLanguage')
                 }) }}
             </fieldset>
 
