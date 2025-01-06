@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.10.3 - 2025-01-06
+
+### Changed
+
+- new icon-mask logo
+
 ## 2.10.2 - 2024-12-13
 
 ### Fixed
