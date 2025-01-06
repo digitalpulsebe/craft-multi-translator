@@ -137,6 +137,12 @@
 ### Updated
 - Craft 5 support
 
+## 1.15.3 - 2025-01-06
+
+### Changed
+
+- new icon-mask logo
+
 ## 1.15.2 - 2024-12-13
 
 ### Fixed
