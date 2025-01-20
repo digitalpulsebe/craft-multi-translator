@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 1.15.4 - 2025-01-20
+
+### Fixed
+
+- fix matrix blocks translated content is not saved when translating to drafts (fixes issue #34)
+
 ## 1.15.3 - 2025-01-06
 
 ### Changed
