@@ -77,6 +77,8 @@ class TranslateService extends Component
         } elseif ($targetElement instanceof Entry && $this->getProviderSettings()->getSaveAsDraft()) {
             // only Entries can have drafts
             $targetElement = \Craft::$app->drafts->createDraft($targetElement, null, 'Translated Draft', $revisionNotes);
+            $targetElement->setFieldValues($translatedValues);
+            \Craft::$app->elements->saveElement($targetElement);
         } else {
             $targetElement->setRevisionNotes($revisionNotes);
             \Craft::$app->elements->saveElement($targetElement);
@@ -278,6 +280,7 @@ class TranslateService extends Component
                 if (!empty($array['customText'])) {
                     $array['customText'] = $this->translateText($sourceSite->language, $targetSite->language, $array['customText']);
                 }
+                $array['type'] = $value->type; // add type, because they forgot to return it with toArray?
                 return $array;
             } catch (\Throwable $throwable) {
                 // too bad, f*** linkfields
