@@ -143,7 +143,7 @@
 ### Updated
 - Craft 5 support
 
-## Unreleased 
+## 1.15.5 - 2025-02-06 
 
 ### Fixed
 
