@@ -1,5 +1,16 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- fix link-field losing type after serialisation (#38)
+- fix UI padding lost after Craft update (#36)
+
+### Changed
+
+- Changed prompt for chat-gpt to avoid additional text in short prompts (#37) Thanks @pascal-blaser
+
 ## 2.10.3 - 2025-01-06
 
 ### Changed
