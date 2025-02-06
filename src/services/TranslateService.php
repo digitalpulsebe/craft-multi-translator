@@ -263,6 +263,7 @@ class TranslateService extends Component
                 if (!empty($array['customText'])) {
                     $array['customText'] = $this->translateText($sourceSite->language, $targetSite->language, $array['customText']);
                 }
+                $array['type'] = $value->type; // add type, because they forgot to return it with toArray?
                 return $array;
             } catch (\Throwable $throwable) {
                 // too bad, f*** linkfields
