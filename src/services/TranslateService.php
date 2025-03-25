@@ -136,7 +136,7 @@ class TranslateService extends Component
     {
         $target = [];
 
-        $disabledFields = $isRootElement ? $this->getProviderSettings()->getDisabledFields() : [];
+        $disabledFields = $isRootElement ? $this->getProviderSettings()->getDisabledFieldHandles() : [];
 
         if ($source->title && $source->getIsTitleTranslatable() && !in_array('title', $disabledFields)) {
             $target['title'] = $this->translateText($sourceSite->language, $targetSite->language, $source->title);

@@ -154,6 +154,22 @@
 ### Updated
 - Craft 5 support
 
+## 1.15.7 - 2025-03-25
+
+### Fixed
+
+- fix saving disabledFields in settings
+
+## 1.15.6 - 2025-03-25
+
+### Added
+
+- Disabled fields setting
+
+### Fixed
+
+- fix error getDisabledFields(): Return value must be of type array, string returned
+
 ## 1.15.5 - 2025-02-06 
 
 ### Fixed
