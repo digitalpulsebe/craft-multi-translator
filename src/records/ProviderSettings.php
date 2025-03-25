@@ -150,7 +150,23 @@ class ProviderSettings extends ActiveRecord
      */
     public function getDisabledFields(): array
     {
-        return $this->getSetting('disabledFields', []);
+        $value = $this->getSetting('disabledFields', []);
+
+        $returnHandles = [];
+
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                if (is_array($item) && isset($item['handle'])) {
+                    // these are from the general settings (editableTableField value)
+                    $returnHandles[] = $item['handle'];
+                } elseif (is_string($item)) {
+                    // these are from the review settings (checkbox values)
+                    $returnHandles[] = $item;
+                }
+            }
+        }
+
+        return $returnHandles;
     }
 
     public function getSetting($key, $default = null): mixed
