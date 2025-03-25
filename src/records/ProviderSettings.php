@@ -150,6 +150,15 @@ class ProviderSettings extends ActiveRecord
      */
     public function getDisabledFields(): array
     {
+        return $this->getSetting('disabledFields', []);
+    }
+
+    /**
+     * Ignore these fields
+     * @return string[] of handles
+     */
+    public function getDisabledFieldHandles(): array
+    {
         $value = $this->getSetting('disabledFields', []);
 
         $returnHandles = [];
