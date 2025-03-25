@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 1.15.7 - 2025-03-25
+
+### Fixed
+
+- fix saving disabledFields in settings
+
 ## 1.15.6 - 2025-03-25
 
 ### Added
