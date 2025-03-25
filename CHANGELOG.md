@@ -1,5 +1,15 @@
 # Release Notes for Multi Translator
 
+## 2.10.5 - 2025-03-25
+
+### Added
+
+- Disabled fields setting
+
+### Fixed
+
+- fix error getDisabledFields(): Return value must be of type array, string returned
+
 ## 2.10.4 - 2025-02-06
 
 ### Fixed
