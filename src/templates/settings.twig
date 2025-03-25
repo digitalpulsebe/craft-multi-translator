@@ -195,6 +195,27 @@
                     on: settings.updateInternalLinks,
                     errors: settings.getErrors("updateInternalLinks"),
                 }) }}
+
+                {{ forms.editableTableField({
+                    label: "Disabled fields",
+                    instructions: 'Disable field handles and ignore them in the translation',
+                    name: "disabledFields",
+                    id: "disabledFields",
+                    cols: {
+                        'handle': {
+                            type: 'singleline',
+                            heading: "Field handle",
+                            rows: 1
+                        },
+                    },
+                    rows: settings.disabledFields,
+                    allowAdd: true,
+                    allowDelete: true,
+                    allowReorder: true,
+                    addRowLabel: 'Add a field',
+                    errors: settings.getErrors('disabledFields'),
+                    required: false
+                })|spaceless }}
             </fieldset>
         {% endnamespace %}
 
