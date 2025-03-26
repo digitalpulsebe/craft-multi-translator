@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.10.6 - 2025-03-26
+
+### Fixed
+
+- fix error getDisabledFields(): Return value must be of type array, string returned x2
+
 ## 2.10.5 - 2025-03-25
 
 ### Added
@@ -163,6 +169,12 @@
 
 ### Updated
 - Craft 5 support
+
+## 1.15.8 - 2025-03-26
+
+### Fixed
+
+- fix error getDisabledFields(): Return value must be of type array, string returned x2
 
 ## 1.15.7 - 2025-03-25
 
