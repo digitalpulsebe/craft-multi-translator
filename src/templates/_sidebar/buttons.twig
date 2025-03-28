@@ -21,7 +21,7 @@
                                             <a class=""
                                                href="{{ actionUrl('multi-translator/sidebar/translate', {
                                                    'elementId': element.canonicalId,
-                                                   'elementType': element.className,
+                                                   'elementType': className(element),
                                                    'sourceSiteId': site.id,
                                                    'targetSiteId': element.siteId
                                                }) }}">
@@ -51,7 +51,7 @@
                                         <a class=""
                                            href="{{ actionUrl('multi-translator/sidebar/translate', {
                                                'elementId': element.canonicalId,
-                                               'elementType': element.className,
+                                               'elementType': className(element),
                                                'sourceSiteId': element.siteId,
                                                'targetSiteId': site.id
                                            }) }}">
@@ -70,7 +70,7 @@
                 <div class="input">
                     <a href="{{ url('multi-translator/translate/review', {
                         'elementId': element.canonicalId,
-                        'elementType': element.className,
+                        'elementType': className(element),
                         'sourceSiteId': element.siteId,
                     }) }}">
                         More options

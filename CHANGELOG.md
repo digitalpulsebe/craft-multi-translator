@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.10.7 - 2025-03-28
+
+### Fixed
+
+- use className(element) instead of deprecated className (fixes #44)
+
 ## 2.10.6 - 2025-03-26
 
 ### Fixed
