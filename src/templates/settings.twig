@@ -196,6 +196,15 @@
                     errors: settings.getErrors("updateInternalLinks"),
                 }) }}
 
+                {{ forms.lightswitchField({
+                    label: "Translated CKeditor nested entries",
+                    instructions: "Find and process nested Entries inside CKeditor value",
+                    id: "processNestedEntries",
+                    name: "processNestedEntries",
+                    on: settings.processNestedEntries,
+                    errors: settings.getErrors("processNestedEntries"),
+                }) }}
+
                 {{ forms.editableTableField({
                     label: "Disabled fields",
                     instructions: 'Disable field handles and ignore them in the translation',
