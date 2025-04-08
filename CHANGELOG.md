@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- translate nested Entries inside CKEditor (fixes #35)
+
 ## 2.10.7 - 2025-03-28
 
 ### Fixed

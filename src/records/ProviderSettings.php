@@ -136,6 +136,15 @@ class ProviderSettings extends ActiveRecord
     }
 
     /**
+     * Translate nested Entries inside CKeditor value
+     * @return bool
+     */
+    public function getProcessNestedEntries(): bool
+    {
+        return $this->getSetting('processNestedEntries', true);
+    }
+
+    /**
      * Save translated result always as a Draft
      * @return bool
      */

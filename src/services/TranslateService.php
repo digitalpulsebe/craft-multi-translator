@@ -105,7 +105,7 @@ class TranslateService extends Component
                 }, $source->fieldLayout->getCustomFields()),
                 'sourceSiteLanguage' => $sourceSite->language,
                 'targetSiteLanguage' => $targetSite->language,
-                'propagationMethod' => $source->section->propagationMethod ?? null,
+                'propagationMethod' => $source?->section->propagationMethod ?? null,
                 'sourceEntry' => ['id' => $source->id, 'siteId' => $source->siteId, 'draft' => $source->getIsDraft(), 'customFields' => $source->getSerializedFieldValues()],
                 'targetElement' => ['id' => $targetElement->id, 'siteId' => $targetElement->siteId, 'draft' => $targetElement->getIsDraft()],
                 'translatedValues' => $translatedValues,
@@ -191,6 +191,7 @@ class TranslateService extends Component
             ])) {
                 // search for interal href links
                 $translatedValue = $this->translateLinks($translatedValue, $sourceSite, $targetSite);
+                $translatedValue = $this->translateNestedEntries($translatedValue, $sourceSite, $targetSite);
             }
 
             if ($translatedValue) {
@@ -414,7 +415,7 @@ class TranslateService extends Component
 
         if (empty($targetEntry)) {
             // we need to create one for this target site
-            if ($source->section->propagationMethod == PropagationMethod::Custom) {
+            if ($source?->section?->propagationMethod == PropagationMethod::Custom) {
                 // create for site first, but keep enabled status
                 $sitesEnabled = $source->getEnabledForSite();
                 if (is_array($sitesEnabled) && !isset($sitesEnabled[$targetSiteId])) {
@@ -435,7 +436,7 @@ class TranslateService extends Component
                 }
 
                 $targetEntry = ElementHelper::one(Entry::class, $source->id, $targetSiteId);
-            } elseif ($source->section->propagationMethod == PropagationMethod::All) {
+            } elseif ($source?->section?->propagationMethod == PropagationMethod::All) {
                 // it should have been there, so propagate
                 $targetEntry = Craft::$app->elements->propagateElement($source, $targetSiteId, false);
             } else {
@@ -506,6 +507,31 @@ class TranslateService extends Component
                         $translatedMatch = '{'.$type.':'.$entryId.'@'.$targetSiteId.':';
                         $translatedValue = str_replace($fullMatch, $translatedMatch, $translatedValue);
                     }
+                }
+            }
+        }
+
+        return $translatedValue;
+    }
+
+    public function translateNestedEntries(string $translatedValue = null, Site $sourceSite, Site $targetSite): ?string
+    {
+        if (!$this->getProviderSettings()->getProcessNestedEntries()) {
+            return $translatedValue;
+        }
+
+        $matches = [];
+        preg_match_all('/<craft-entry data-entry-id="(\d+)" ?(data-site-id="\d+")?>/i', $translatedValue, $matches);
+
+        // should have two arrays: full matches, capture group 1-2
+        if (count($matches) == 3 && count($matches[0])) {
+            foreach ($matches[0] as $i => $fullMatch) {
+                $entryId = $matches[1][$i];
+
+                $sourceEntry = Entry::find()->siteId($sourceSite->id)->id($entryId)->one();
+                $targetEntry = $this->translateElement($sourceEntry, $sourceSite, $targetSite);
+                if ($targetEntry) {
+                    $translatedValue = str_replace($fullMatch, "<craft-entry data-entry-id=\"$targetEntry->id\" data-site-id=\"$targetEntry->siteId\">", $translatedValue);
                 }
             }
         }
