@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- Extra permission for bulk translating
+
 ## 2.11.0 - 2025-04-08
 
 ### Added

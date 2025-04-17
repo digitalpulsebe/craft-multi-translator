@@ -48,6 +48,10 @@ JS, [static::class]);
             throw new UnauthorizedHttpException('You are not allowed to translate Elements');
         }
 
+        if (!\Craft::$app->user->checkPermission('multiTranslateContentBulk')) {
+            throw new UnauthorizedHttpException('You are not allowed to translate Elements in bulk');
+        }
+
         Craft::$app
             ->getQueue()
             ->ttr(MultiTranslator::getInstance()->getSettings()->queueJobTtr)
