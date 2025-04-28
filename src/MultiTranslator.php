@@ -45,7 +45,7 @@ use yii\log\Logger;
  */
 class MultiTranslator extends Plugin
 {
-    public string $schemaVersion = '1.2.0';
+    public string $schemaVersion = '1.3.0';
     public bool $hasCpSettings = true;
     public bool $hasCpSection = true;
     public ?string $name = 'Multi Translator';
@@ -153,7 +153,11 @@ class MultiTranslator extends Plugin
 
     private function registerActions(): void
     {
-        foreach(static::getSupportedElementClasses() as $supportedElementClass) {
+        if (!Craft::$app->user->checkPermission('multiTranslateContentBulk')) {
+            return;
+        }
+
+        foreach (static::getSupportedElementClasses() as $supportedElementClass) {
             Event::on(
                 $supportedElementClass,
                 Element::EVENT_REGISTER_ACTIONS,
@@ -191,6 +195,9 @@ class MultiTranslator extends Plugin
                         ],
                         'multiTranslateContent' => [
                             'label' => 'Translate Content',
+                        ],
+                        'multiTranslateContentBulk' => [
+                            'label' => 'Translate Content in bulk (element action)',
                         ],
                     ],
                 ];

@@ -3,7 +3,7 @@
         <legend class="h6">Multi Translator</legend>
         <div class="meta">
             {% if element.id != element.canonicalId %}
-                <div class="field">Warning: revision changes will apply on top of the translated Entry</div>
+                <div>Warning: revision changes will apply on top of the translated Entry</div>
             {% endif %}
             {% set existingSiteIds = create('craft\\helpers\\ElementHelper').siteStatusesForElement(element)|keys %}
             {% set supportedSiteIds = create('craft\\helpers\\ElementHelper').supportedSitesForElement(element, true)|map(site => site.siteId) %}
