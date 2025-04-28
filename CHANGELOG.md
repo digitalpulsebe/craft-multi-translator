@@ -6,6 +6,10 @@
 
 - Extra permission for bulk translating
 
+### Fixed
+
+- use multiTranslateContent permission for review template
+
 ## 1.15.8 - 2025-03-26
 
 ### Fixed
