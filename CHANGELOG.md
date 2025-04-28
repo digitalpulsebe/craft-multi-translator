@@ -6,6 +6,10 @@
 
 - Extra permission for bulk translating
 
+### Fixed
+
+- use multiTranslateContent permission for review template
+
 ## 2.11.0 - 2025-04-08
 
 ### Added
@@ -187,6 +191,16 @@
 
 ### Updated
 - Craft 5 support
+
+## 1.16.0 - 2025-04-28
+
+### Added
+
+- Extra permission for bulk translating
+
+### Fixed
+
+- use multiTranslateContent permission for review template
 
 ## 1.15.8 - 2025-03-26
 
