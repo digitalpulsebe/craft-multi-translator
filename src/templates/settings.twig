@@ -158,9 +158,23 @@
                     <h2>General Options</h2>
                 </legend>
 
+                {{ forms.selectField({
+                    label: "Translate buttons direction",
+                    instructions: "Select direction 'to target' or 'from source', in the sidebar actions of entry detail view.",
+                    id: "translationDirectionButtons",
+                    name: "translationDirectionButtons",
+                    value: settings.translationDirectionButtons,
+                    options: [
+                        {'label': 'From current entry to <other sites>', 'value': 'fromThis'},
+                        {'label': 'From <other sites> to current entry', 'value': 'toThis'},
+                        {'label': 'Both (might be confusing)', 'value': 'both'},
+                    ],
+                    errors: settings.getErrors("translationDirectionButtons"),
+                }) }}
+
                 {{ forms.lightswitchField({
                     label: "Save as draft",
-                    instructions: "Always create a new draft when translating entries",
+                    instructions: "Always create a new draft when translating entries.",
                     id: "saveAsDraft",
                     name: "saveAsDraft",
                     on: settings.saveAsDraft,
