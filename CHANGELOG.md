@@ -192,6 +192,14 @@
 ### Updated
 - Craft 5 support
 
+## 1.17.0 - 2025-05-26
+
+### Changed
+
+- filter empty rows for glossaries
+- catch and flash errors when saving glossaries
+- update deepl supported languages for glossaries
+
 ## 1.16.0 - 2025-04-28
 
 ### Added
