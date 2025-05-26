@@ -86,6 +86,13 @@ class Glossary extends ActiveRecord
         }
 
         if (is_array($data['rows']) && count($data['rows']) > 0) {
+            $data['rows'] = array_filter(
+                $data['rows'],
+                function ($row) {
+                    return !(empty(trim($row['source'])) || empty(trim($row['target'])));
+                }
+            );
+
             $rows = $item->setRows($data['rows']);
         } else {
             $item->addError('rows', 'Content empty');
