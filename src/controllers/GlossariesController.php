@@ -41,14 +41,19 @@ class GlossariesController extends Controller
     {
         $this->requirePermission('multiTranslateContent');
 
-        $record = Glossary::createOrUpdate($this->request->post());
+        try {
+            $record = Glossary::createOrUpdate($this->request->post());
 
-        if ($record->hasErrors()) {
-            $this->setFailFlash('Validation errors');
-            return $this->renderTemplate('multi-translator/glossaries/_edit.twig', ['glossary' => $record]);
-        } else {
-            $this->setSuccessFlash('Glossary saved/updated.');
-            return $this->redirect('multi-translator/glossaries');
+            if ($record->hasErrors()) {
+                $this->setFailFlash('Validation errors');
+                return $this->renderTemplate('multi-translator/glossaries/_edit.twig', ['glossary' => $record]);
+            } else {
+                $this->setSuccessFlash('Glossary saved/updated.');
+                return $this->redirect('multi-translator/glossaries');
+            }
+        } catch (\Throwable $exception) {
+            $this->setFailFlash($exception->getMessage());
+            return $this->redirectToPostedUrl();
         }
     }
 
