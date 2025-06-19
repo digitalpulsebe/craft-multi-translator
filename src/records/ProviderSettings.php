@@ -110,6 +110,15 @@ class ProviderSettings extends ActiveRecord
     }
 
     /**
+     * select direction 'to target' or 'from source', in the sidebar actions of entry detail view.
+     * @return string
+     */
+    public function getTranslationDirectionButtons(): string
+    {
+        return $this->getSetting('translationDirectionButtons', 'fromThis');
+    }
+
+    /**
      * clear the slug when setting a translated title
      * @return bool
      */
