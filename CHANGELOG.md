@@ -1,5 +1,15 @@
 # Release Notes for Multi Translator
 
+## 2.14.0 - 2025-06-19
+
+### Added
+
+- new setting to choose between Translate buttons directions
+
+### Changed
+
+- new less confusing UI in the sidebar
+
 ## 2.13.0 - 2025-05-26
 
 ### Changed
