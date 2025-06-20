@@ -50,8 +50,13 @@ class OpenAiService extends ApiService
         $sourceLanguage = $this->getLanguage($sourceLocale);
         $targetLanguage = $this->getLanguage($targetLocale);
 
-        $prompt = ($sourceLanguage) ? "Translate the following text from $sourceLanguage " : 'Translate the following text ';
-        $prompt .= "to $targetLanguage, keep html and only answer with the translated text, if you can not translate it, just return the text i've provided you: " . $text;
+        $prompt = $this->getProviderSettings()->getOpenAiPrompt();
+        $prompt = empty($prompt) ? 'Translate the following text from {source} to {target}, keep html and only answer with the translated text, if you can not translate it, just return the text i\'ve provided you: {text}' : $prompt;
+        $prompt = str_replace([
+            '{source}', '{target}', '{text}'
+        ],[
+            $sourceLanguage ?? '[guess the language]', $targetLanguage, $text
+        ], $prompt);
 
         $body = [
             'model' => $this->getProviderSettings()->getOpenAiModel(),

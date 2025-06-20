@@ -34,7 +34,7 @@ class BulkTranslateJob extends BaseJob
         foreach ($elements as $i => $element) {
             $iHuman = $i+1;
 
-            $this->setProgress($queue, $i/$elementCount, "Translating element $iHuman/$elementCount");
+            $this->setProgress($queue, $i/$elementCount, "Translating element $iHuman/$elementCount to $targetSite->name");
 
             $translatedElement = MultiTranslator::getInstance()->translate->translateElement($element, $sourceSite, $targetSite);
 
