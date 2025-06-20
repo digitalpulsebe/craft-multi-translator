@@ -100,6 +100,15 @@ class ProviderSettings extends ActiveRecord
     }
 
     /**
+     * Custom prompt
+     * @return string|null
+     */
+    public function getOpenAiPrompt(): ?string
+    {
+        return $this->getSetting('openAiPrompt', null);
+    }
+
+    /**
      * Temperature setting for the OpenAI API
      * read more: https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature
      * @return float

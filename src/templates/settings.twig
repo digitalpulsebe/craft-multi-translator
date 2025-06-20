@@ -126,8 +126,19 @@
                         {'label': 'GPT 4 Turbo', 'value': 'gpt-4-turbo'},
                         {'label': 'GPT 4o Mini', 'value': 'gpt-4o-mini'},
                         {'label': 'GPT 4o', 'value': 'gpt-4o'},
+                        {'label': 'GPT 4.1', 'value': 'gpt-4.1'},
+                        {'label': 'GPT 4.1 Mini', 'value': 'gpt-4.1-mini'},
+                        {'label': 'GPT 4.1 Nano', 'value': 'gpt-4.1-nano'},
                     ],
                     errors: settings.getErrors("openAiModel"),
+                }) }}
+
+                {{ forms.textfield({
+                    label: 'Custom prompt',
+                    name: 'openAiPrompt',
+                    instructions: 'Write your own prompt. Make sure to include {sourceLanguage}, {targetLanguage} and {text} tokens',
+                    type: 'text',
+                    value: settings.openAiPrompt,
                 }) }}
 
                 {{ forms.textfield({
