@@ -1,5 +1,13 @@
 # Release Notes for Multi Translator
 
+## 2.15.0 - 2025-06-20
+
+### Added
+
+- add custom prompt setting for openai api
+- add translate to all sites from sidebar
+- add translate to all sites from actions
+
 ## 2.14.0 - 2025-06-19
 
 ### Added
