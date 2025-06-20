@@ -48,6 +48,15 @@
                                         </li>
                                     {% endif %}
                                 {% endfor %}
+                                <li>
+                                    <a href="{{ actionUrl('multi-translator/sidebar/translate-to-all', {
+                                        'elementId': element.canonicalId,
+                                        'elementType': className(element),
+                                        'sourceSiteId': element.siteId
+                                    }) }}">
+                                        <strong>All sites</strong>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
