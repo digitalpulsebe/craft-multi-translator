@@ -1,75 +1,130 @@
+{% import '_includes/forms.twig' as forms %}
+    {% set settings = craft.multiTranslator.providerSettings %}
+
 {% if currentUser.can('multiTranslateContent') %}
     <fieldset>
         <legend class="h6">Multi Translator</legend>
         <div class="meta">
             {% if element.id != element.canonicalId %}
-                <div class="field">Warning: revision changes will apply on top of the translated Entry</div>
+                <div class="warning">Warning: revision changes will apply on top of the translated Entry</div>
             {% endif %}
             {% set existingSiteIds = create('craft\\helpers\\ElementHelper').siteStatusesForElement(element)|keys %}
             {% set supportedSiteIds = create('craft\\helpers\\ElementHelper').supportedSitesForElement(element, true)|map(site => site.siteId) %}
             {% set sites = craft.app.sites.allSites %}
 
-            <div class="field">
-                {% if existingSiteIds|length > 1 %}
-                <button type="button" class="btn menubtn" aria-label="Translate">Translate from...</button>
-                <div class="menu">
-                    <ul>
-                        {% for site in sites %}
-                            {% if site.id in existingSiteIds %}
-                                <li>
-                                    <a class=""
-                                       href="{{ actionUrl('multi-translator/sidebar/translate', {
-                                           'elementId': element.canonicalId,
-                                           'elementType': element.className,
-                                           'sourceSiteId': site.id,
-                                           'targetSiteId': element.siteId
-                                       }) }}">
-                                        {{ site.name }} ({{ site.locale }})
-                                        {%- if element.siteId == site.id %} (self){% endif %}
-                                    </a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% else %}
-                    <p>
-                        This entry has no other translations yet.
-                    </p>
-                {% endif %}
-            </div>
-            <div class="field">
-                <button type="button" class="btn menubtn" aria-label="Translate">Translate to...</button>
-                <div class="menu">
-                    <ul>
-                        {% for site in sites %}
-                            {% if site.id in supportedSiteIds %}
-                                <li>
-                                    <a class=""
-                                       href="{{ actionUrl('multi-translator/sidebar/translate', {
-                                           'elementId': element.canonicalId,
-                                           'elementType': element.className,
-                                           'sourceSiteId': element.siteId,
-                                           'targetSiteId': site.id
-                                       }) }}">
-                                        {{ site.name }} ({{ site.locale }})
-                                        {%- if element.siteId == site.id %} (self){% endif %}
-                                    </a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+            {% set currentDescription = "#{element.site.name} (#{element.site.language})" %}
 
-            <div class="field">
-                <a href="{{ url('multi-translator/translate/review', {
-                    'elementId': element.canonicalId,
-                    'elementType': element.className,
-                    'sourceSiteId': element.siteId,
-                }) }}">
-                    More options
-                </a>
+            {% if settings.translationDirectionButtons in ['fromThis', 'both'] %}
+                <div class="field">
+                    <div class="heading">
+                        Translate from
+                    </div>
+                    <div class="input">
+                        <label>{{ currentDescription }}</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="heading">
+                        to:
+                    </div>
+                    <div class="input">
+                        <button type="button" class="btn menubtn" aria-label="Translate">select target</button>
+                        <div class="menu">
+                            <ul>
+                                {% for site in sites %}
+                                    {% if site.id in supportedSiteIds %}
+                                        <li>
+                                            <a class=""
+                                               href="{{ actionUrl('multi-translator/sidebar/translate', {
+                                                   'elementId': element.canonicalId,
+                                                   'elementType': className(element),
+                                                   'sourceSiteId': element.siteId,
+                                                   'targetSiteId': site.id
+                                               }) }}">
+                                                {{ site.name }} ({{ site.locale }})
+                                                {%- if element.siteId == site.id %} (self){% endif %}
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                                <li>
+                                    <a href="{{ actionUrl('multi-translator/sidebar/translate-to-all', {
+                                        'elementId': element.canonicalId,
+                                        'elementType': className(element),
+                                        'sourceSiteId': element.siteId
+                                    }) }}">
+                                        <strong>All sites</strong>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if settings.translationDirectionButtons in ['toThis', 'both'] %}
+                {% if existingSiteIds|length > 1 %}
+                    <div class="field">
+                        <div class="heading">
+                            Translate from:
+                        </div>
+                        <div class="input">
+                            <button type="button" class="btn menubtn" aria-label="Translate">select source</button>
+                            <div class="menu">
+                                <ul>
+                                    {% for site in sites %}
+                                        {% if site.id in existingSiteIds %}
+                                            <li>
+                                                <a class=""
+                                                   href="{{ actionUrl('multi-translator/sidebar/translate', {
+                                                       'elementId': element.canonicalId,
+                                                       'elementType': className(element),
+                                                       'sourceSiteId': site.id,
+                                                       'targetSiteId': element.siteId
+                                                   }) }}">
+                                                    {{ site.name }} ({{ site.locale }})
+                                                    {%- if element.siteId == site.id %} (self){% endif %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="heading">
+                            to
+                        </div>
+                        <div class="input">
+                            <label>{{ currentDescription }}</label>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="field" style="border-block-start-width: 2px;">
+                        <div class="heading">
+                            This entry has no other translations yet.
+                        </div>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            <div class="field" style="border-block-start-width: 2px;">
+                <div class="input">
+                    <div class="heading">
+                        <a href="{{ url('multi-translator/translate/review', {
+                            'elementId': element.canonicalId,
+                            'elementType': className(element),
+                            'sourceSiteId': element.siteId,
+                        }) }}">
+                            <span aria-hidden="true" data-icon="gear"></span>
+                            More options...
+                        </a>
+                    </div>
+
+                </div>
             </div>
         </div>
     </fieldset>

@@ -126,8 +126,19 @@
                         {'label': 'GPT 4 Turbo', 'value': 'gpt-4-turbo'},
                         {'label': 'GPT 4o Mini', 'value': 'gpt-4o-mini'},
                         {'label': 'GPT 4o', 'value': 'gpt-4o'},
+                        {'label': 'GPT 4.1', 'value': 'gpt-4.1'},
+                        {'label': 'GPT 4.1 Mini', 'value': 'gpt-4.1-mini'},
+                        {'label': 'GPT 4.1 Nano', 'value': 'gpt-4.1-nano'},
                     ],
                     errors: settings.getErrors("openAiModel"),
+                }) }}
+
+                {{ forms.textfield({
+                    label: 'Custom prompt',
+                    name: 'openAiPrompt',
+                    instructions: 'Write your own prompt. Make sure to include {sourceLanguage}, {targetLanguage} and {text} tokens',
+                    type: 'text',
+                    value: settings.openAiPrompt,
                 }) }}
 
                 {{ forms.textfield({
@@ -147,9 +158,23 @@
                     <h2>General Options</h2>
                 </legend>
 
+                {{ forms.selectField({
+                    label: "Translate buttons direction",
+                    instructions: "Select direction 'to target' or 'from source', in the sidebar actions of entry detail view.",
+                    id: "translationDirectionButtons",
+                    name: "translationDirectionButtons",
+                    value: settings.translationDirectionButtons,
+                    options: [
+                        {'label': 'From current entry to <other sites>', 'value': 'fromThis'},
+                        {'label': 'From <other sites> to current entry', 'value': 'toThis'},
+                        {'label': 'Both (might be confusing)', 'value': 'both'},
+                    ],
+                    errors: settings.getErrors("translationDirectionButtons"),
+                }) }}
+
                 {{ forms.lightswitchField({
                     label: "Save as draft",
-                    instructions: "Always create a new draft when translating entries",
+                    instructions: "Always create a new draft when translating entries.",
                     id: "saveAsDraft",
                     name: "saveAsDraft",
                     on: settings.saveAsDraft,

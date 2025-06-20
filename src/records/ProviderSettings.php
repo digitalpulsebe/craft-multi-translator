@@ -100,6 +100,15 @@ class ProviderSettings extends ActiveRecord
     }
 
     /**
+     * Custom prompt
+     * @return string|null
+     */
+    public function getOpenAiPrompt(): ?string
+    {
+        return $this->getSetting('openAiPrompt', null);
+    }
+
+    /**
      * Temperature setting for the OpenAI API
      * read more: https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature
      * @return float
@@ -107,6 +116,15 @@ class ProviderSettings extends ActiveRecord
     public function getOpenAiTemperature(): float
     {
         return floatval($this->getSetting('openAiTemperature', 0.5));
+    }
+
+    /**
+     * select direction 'to target' or 'from source', in the sidebar actions of entry detail view.
+     * @return string
+     */
+    public function getTranslationDirectionButtons(): string
+    {
+        return $this->getSetting('translationDirectionButtons', 'fromThis');
     }
 
     /**
