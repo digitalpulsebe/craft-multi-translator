@@ -5,6 +5,7 @@ namespace digitalpulsebe\craftmultitranslator\elements\actions;
 use Craft;
 use craft\base\ElementAction;
 use craft\helpers\UrlHelper;
+use craft\models\Site;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\jobs\BulkTranslateJob;
 use yii\web\UnauthorizedHttpException;
@@ -52,17 +53,30 @@ JS, [static::class]);
             throw new UnauthorizedHttpException('You are not allowed to translate Elements in bulk');
         }
 
-        Craft::$app
-            ->getQueue()
-            ->ttr(MultiTranslator::getInstance()->getSettings()->queueJobTtr)
-            ->push(new BulkTranslateJob([
-                'elementIds' => $elementIds,
-                'elementType' => $query->elementType,
-                'sourceSiteHandle' => $this->sourceSiteHandle,
-                'targetSiteHandle' => $this->targetSiteHandle,
-                'description' => 'Translating '.count($elementIds).' elements...'
-            ]))
-        ;
+        if ($this->targetSiteHandle == '_ALL_') {
+            $sourceSiteHandle = $this->sourceSiteHandle;
+            $siteHandles = collect(Craft::$app->sites->getAllSites())
+                ->filter(function (Site $site) use ($sourceSiteHandle) { return $site->handle != $sourceSiteHandle; })
+                ->map(function (Site $site) { return $site->handle; })
+                ->all();
+        } else {
+            $siteHandles = [$this->targetSiteHandle];
+        }
+
+        foreach ($siteHandles as $siteHandle) {
+            Craft::$app
+                ->getQueue()
+                ->ttr(MultiTranslator::getInstance()->getSettings()->queueJobTtr)
+                ->push(new BulkTranslateJob([
+                    'elementIds' => $elementIds,
+                    'elementType' => $query->elementType,
+                    'sourceSiteHandle' => $this->sourceSiteHandle,
+                    'targetSiteHandle' => $siteHandle,
+                    'description' => 'Translating '.count($elementIds)." elements to $siteHandle..."
+                ]))
+            ;
+        }
+
 
         $this->setMessage('Added to queue');
 
