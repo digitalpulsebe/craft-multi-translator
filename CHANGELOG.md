@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 1.18.1 - 2025-06-25
+
+### Changed
+
+- remove hardcoded timeout for guzzle client for openai
+
 ## 1.18.0 - 2025-06-20
 
 ### Added
