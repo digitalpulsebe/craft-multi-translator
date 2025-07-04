@@ -43,10 +43,12 @@ class SidebarController extends BaseController
             try {
                 $translatedElement = MultiTranslator::getInstance()->translate->translateElement($element, $sourceSite, $targetSite);
 
-                if (!empty($translatedElement->errors)) {
-                    $this->setFailFlash('Validation errors '.json_encode($translatedElement->errors));
-                } else {
-                    $successSites->push($targetSite);
+                if (!empty($translatedElement)) {
+                    if (!empty($translatedElement->errors)) {
+                        $this->setFailFlash('Validation errors '.json_encode($translatedElement->errors));
+                    } else {
+                        $successSites->push($targetSite);
+                    }
                 }
             } catch (\Throwable $throwable) {
                 Craft::$app->session->setError($throwable->getMessage());

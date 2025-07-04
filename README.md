@@ -1,14 +1,14 @@
 # Multi Translator
 
-Translate content of elements using external services
+Translate your site content using Deepl, Google Translate or ChatGPT
 
 ## Requirements
 
-This plugin requires Craft CMS 4.4.0 or later, and PHP 8.0.2 or later.
+This plugin requires Craft CMS 4 or Craft CMS 5
 
 ## Installation
 
-You can install this plugin from the Plugin Store or with Composer.
+You can install this plugin from the [Plugin Store](https://plugins.craftcms.com/multi-translator) or with Composer.
 
 #### From the Plugin Store
 
@@ -49,7 +49,14 @@ Configure options in the Craft control panel settings
 
 ## Permissions
 
-For non-admin users, enable the permission 'Translate Content' under 'Multi Translator'
+For non-admin users, enable permissions under the 'Multi Translator' section:
+
+- 'Manage settings'
+  - this will allow CMS users to enter an API key an edit general settings
+- 'Translate Content'
+  - enables the element actions to [translate one-by-one](#translate-one-by-one)
+- 'Translate Content in bulk (element action)'
+  - enables the bulk actions to [translate one-by-one](#translate-in-bulk)
 
 ## Supported field types
 
@@ -72,8 +79,10 @@ There are two ways to trigger a translation.
 
 ### Translate one-by-one
 
-1. Navigate to the entry and the desired target site/language.
-2. Use the buttons in the sidebar and select the source language.
+1. Navigate to the entry on the desired source site/language.
+2. Use the buttons in the sidebar and select the target language.
+
+(you can reverse this flow by setting the default direction in the configuration)
 
 ![Screenshot](resources/img/screenshot_sidebar.png)
 
@@ -93,3 +102,90 @@ When translating, the plugin will search a glossary for the appropriate source a
 There can only be **one glossary for each language pair**.
 
 ![Screenshot](resources/img/screenshot_glossaries.png)
+
+## Extending with events
+
+You can add your own logic by listening to these events:
+
+### The `beforeElementTranslation` event
+
+Example:
+
+```php
+use digitalpulsebe\craftmultitranslator\events\ElementTranslationEvent;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+
+Event::on(
+    TranslateService::class,
+    TranslateService::EVENT_BEFORE_ELEMENT_TRANSLATION,
+    function (ElementTranslationEvent $event) {
+        $sourceElement = $event->sourceElement;
+        $sourceSite = $event->sourceSite;
+        $targetSite = $event->targetSite;
+    
+        if ($sourceSite->handle == 'disabledSite') {
+            $event->isValid = false; // cancel translation for this scenario
+        }
+    }
+);
+```
+
+### The `afterElementTranslation` event
+
+Example:
+
+```php
+use digitalpulsebe\craftmultitranslator\events\ElementTranslationEvent;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+use digitalpulsebe\craftmultitranslator\MultiTranslator;
+
+Event::on(
+    TranslateService::class,
+    TranslateService::EVENT_AFTER_ELEMENT_TRANSLATION,
+    function (ElementTranslationEvent $event) {
+        $event->targetElement->slug = MultiTranslator::getInstance()->translate->translateText(
+            $event->sourceSite->language,
+            $event->targetSite->language,
+            $event->sourceElement->slug
+        );
+    }
+);
+```
+
+### The `beforeFieldTranslation` event
+
+Example:
+
+```php
+use digitalpulsebe\craftmultitranslator\events\FieldTranslationEvent;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+
+Event::on(
+    TranslateService::class,
+    TranslateService::EVENT_BEFORE_FIELD_TRANSLATION,
+    function (FieldTranslationEvent $event) {
+        if ($event->field->handle == 'fieldTable') {
+            $event->isValid = false; // cancel translation for this field
+        }
+    }
+);
+```
+
+### The `afterFieldTranslation` event
+
+Example:
+
+```php
+use digitalpulsebe\craftmultitranslator\events\FieldTranslationEvent;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+
+Event::on(
+    TranslateService::class,
+    TranslateService::EVENT_AFTER_FIELD_TRANSLATION,
+    function (FieldTranslationEvent $event) {
+        if ($event->field->handle == 'body') {
+            $event->translatedValue = 'CUSTOM VALUE';
+        }
+    }
+);
+```

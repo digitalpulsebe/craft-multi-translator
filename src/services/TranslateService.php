@@ -15,11 +15,18 @@ use craft\enums\PropagationMethod;
 use craft\fields\Table;
 use craft\models\Section;
 use craft\models\Site;
+use digitalpulsebe\craftmultitranslator\events\FieldTranslationEvent;
 use digitalpulsebe\craftmultitranslator\helpers\ElementHelper;
+use digitalpulsebe\craftmultitranslator\events\ElementTranslationEvent;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 
 class TranslateService extends Component
 {
+    public const EVENT_BEFORE_ELEMENT_TRANSLATION = 'beforeElementTranslation';
+    public const EVENT_AFTER_ELEMENT_TRANSLATION = 'afterElementTranslation';
+    public const EVENT_BEFORE_FIELD_TRANSLATION = 'beforeFieldTranslation';
+    public const EVENT_AFTER_FIELD_TRANSLATION = 'afterFieldTranslation';
+
     static array $textFields = [
         'craft\fields\PlainText',
         'craft\redactor\Field',
@@ -41,8 +48,12 @@ class TranslateService extends Component
      * @throws \craft\errors\ElementNotFoundException
      * @throws \yii\base\Exception
      */
-    public function translateElement(Element $source, Site $sourceSite, Site $targetSite): Element
+    public function translateElement(Element $source, Site $sourceSite, Site $targetSite, bool $isRootElement = true): ?Element
     {
+        if (!$this->onBeforeElementTranslation($source, $sourceSite, $targetSite, $isRootElement)) {
+            return null;
+        }
+
         // translate inside of Element, get serialized data
         $translatedValues = $this->translateElementFields($source, $sourceSite, $targetSite, true);
 
@@ -70,6 +81,10 @@ class TranslateService extends Component
         $targetElement->setFieldValues($translatedValues);
 
         $revisionNotes = 'Translated by Multi Translator from "'.$sourceSite->name.'" ('.$sourceSite->getLocale()->getLanguageID().')';
+
+        if (!$this->onAfterElementTranslation($source, $targetElement, $sourceSite, $targetSite, $isRootElement)) {
+            return null;
+        }
 
         if ($targetElement instanceof Entry && $targetElement->getIsDraft()) {
             // only Entries can have drafts
@@ -150,13 +165,17 @@ class TranslateService extends Component
         foreach ($source->fieldLayout->getCustomFields() as $field) {
             $translatedValue = null;
             $fieldTranslatable = $field->translationMethod != Field::TRANSLATION_METHOD_NONE;
+            $beforeTranslationEvent = $this->onBeforeFieldTranslation($source, $field, $sourceSite, $targetSite);
             $processField = boolval($fieldTranslatable); // if translatable
 
             if (in_array($field->handle, $disabledFields)) {
                 continue;
             }
 
-            if (in_array(get_class($field), static::$textFields) && $processField) {
+            if (!$beforeTranslationEvent->isValid) {
+                // translated value, possibly overridden on event handle
+                $translatedValue = $beforeTranslationEvent->translatedValue;
+            } elseif (in_array(get_class($field), static::$textFields) && $processField) {
                 // normal text fields
                 $translatedValue = $this->translateTextField($source, $field, $sourceSite, $targetSite);
             } elseif (in_array(get_class($field), static::$matrixFields)) {
@@ -193,6 +212,8 @@ class TranslateService extends Component
                 $translatedValue = $this->translateLinks($translatedValue, $sourceSite, $targetSite);
                 $translatedValue = $this->translateNestedEntries($translatedValue, $sourceSite, $targetSite);
             }
+
+            $translatedValue = $this->onAfterFieldTranslation($source, $field, $sourceSite, $targetSite, $translatedValue);
 
             if ($translatedValue) {
                 $target[$field->handle] = $translatedValue;
@@ -529,7 +550,7 @@ class TranslateService extends Component
                 $entryId = $matches[1][$i];
 
                 $sourceEntry = Entry::find()->siteId($sourceSite->id)->id($entryId)->one();
-                $targetEntry = $this->translateElement($sourceEntry, $sourceSite, $targetSite);
+                $targetEntry = $this->translateElement($sourceEntry, $sourceSite, $targetSite, false);
                 if ($targetEntry) {
                     $translatedValue = str_replace($fullMatch, "<craft-entry data-entry-id=\"$targetEntry->id\" data-site-id=\"$targetEntry->siteId\">", $translatedValue);
                 }
@@ -537,6 +558,72 @@ class TranslateService extends Component
         }
 
         return $translatedValue;
+    }
+
+    public function onBeforeElementTranslation(Element $source, Site $sourceSite, Site $targetSite, bool $isRootElement): bool
+    {
+        $event = new ElementTranslationEvent([
+            'sourceElement' => $source,
+            'sourceSite' => $sourceSite,
+            'targetSite' => $targetSite,
+            'isRootElement' => $isRootElement,
+        ]);
+
+        $this->trigger(self::EVENT_BEFORE_ELEMENT_TRANSLATION, $event);
+
+        return $event->isValid;
+    }
+
+    public function onAfterElementTranslation(Element $source, Element $target, Site $sourceSite, Site $targetSite, bool $isRootElement = true): bool
+    {
+        $event = new ElementTranslationEvent([
+            'sourceElement' => $source,
+            'targetElement' => $target,
+            'sourceSite' => $sourceSite,
+            'targetSite' => $targetSite,
+            'isRootElement' => $isRootElement,
+        ]);
+
+        $this->trigger(self::EVENT_AFTER_ELEMENT_TRANSLATION, $event);
+
+        return $event->isValid;
+    }
+
+    public function onBeforeFieldTranslation(Element $source, FieldInterface $field, Site $sourceSite, Site $targetSite): FieldTranslationEvent
+    {
+        $event = new FieldTranslationEvent([
+            'sourceElement' => $source,
+            'field' => $field,
+            'sourceSite' => $sourceSite,
+            'targetSite' => $targetSite,
+        ]);
+
+        $this->trigger(self::EVENT_BEFORE_FIELD_TRANSLATION, $event);
+
+        return $event;
+    }
+
+    /**
+     * @param Element $source
+     * @param FieldInterface $field
+     * @param Site $sourceSite
+     * @param Site $targetSite
+     * @param mixed $translatedValue
+     * @return mixed translated value, possibly overridden on event handle
+     */
+    public function onAfterFieldTranslation(Element $source, FieldInterface $field, Site $sourceSite, Site $targetSite, mixed $translatedValue): mixed
+    {
+        $event = new FieldTranslationEvent([
+            'sourceElement' => $source,
+            'field' => $field,
+            'sourceSite' => $sourceSite,
+            'targetSite' => $targetSite,
+            'translatedValue' => $translatedValue,
+        ]);
+
+        $this->trigger(self::EVENT_AFTER_FIELD_TRANSLATION, $event);
+
+        return $event->translatedValue;
     }
 
     protected function getProviderSettings(): \digitalpulsebe\craftmultitranslator\records\ProviderSettings

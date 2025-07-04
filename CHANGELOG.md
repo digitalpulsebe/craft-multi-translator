@@ -1,5 +1,14 @@
 # Release Notes for Multi Translator
 
+## 2.16.0 - 2025-07-04
+
+### Added
+
+- event beforeElementTranslation
+- event afterElementTranslation
+- event beforeFieldTranslation
+- event afterFieldTranslation
+
 ## 2.15.0 - 2025-06-20
 
 ### Added
