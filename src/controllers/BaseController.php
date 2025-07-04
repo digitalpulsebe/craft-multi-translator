@@ -23,6 +23,11 @@ abstract class BaseController extends Controller
         try {
             $translatedElement = MultiTranslator::getInstance()->translate->translateElement($element, $sourceSite, $targetSite);
 
+            if (empty($translatedElement)) {
+                $this->setFailFlash('Translation cancelled');
+                return $this->redirect($element->cpEditUrl);
+            }
+
             if (!empty($translatedElement->errors)) {
                 $this->setFailFlash('Validation errors '.json_encode($translatedElement->errors));
                 return $this->redirect($translatedElement->cpEditUrl);

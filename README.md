@@ -102,3 +102,90 @@ When translating, the plugin will search a glossary for the appropriate source a
 There can only be **one glossary for each language pair**.
 
 ![Screenshot](resources/img/screenshot_glossaries.png)
+
+## Extending with events
+
+You can add your own logic by listening to these events:
+
+### The `beforeElementTranslation` event
+
+Example:
+
+```php
+use digitalpulsebe\craftmultitranslator\events\ElementTranslationEvent;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+
+Event::on(
+    TranslateService::class,
+    TranslateService::EVENT_BEFORE_ELEMENT_TRANSLATION,
+    function (ElementTranslationEvent $event) {
+        $sourceElement = $event->sourceElement;
+        $sourceSite = $event->sourceSite;
+        $targetSite = $event->targetSite;
+    
+        if ($sourceSite->handle == 'disabledSite') {
+            $event->isValid = false; // cancel translation for this scenario
+        }
+    }
+);
+```
+
+### The `afterElementTranslation` event
+
+Example:
+
+```php
+use digitalpulsebe\craftmultitranslator\events\ElementTranslationEvent;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+use digitalpulsebe\craftmultitranslator\MultiTranslator;
+
+Event::on(
+    TranslateService::class,
+    TranslateService::EVENT_AFTER_ELEMENT_TRANSLATION,
+    function (ElementTranslationEvent $event) {
+        $event->targetElement->slug = MultiTranslator::getInstance()->translate->translateText(
+            $event->sourceSite->language,
+            $event->targetSite->language,
+            $event->sourceElement->slug
+        );
+    }
+);
+```
+
+### The `beforeFieldTranslation` event
+
+Example:
+
+```php
+use digitalpulsebe\craftmultitranslator\events\FieldTranslationEvent;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+
+Event::on(
+    TranslateService::class,
+    TranslateService::EVENT_BEFORE_FIELD_TRANSLATION,
+    function (FieldTranslationEvent $event) {
+        if ($event->field->handle == 'fieldTable') {
+            $event->isValid = false; // cancel translation for this field
+        }
+    }
+);
+```
+
+### The `afterFieldTranslation` event
+
+Example:
+
+```php
+use digitalpulsebe\craftmultitranslator\events\FieldTranslationEvent;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+
+Event::on(
+    TranslateService::class,
+    TranslateService::EVENT_AFTER_FIELD_TRANSLATION,
+    function (FieldTranslationEvent $event) {
+        if ($event->field->handle == 'body') {
+            $event->translatedValue = 'CUSTOM VALUE';
+        }
+    }
+);
+```
