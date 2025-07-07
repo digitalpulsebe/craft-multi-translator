@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- fix translate Hyper linked entry siteId
+
 ## 2.16.0 - 2025-07-04
 
 ### Added

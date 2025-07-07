@@ -329,6 +329,9 @@ class TranslateService extends Component
                 if (!empty($value['linkText'])) {
                     $values[$i]['linkText'] = $this->translateText($sourceSite->language, $targetSite->language, $value['linkText']);
                 }
+                if (!empty($value['linkSiteId']) && $value['linkSiteId'] == $sourceSite->id) {
+                    $values[$i]['linkSiteId'] = $targetSite->id;
+                }
             } catch (\Throwable $throwable) {
                 // might fail, but we still want to continue
                 MultiTranslator::error([
