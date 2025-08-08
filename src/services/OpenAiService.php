@@ -33,8 +33,7 @@ class OpenAiService extends ApiService
                     'Authorization' => "Bearer $apiKey",
                     'Content-Type' => "application/json",
                 ],
-				'http_errors' => true,
-                'timeout' => 30
+				'http_errors' => true
             ]);
         }
 
