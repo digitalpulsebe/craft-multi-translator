@@ -6,6 +6,10 @@
 
 - fix translate Hyper linked entry siteId
 
+### Changed
+
+- remove hardcoded timeout for guzzle client for openai
+
 ## 2.16.0 - 2025-07-04
 
 ### Added
@@ -232,6 +236,12 @@
 
 ### Updated
 - Craft 5 support
+
+## 1.18.1 - 2025-06-25
+
+### Changed
+
+- remove hardcoded timeout for guzzle client for openai
 
 ## 1.18.0 - 2025-06-20
 
