@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.17.1 - 2025-09-05
+
+### Fixed
+
+- translate block button label text
+
 ## 2.17.0 - 2025-09-05
 
 ### Added

@@ -77,7 +77,7 @@
         var $menu = $block.find('> .actions .menu');
 
         if ($menu.length && !$menu.find('ul.translate-action').length) {
-            var $li = $('<li><button class="menu-item" data-icon="language">Vertalen naar…</button></li>');
+            var $li = $('<li><button class="menu-item" data-icon="language">Translate to…</button></li>');
             var $ul = $('<ul class="translate-action"></ul>')
 
             $li.on('click', function(e) {
