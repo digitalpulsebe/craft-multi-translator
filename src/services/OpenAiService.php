@@ -91,6 +91,6 @@ class OpenAiService extends ApiService
         if (empty($locale)) {
             return null;
         }
-        return locale_get_display_language($locale, 'en');
+        return locale_get_display_name($locale, 'en');
     }
 }
