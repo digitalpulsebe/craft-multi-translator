@@ -553,7 +553,7 @@ class TranslateService extends Component
                 $entryId = $matches[1][$i];
 
                 $sourceEntry = Entry::find()->siteId($sourceSite->id)->id($entryId)->one();
-                $targetEntry = $this->translateElement($sourceEntry, $sourceSite, $targetSite, false);
+                $targetEntry = $sourceEntry ? $this->translateElement($sourceEntry, $sourceSite, $targetSite, false) : null;
                 if ($targetEntry) {
                     $translatedValue = str_replace($fullMatch, "<craft-entry data-entry-id=\"$targetEntry->id\" data-site-id=\"$targetEntry->siteId\">", $translatedValue);
                 }
