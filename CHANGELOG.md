@@ -10,6 +10,11 @@
 
 - update openai prompt use `locale_get_display_name` instead of `locale_get_display_language`
 
+### Fixed
+
+- handle null when translating nested entries
+- change panel class to fix styling (#63)
+
 ## 2.16.1 - 2025-08-08
 
 ### Fixed
