@@ -18,8 +18,16 @@
                 label: 'Target site',
                 id: "translationTarget-${elementId}",
                 name: 'targetSiteId',
-                options: sites|map(site => {label: site.name, value: site.id}),
-                firstOption: 'Select a site',
+                options: [{
+                    label: 'select target',
+                    value: ''
+                }]|merge(
+                    sites|map(site => {
+                        label: "#{site.name} (#{site.locale})",
+                        value: site.id
+                    })
+                ),
+                inputAttributes: {required: 1},
             }) }}
         </div>
     </div>
