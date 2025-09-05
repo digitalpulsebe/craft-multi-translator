@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- translate matrix blocks from context-menu action
+
 ## 2.16.1 - 2025-08-08
 
 ### Fixed
