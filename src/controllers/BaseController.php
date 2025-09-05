@@ -33,7 +33,10 @@ abstract class BaseController extends Controller
                 return $this->redirect($translatedElement->cpEditUrl);
             }
 
-            return $this->asSuccess('Element translated', ['elementId' => $elementId], $translatedElement->cpEditUrl);
+            // get parent of translated element, if exists
+            $rootOwner = $translatedElement->getRootOwner();
+
+            return $this->asSuccess('Element translated', ['elementId' => $elementId], $rootOwner ? $rootOwner->getCpEditUrl() : $translatedElement->getCpEditUrl());
         } catch (\Throwable $throwable) {
             $redirectElement = ElementHelper::one($elementType, $elementId, $targetSiteId);
             if (empty($redirectElement)) {

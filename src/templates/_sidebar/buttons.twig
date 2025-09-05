@@ -1,7 +1,10 @@
 {% import '_includes/forms.twig' as forms %}
-    {% set settings = craft.multiTranslator.providerSettings %}
 
 {% if currentUser.can('multiTranslateContent') %}
+
+    {% do view.registerAssetBundle("digitalpulsebe\\craftmultitranslator\\assets\\MultiTranslatorBundle") %}
+    {% set settings = craft.multiTranslator.providerSettings %}
+
     <fieldset>
         <legend class="h6">Multi Translator</legend>
         <div class="meta">
