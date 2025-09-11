@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- add support for the 'Content Block' field type
+
 ## 2.17.1 - 2025-09-05
 
 ### Fixed
