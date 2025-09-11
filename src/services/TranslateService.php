@@ -10,10 +10,10 @@ use craft\base\FieldInterface;
 use craft\commerce\elements\Product;
 use craft\commerce\elements\Variant;
 use craft\elements\Asset;
+use craft\elements\ContentBlock;
 use craft\elements\Entry;
 use craft\enums\PropagationMethod;
 use craft\fields\Table;
-use craft\models\Section;
 use craft\models\Site;
 use digitalpulsebe\craftmultitranslator\events\FieldTranslationEvent;
 use digitalpulsebe\craftmultitranslator\helpers\ElementHelper;
@@ -162,7 +162,14 @@ class TranslateService extends Component
             $target['alt'] = $this->translateText($sourceSite->language, $targetSite->language, $source->alt);
         }
 
-        foreach ($source->fieldLayout->getCustomFields() as $field) {
+        $this->processFieldLayoutFields($source, $target, $sourceSite, $targetSite, $disabledFields);
+
+        return $target;
+    }
+
+    protected function processFieldLayoutFields(Element|ContentBlock $source, array &$target, Site $sourceSite, Site $targetSite, array $disabledFields = []): void
+    {
+        foreach ($source->getFieldLayout()->getCustomFields() as $field) {
             $translatedValue = null;
             $fieldTranslatable = $field->translationMethod != Field::TRANSLATION_METHOD_NONE;
             $beforeTranslationEvent = $this->onBeforeFieldTranslation($source, $field, $sourceSite, $targetSite);
@@ -187,6 +194,9 @@ class TranslateService extends Component
             } elseif (get_class($field) == 'lenz\linkfield\fields\LinkField' && $processField) {
                 // translate linkfield custom label
                 $translatedValue = $this->translateLinkField($source, $field, $sourceSite, $targetSite);
+            } elseif (get_class($field) == 'craft\fields\ContentBlock' && $processField) {
+                // translate content block
+                $translatedValue = $this->translateContentBlock($source, $field, $sourceSite, $targetSite);
             } elseif (get_class($field) == 'presseddigital\linkit\fields\LinkitField' && $processField) {
                 // translate Linkit custom text
                 $translatedValue = $this->translateLinkitField($source, $field, $sourceSite, $targetSite);
@@ -221,8 +231,6 @@ class TranslateService extends Component
                 $target[$field->handle] = $field->serializeValue($source->getFieldValue($field->handle), $source);
             }
         }
-
-        return $target;
     }
 
     public function translateTextField(Element $element, FieldInterface $field, Site $sourceSite, Site $targetSite): ?string
@@ -561,6 +569,19 @@ class TranslateService extends Component
         }
 
         return $translatedValue;
+    }
+
+    private function translateContentBlock(Element $source, \craft\fields\ContentBlock $field, Site $sourceSite, Site $targetSite)
+    {
+        $serialized = $source->getSerializedFieldValues([$field->handle])[$field->handle];
+        $fields = [];
+        $this->processFieldLayoutFields($source->getFieldValue($field->handle), $fields, $sourceSite, $targetSite);
+
+        foreach ($fields as $fieldHandle => $value) {
+            $serialized['fields'][$fieldHandle] = $value;
+        }
+
+        return $serialized;
     }
 
     public function onBeforeElementTranslation(Element $source, Site $sourceSite, Site $targetSite, bool $isRootElement): bool
