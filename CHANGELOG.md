@@ -264,6 +264,12 @@
 ### Updated
 - Craft 5 support
 
+## 1.19.0 - 2025-09-19
+
+### Changed
+
+- restrict translation targets according to permissions; require permissions in controllers for user to editSite
+
 ## 1.18.1 - 2025-06-25
 
 ### Changed
