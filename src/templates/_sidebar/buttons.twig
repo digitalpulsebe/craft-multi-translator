@@ -32,31 +32,38 @@
                         <button type="button" class="btn menubtn" aria-label="Translate">select target</button>
                         <div class="menu">
                             <ul>
+                                {% set userCanEditAllSites = true %}
                                 {% for site in sites %}
-                                    {% if site.id in supportedSiteIds %}
-                                        <li>
-                                            <a class=""
-                                               href="{{ actionUrl('multi-translator/sidebar/translate', {
-                                                   'elementId': element.canonicalId,
-                                                   'elementType': className(element),
-                                                   'sourceSiteId': element.siteId,
-                                                   'targetSiteId': site.id
-                                               }) }}">
-                                                {{ site.name }} ({{ site.locale }})
-                                                {%- if element.siteId == site.id %} (self){% endif %}
-                                            </a>
-                                        </li>
+                                    {% if currentUser.can('editSite:'~site.uid) %}
+                                        {% if site.id in supportedSiteIds %}
+                                            <li>
+                                                <a class=""
+                                                   href="{{ actionUrl('multi-translator/sidebar/translate', {
+                                                       'elementId': element.canonicalId,
+                                                       'elementType': className(element),
+                                                       'sourceSiteId': element.siteId,
+                                                       'targetSiteId': site.id
+                                                   }) }}">
+                                                    {{ site.name }} ({{ site.locale }})
+                                                    {%- if element.siteId == site.id %} (self){% endif %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% else %}
+                                        {% set userCanEditAllSites = false %}
                                     {% endif %}
                                 {% endfor %}
-                                <li>
-                                    <a href="{{ actionUrl('multi-translator/sidebar/translate-to-all', {
-                                        'elementId': element.canonicalId,
-                                        'elementType': className(element),
-                                        'sourceSiteId': element.siteId
-                                    }) }}">
-                                        <strong>All sites</strong>
-                                    </a>
-                                </li>
+                                {% if userCanEditAllSites %}
+                                    <li>
+                                        <a href="{{ actionUrl('multi-translator/sidebar/translate-to-all', {
+                                            'elementId': element.canonicalId,
+                                            'elementType': className(element),
+                                            'sourceSiteId': element.siteId
+                                        }) }}">
+                                            <strong>All sites</strong>
+                                        </a>
+                                    </li>
+                                {% endif %}
                             </ul>
                         </div>
                     </div>
@@ -74,7 +81,7 @@
                             <div class="menu">
                                 <ul>
                                     {% for site in sites %}
-                                        {% if site.id in existingSiteIds %}
+                                        {% if site.id in existingSiteIds and currentUser.can('editSite:'~site.uid) %}
                                             <li>
                                                 <a class=""
                                                    href="{{ actionUrl('multi-translator/sidebar/translate', {

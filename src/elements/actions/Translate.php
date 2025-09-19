@@ -64,6 +64,12 @@ JS, [static::class]);
         }
 
         foreach ($siteHandles as $siteHandle) {
+            $targetSite = Craft::$app->sites->getSiteByHandle($siteHandle);
+
+            if (!\Craft::$app->user->checkPermission('editSite:'.$targetSite->uid)) {
+                throw new UnauthorizedHttpException('You are not allowed to translate Elements for this site: '.$siteHandle);
+            }
+
             Craft::$app
                 ->getQueue()
                 ->ttr(MultiTranslator::getInstance()->getSettings()->queueJobTtr)
