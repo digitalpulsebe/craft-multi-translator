@@ -20,6 +20,8 @@ abstract class BaseController extends Controller
         $sourceSite = Craft::$app->sites->getSiteById($sourceSiteId);
         $targetSite = Craft::$app->sites->getSiteById($targetSiteId);
 
+        $this->requirePermission('editSite:'.$targetSite->uid);
+
         try {
             $translatedElement = MultiTranslator::getInstance()->translate->translateElement($element, $sourceSite, $targetSite);
 

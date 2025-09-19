@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.19.0 - 2025-09-19
+
+### Changed
+
+- restrict translation targets according to permissions; require permissions in controllers for user to editSite
+
 ## 2.18.0 - 2025-09-11
 
 ### Added
@@ -263,6 +269,12 @@
 
 ### Updated
 - Craft 5 support
+
+## 1.19.0 - 2025-09-19
+
+### Changed
+
+- restrict translation targets according to permissions; require permissions in controllers for user to editSite
 
 ## 1.18.1 - 2025-06-25
 

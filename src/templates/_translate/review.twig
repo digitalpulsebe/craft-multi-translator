@@ -44,10 +44,11 @@
     {% set supportedSiteIds = create('craft\\helpers\\ElementHelper').supportedSitesForElement(element, true)|map(site => site.siteId) %}
     {% set sites = craft.app.sites.allSites %}
 
-    {% set existingSiteOptions = sites|filter(site => site.id in existingSiteIds)|map(site => {label: site.name, value: site.id}) %}
+    {% set existingSiteOptions = sites|filter(site => (site.id in existingSiteIds and currentUser.can('editSite:'~site.uid)))|map(site => {label: site.name, value: site.id}) %}
     {% set supportedSiteOptions = [{label: '- select target -', value: ''}] %}
     {% set supportedSiteOptions = supportedSiteOptions
         |merge(sites|filter(site => site.id in supportedSiteIds)
+        |filter(site => currentUser.can('editSite:'~site.uid))
         |map(site => {label: site.name, value: site.id})) %}
 
     <form method="post">
