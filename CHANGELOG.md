@@ -1,5 +1,15 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- fetch glossaries from the DeepL API
+
+### Changed
+
+- delete glossaries in DeepL API with new v3 endpoint
+
 ## 2.19.0 - 2025-09-19
 
 ### Changed

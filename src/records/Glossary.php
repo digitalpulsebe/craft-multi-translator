@@ -125,11 +125,12 @@ class Glossary extends ActiveRecord
     {
         if (!empty($this->deeplId)) {
             try {
-                MultiTranslator::getInstance()->deepl->deleteGlossary($this->deeplId);
+                MultiTranslator::getInstance()->deepl->deleteGlossary($this->id);
             } catch (\Throwable $e) {
                 // might fail, but we still want to continue
                 MultiTranslator::error([
                     'message' => 'Error when deleting existing Deepl Glossary',
+                    'error' => $e->getMessage(),
                     'glossaryId' => $this->deeplId,
                 ]);
             }
@@ -144,7 +145,6 @@ class Glossary extends ActiveRecord
             [['name', 'sourceLanguage', 'targetLanguage'], 'required'],
             [['name', 'sourceLanguage', 'targetLanguage'], 'trim'],
             ['sourceLanguage', 'compare', 'compareAttribute' => 'targetLanguage', 'operator' => '!='],
-            [['sourceLanguage', 'targetLanguage'], 'unique', 'targetAttribute' => ['sourceLanguage', 'targetLanguage']],
         ];
     }
 }

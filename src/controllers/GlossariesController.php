@@ -24,6 +24,20 @@ class GlossariesController extends Controller
         return $this->actionEdit();
     }
 
+    public function actionFetch()
+    {
+        $this->requirePermission('multiTranslateContent');
+
+        try {
+            MultiTranslator::getInstance()->deepl->fetchGlossaries();
+            $this->setSuccessFlash('Glossaries fetched from DeepL.');
+        } catch (\Throwable $exception) {
+            $this->setFailFlash($exception->getMessage());
+        }
+
+        return $this->redirect('multi-translator/glossaries');
+    }
+
     public function actionDelete(int $id = null): Response
     {
         $this->requirePermission('multiTranslateContent');

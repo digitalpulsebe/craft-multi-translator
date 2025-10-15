@@ -3,8 +3,12 @@
 namespace digitalpulsebe\craftmultitranslator\services;
 
 use craft\helpers\App;
+use DeepL\DeepLClient;
+use DeepL\DeepLException;
 use DeepL\GlossaryEntries;
 use DeepL\GlossaryInfo;
+use DeepL\MultilingualGlossaryDictionaryEntries;
+use DeepL\MultilingualGlossaryInfo;
 use DeepL\Translator;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\records\Glossary;
@@ -33,7 +37,7 @@ class DeeplService extends ApiService
     {
         if (!$this->_client) {
             $apiKey = App::parseEnv($this->getProviderSettings()->getDeeplApiKey());
-            $this->_client = new Translator($apiKey);;
+            $this->_client = new DeepLClient($apiKey);;
         }
 
         return $this->_client;
@@ -65,7 +69,46 @@ class DeeplService extends ApiService
 
     public function listGlossaries()
     {
-        return $this->getClient()->listGlossaries();
+        return $this->getClient()->listMultilingualGlossaries();
+    }
+
+    public function fetchGlossaries(): void
+    {
+        $glossaries = $this->listGlossaries();
+        $recordIds = [];
+
+        foreach ($glossaries as $glossaryInfo) {
+            foreach ($glossaryInfo->dictionaries as $dictionary) {
+                $glossaryEntries = $this->getClient()->getMultilingualGlossaryEntries($glossaryInfo->glossaryId, $dictionary->sourceLang, $dictionary->targetLang);
+
+                foreach ($glossaryEntries as $glossaryEntry) {
+                    if ($glossaryEntry instanceof MultilingualGlossaryDictionaryEntries) {
+                        $glossaryRecord = Glossary::findOne([
+                            'deeplId' => $glossaryInfo->glossaryId,
+                            'sourceLanguage' => $dictionary->sourceLang,
+                            'targetLanguage' => $dictionary->targetLang,
+                        ]);
+
+                        if (!$glossaryRecord) {
+                            $glossaryRecord = new Glossary();
+                            $glossaryRecord->setAttribute('deeplId', $glossaryInfo->glossaryId);
+                            $glossaryRecord->setAttribute('sourceLanguage', $glossaryEntry->sourceLang);
+                            $glossaryRecord->setAttribute('targetLanguage', $glossaryEntry->targetLang);
+                        }
+
+                        $glossaryRecord->setAttribute('data', $glossaryEntry->entries);
+                        $glossaryRecord->setAttribute('name', $glossaryInfo->name);
+                        if (!$glossaryRecord->save()) {
+                            throw new \Exception(json_encode($glossaryRecord->getErrors()));
+                        }
+
+                        $recordIds[] = $glossaryRecord->id;
+                    }
+                }
+            }
+        }
+
+        Glossary::deleteAll(['not in', 'id', $recordIds]);
     }
 
     public function createGlossary(string $name, string $sourceLanguage, string $targetLanguage, array $data): GlossaryInfo
@@ -75,9 +118,19 @@ class DeeplService extends ApiService
         return $this->getClient()->createGlossary($name, $sourceLanguage, $targetLanguage, $entries);
     }
 
-    public function deleteGlossary(string $id): void
+    public function deleteGlossary(int $recordId): void
     {
-        $this->getClient()->deleteGlossary($id);
+        $record = Glossary::findOne(['id' => $recordId]);
+
+        $glossaryInfo = $this->getClient()->getMultilingualGlossary($record->deeplId);
+
+        if ($glossaryInfo) {
+            foreach ($glossaryInfo->dictionaries as $dictionary) {
+                if ($dictionary->sourceLang == $record->sourceLanguage && $dictionary->targetLang == $record->targetLanguage) {
+                    $this->getClient()->deleteMultilingualGlossaryDictionary($glossaryInfo, $dictionary);
+                }
+            }
+        }
     }
 
     public function sourceLocale($raw): ?string

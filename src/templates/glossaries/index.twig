@@ -13,6 +13,7 @@
 {% block actionButton %}
     {% if settings.translationProvider == 'deepl' and service.isConnected %}
         <a class="btn submit add icon" href="{{ url('multi-translator/glossaries/new') }}">Create new</a>
+        <a class="btn submit sync icon" href="{{ url('multi-translator/glossaries/fetch') }}">Fetch from DeepL</a>
     {% endif %}
 {% endblock %}
 
