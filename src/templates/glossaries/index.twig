@@ -27,6 +27,10 @@
                 the DeepL documentation
             </a>
         </p>
+        <p>
+            You can have only one glossary per language pair. So disable the glossaries you don't want to use.
+            Disabling a glossary will not affect glossaries in your DeepL account, deleting it will delete it from your DeepL account as well.
+        </p>
 
         {% if settings.translationProvider == 'deepl' and service.isConnected %}
 
@@ -44,17 +48,36 @@
                         {% for glossary in craft.multiTranslator.glossaries %}
                             <tr>
                                 <td>
+                                    <span
+                                        class="status {{ glossary.enabled ? 'live' : 'disabled' }}"
+                                        role="img"
+                                        aria-label="Status: {{ glossary.enabled ? 'live' : 'disabled' }}">
+                                    </span>
                                     <a href="{{ url('multi-translator/glossaries/edit/'~glossary.id) }}" title="edit">
+
                                         {{ glossary.name }}
                                     </a>
                                 </td>
                                 <td>{{ glossary.sourceLanguage }} &rightarrow; {{ glossary.targetLanguage }}</td>
                                 <td>{{ glossary.rows|length }}</td>
                                 <td style="text-align: right">
+                                    {% if glossary.enabled %}
+                                        <a
+                                            href="{{ actionUrl('multi-translator/glossaries/disable/', {id: glossary.id}) }}"
+                                            class="btn"
+                                            title="Disable this glossary"
+                                        >disable</a>
+                                    {% else %}<a
+                                            href="{{ actionUrl('multi-translator/glossaries/enable/', {id: glossary.id}) }}"
+                                            class="btn"
+                                            title="Enable this glossary"
+                                        >enable</a>
+                                    {% endif %}
                                     <a
                                         href="{{ actionUrl('multi-translator/glossaries/delete/', {id: glossary.id}) }}"
                                         class="btn"
-                                        onclick="return confirm('Delete this?')"
+                                        title="Delete this glossary in your DeepL account"
+                                        onclick="return confirm('Are you sure you want to delete this? The glossary will be deleted from your DeepL account as well.')"
                                     >delete</a>
                                 </td>
                             </tr>

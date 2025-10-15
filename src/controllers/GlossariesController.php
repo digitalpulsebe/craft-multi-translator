@@ -51,6 +51,38 @@ class GlossariesController extends Controller
         return $this->redirect('multi-translator/glossaries');
     }
 
+    public function actionEnable(int $id = null): Response
+    {
+        $this->requirePermission('multiTranslateContent');
+
+        $record = $id ? Glossary::findOne(['id' => $id]) : null;
+
+        if ($record) {
+            $record->setAttribute('enabled', 1);
+            if ($record->save()) {
+                $this->setSuccessFlash('Glossary enabled.');
+            }
+        }
+
+        return $this->redirect('multi-translator/glossaries');
+    }
+
+    public function actionDisable(int $id = null): Response
+    {
+        $this->requirePermission('multiTranslateContent');
+
+        $record = $id ? Glossary::findOne(['id' => $id]) : null;
+
+        if ($record) {
+            $record->setAttribute('enabled', 0);
+            if ($record->save()) {
+                $this->setSuccessFlash('Glossary disabled.');
+            }
+        }
+
+        return $this->redirect('multi-translator/glossaries');
+    }
+
     public function actionSave(): Response
     {
         $this->requirePermission('multiTranslateContent');

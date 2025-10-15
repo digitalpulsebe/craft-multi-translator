@@ -66,6 +66,7 @@
                     name: 'sourceLanguage',
                     value: glossary.sourceLanguage,
                     options: supportedLanguages,
+                    disabled: (glossary.id is not empty),
                     errors: glossary.getErrors('sourceLanguage')
                 }) }}
                 {{ forms.selectfield({
@@ -73,8 +74,13 @@
                     name: 'targetLanguage',
                     value: glossary.targetLanguage,
                     options: supportedLanguages,
+                    disabled: (glossary.id is not empty),
                     errors: glossary.getErrors('targetLanguage')
                 }) }}
+                {% if glossary.id is not empty %}
+                    {{ hiddenInput('sourceLanguage', glossary.sourceLanguage) }}
+                    {{ hiddenInput('targetLanguage', glossary.targetLanguage) }}
+                {% endif %}
             </fieldset>
 
             <fieldset>

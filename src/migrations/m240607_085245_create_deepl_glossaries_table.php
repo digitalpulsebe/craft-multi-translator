@@ -17,6 +17,7 @@ class m240607_085245_create_deepl_glossaries_table extends Migration
     {
         $this->createTable('{{%multitranslator_deepl_glossaries}}', [
             'id' => $this->primaryKey(),
+            'enabled' => $this->boolean()->notNull()->defaultValue(1),
             'name' => $this->string(),
             'deeplId' => $this->string(),
             'sourceLanguage' => $this->string(5),

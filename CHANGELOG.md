@@ -5,10 +5,11 @@
 ### Added
 
 - fetch glossaries from the DeepL API
+- enable/disable glossaries
 
 ### Changed
 
-- delete glossaries in DeepL API with new v3 endpoint
+- delete/update/create glossaries in DeepL API with the new v3 endpoint
 
 ## 2.19.0 - 2025-09-19
 

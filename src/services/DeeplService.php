@@ -48,6 +48,7 @@ class DeeplService extends ApiService
         $glossary = Glossary::find()->where([
             'sourceLanguage' => substr($sourceLocale, 0, 2),
             'targetLanguage' => substr($targetLocale, 0, 2),
+            'enabled' => 1,
         ])->one();
 
         $defaultOptions = [
@@ -67,14 +68,9 @@ class DeeplService extends ApiService
         return null;
     }
 
-    public function listGlossaries()
-    {
-        return $this->getClient()->listMultilingualGlossaries();
-    }
-
     public function fetchGlossaries(): void
     {
-        $glossaries = $this->listGlossaries();
+        $glossaries = $this->getClient()->listMultilingualGlossaries();
         $recordIds = [];
 
         foreach ($glossaries as $glossaryInfo) {

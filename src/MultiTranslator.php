@@ -45,7 +45,7 @@ use yii\log\Logger;
  */
 class MultiTranslator extends Plugin
 {
-    public string $schemaVersion = '1.3.0';
+    public string $schemaVersion = '1.4.0';
     public bool $hasCpSettings = true;
     public bool $hasCpSection = true;
     public ?string $name = 'Multi Translator';
