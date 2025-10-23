@@ -4,6 +4,7 @@ namespace digitalpulsebe\craftmultitranslator\helpers;
 
 use craft\base\Element;
 use craft\commerce\elements\Product;
+use craft\commerce\elements\Variant;
 use craft\elements\Asset;
 use craft\elements\db\ElementQuery;
 use craft\elements\Entry;
@@ -21,6 +22,8 @@ class ElementHelper
     {
         if ($elementType == 'craft\commerce\elements\Product') {
             return Product::find()->status(null)->id($elementIds)->siteId($siteId);
+        } elseif ($elementType == 'craft\commerce\elements\Variant') {
+            return Variant::find()->status(null)->id($elementIds)->siteId($siteId);
         } elseif ($elementType == Asset::class) {
             return Asset::find()->status(null)->id($elementIds)->siteId($siteId);
         } else {

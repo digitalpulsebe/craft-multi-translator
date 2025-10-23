@@ -64,7 +64,7 @@ class TranslateService extends Component
             // title is not a custom field
             $targetElement->title = $translatedValues['title'];
 
-            if (MultiTranslator::getInstance()->settingsService->getProviderSettings()->getResetSlug()) {
+            if ($this->getProviderSettings()->getResetSlug()) {
                 $targetElement->slug = null;
             }
 
@@ -100,8 +100,10 @@ class TranslateService extends Component
         }
 
         if ($source instanceof Product) {
-            // translate each variant too
-            foreach ($source->getVariants() as $variant) {
+            // translate each variant too;
+            // read settings to include disabled variants
+            $includeDisabled = $this->getProviderSettings()->getTranslateDisabledVariants();
+            foreach ($source->getVariants($includeDisabled) as $variant) {
                 $this->translateElement($variant, $sourceSite, $targetSite);
             }
         }
@@ -109,7 +111,7 @@ class TranslateService extends Component
         if (MultiTranslator::getInstance()->getSettings()->debug) {
             MultiTranslator::log([
                 'settings' => MultiTranslator::getInstance()->getSettings(),
-                'providerSettings' => MultiTranslator::getInstance()->settingsService->getProviderSettings()->asArrayForLogs(),
+                'providerSettings' => $this->getProviderSettings()->asArrayForLogs(),
                 'fields' => array_map(function (FieldInterface $field) {
                     return [
                         'handle' => $field->handle,
@@ -275,8 +277,13 @@ class TranslateService extends Component
     {
         $query = $element->getFieldValue($field->handle);
 
+        $includeDisabled = $this->getProviderSettings()->getTranslateDisabledMatrixElements();
+        if ($includeDisabled) {
+            $query->status(null);
+        }
+
         // serialize current value
-        $serialized = $element->getSerializedFieldValues([$field->handle])[$field->handle];
+        $serialized = $field->serializeValue($query, $element);
 
         foreach ($query->all() as $matrixElement) {
             $translatedMatrixValues = $this->translateElementFields($matrixElement, $sourceSite, $targetSite);

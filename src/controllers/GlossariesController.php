@@ -24,6 +24,20 @@ class GlossariesController extends Controller
         return $this->actionEdit();
     }
 
+    public function actionFetch()
+    {
+        $this->requirePermission('multiTranslateContent');
+
+        try {
+            MultiTranslator::getInstance()->deepl->fetchGlossaries();
+            $this->setSuccessFlash('Glossaries fetched from DeepL.');
+        } catch (\Throwable $exception) {
+            $this->setFailFlash($exception->getMessage());
+        }
+
+        return $this->redirect('multi-translator/glossaries');
+    }
+
     public function actionDelete(int $id = null): Response
     {
         $this->requirePermission('multiTranslateContent');
@@ -32,6 +46,38 @@ class GlossariesController extends Controller
 
         if ($record && $record->delete()) {
             $this->setSuccessFlash('Glossary deleted.');
+        }
+
+        return $this->redirect('multi-translator/glossaries');
+    }
+
+    public function actionEnable(int $id = null): Response
+    {
+        $this->requirePermission('multiTranslateContent');
+
+        $record = $id ? Glossary::findOne(['id' => $id]) : null;
+
+        if ($record) {
+            $record->setAttribute('enabled', 1);
+            if ($record->save()) {
+                $this->setSuccessFlash('Glossary enabled.');
+            }
+        }
+
+        return $this->redirect('multi-translator/glossaries');
+    }
+
+    public function actionDisable(int $id = null): Response
+    {
+        $this->requirePermission('multiTranslateContent');
+
+        $record = $id ? Glossary::findOne(['id' => $id]) : null;
+
+        if ($record) {
+            $record->setAttribute('enabled', 0);
+            if ($record->save()) {
+                $this->setSuccessFlash('Glossary disabled.');
+            }
         }
 
         return $this->redirect('multi-translator/glossaries');

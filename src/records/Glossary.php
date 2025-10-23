@@ -3,10 +3,12 @@
 namespace digitalpulsebe\craftmultitranslator\records;
 
 use craft\db\ActiveRecord;
+use DeepL\MultilingualGlossaryDictionaryEntries;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 
 /**
  * @property int $id
+ * @property bool $enabled
  * @property string $name
  * @property string $deeplId
  * @property string $sourceLanguage
@@ -99,13 +101,21 @@ class Glossary extends ActiveRecord
             return $item;
         }
 
-        if ($isExisting) {
-            // there is no update method, so delete existing first
-            $item->deleteApiRecord();
+        $deeplGlossaryEntries = null;
+        if ($isExisting && !empty($item->deeplId)) {
+            $deeplGlossaryEntries = MultiTranslator::getInstance()->deepl->getClient()->getMultilingualGlossaryEntries($item->deeplId, $item->sourceLanguage, $item->targetLanguage);
         }
 
-        // create (again) in Deepl API
-        $deeplGlossary = MultiTranslator::getInstance()->deepl->createGlossary($item->name, $item->sourceLanguage, $item->targetLanguage, $rows);
+        $newDictionaryEntries = new MultilingualGlossaryDictionaryEntries($item->sourceLanguage, $item->targetLanguage, $rows);
+
+        if ($deeplGlossaryEntries) {
+            // update in Deepl API
+            $deeplGlossary = MultiTranslator::getInstance()->deepl->getClient()->updateMultilingualGlossary($item->deeplId, $item->name, [$newDictionaryEntries]);
+        } else {
+            // create in Deepl API
+            $deeplGlossary = MultiTranslator::getInstance()->deepl->getClient()->createMultilingualGlossary($item->name, [$newDictionaryEntries]);
+
+        }
 
         // save returned id
         $item->deeplId = $deeplGlossary->glossaryId;
@@ -125,11 +135,12 @@ class Glossary extends ActiveRecord
     {
         if (!empty($this->deeplId)) {
             try {
-                MultiTranslator::getInstance()->deepl->deleteGlossary($this->deeplId);
+                MultiTranslator::getInstance()->deepl->deleteGlossary($this->id);
             } catch (\Throwable $e) {
                 // might fail, but we still want to continue
                 MultiTranslator::error([
                     'message' => 'Error when deleting existing Deepl Glossary',
+                    'error' => $e->getMessage(),
                     'glossaryId' => $this->deeplId,
                 ]);
             }
@@ -144,7 +155,6 @@ class Glossary extends ActiveRecord
             [['name', 'sourceLanguage', 'targetLanguage'], 'required'],
             [['name', 'sourceLanguage', 'targetLanguage'], 'trim'],
             ['sourceLanguage', 'compare', 'compareAttribute' => 'targetLanguage', 'operator' => '!='],
-            [['sourceLanguage', 'targetLanguage'], 'unique', 'targetAttribute' => ['sourceLanguage', 'targetLanguage']],
         ];
     }
 }

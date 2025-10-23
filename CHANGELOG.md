@@ -1,5 +1,19 @@
 # Release Notes for Multi Translator
 
+## 2.20.0 - 2025-10-23
+
+### Added
+
+- fetch glossaries from the DeepL API
+- enable/disable glossaries
+- translate Commerce Variants from element actions and sidebar
+- setting to translate disabled Commerce Variants
+- setting to translate disabled Matrix Elements
+
+### Changed
+
+- delete/update/create glossaries in DeepL API with the new v3 endpoint
+
 ## 2.19.0 - 2025-09-19
 
 ### Changed
