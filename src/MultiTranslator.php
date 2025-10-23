@@ -260,6 +260,7 @@ class MultiTranslator extends Plugin
             Entry::class,
             Asset::class,
             'craft\commerce\elements\Product',
+            'craft\commerce\elements\Variant',
         ];
 
         $existing = [];

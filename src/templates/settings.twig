@@ -250,6 +250,24 @@
                     errors: settings.getErrors('disabledFields'),
                     required: false
                 })|spaceless }}
+
+                {{ forms.lightswitchField({
+                    label: "Translate disabled Commerce Variants",
+                    instructions: "Query and translate disabled variants of Commerce Products.",
+                    id: "translateDisabledVariants",
+                    name: "translateDisabledVariants",
+                    on: settings.translateDisabledVariants,
+                    errors: settings.getErrors("translateDisabledVariants"),
+                }) }}
+
+                {{ forms.lightswitchField({
+                    label: "Translate disabled Matrix Elements",
+                    instructions: "Query and translate disabled Matrix Elements inside fields",
+                    id: "translateDisabledMatrixElements",
+                    name: "translateDisabledMatrixElements",
+                    on: settings.translateDisabledMatrixElements,
+                    errors: settings.getErrors("translateDisabledMatrixElements"),
+                }) }}
             </fieldset>
         {% endnamespace %}
 

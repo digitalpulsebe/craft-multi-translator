@@ -6,6 +6,9 @@
 
 - fetch glossaries from the DeepL API
 - enable/disable glossaries
+- translate Commerce Variants from element actions and sidebar
+- setting to translate disabled Commerce Variants
+- setting to translate disabled Matrix Elements
 
 ### Changed
 

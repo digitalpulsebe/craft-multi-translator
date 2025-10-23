@@ -209,6 +209,24 @@ class ProviderSettings extends ActiveRecord
         return $returnHandles;
     }
 
+    /**
+     * Query and translate disabled variants of Commerce Products
+     * @return bool
+     */
+    public function getTranslateDisabledVariants(): bool
+    {
+        return $this->getSetting('translateDisabledVariants', false);
+    }
+
+    /**
+     * Query and translate disabled Matrix Elements inside fields (Matrix, Neo and SuperTableField)
+     * @return bool
+     */
+    public function getTranslateDisabledMatrixElements(): bool
+    {
+        return $this->getSetting('translateDisabledMatrixElements', false);
+    }
+
     public function getSetting($key, $default = null): mixed
     {
         return ArrayHelper::getValue($this->settings, $key, $default);
