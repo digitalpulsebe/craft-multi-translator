@@ -15,6 +15,7 @@ class Install extends Migration
             $this->createTable('{{%multitranslator_deepl_glossaries}}', [
                 'id' => $this->primaryKey(),
                 'name' => $this->string(),
+                'enabled' => $this->boolean()->notNull()->defaultValue(true),
                 'deeplId' => $this->string(),
                 'sourceLanguage' => $this->string(5),
                 'targetLanguage' => $this->string(5),
