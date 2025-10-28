@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.20.1 - 2025-10-28
+
+### Fixed
+
+- migration column 'enabled' default value type (fixes #78)
+
 ## 2.20.0 - 2025-10-23
 
 ### Added

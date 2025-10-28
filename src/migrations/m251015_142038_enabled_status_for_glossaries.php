@@ -15,7 +15,7 @@ class m251015_142038_enabled_status_for_glossaries extends Migration
      */
     public function safeUp(): bool
     {
-        $this->addColumn('{{%multitranslator_deepl_glossaries}}', 'enabled', $this->boolean()->notNull()->defaultValue(1));
+        $this->addColumn('{{%multitranslator_deepl_glossaries}}', 'enabled', $this->boolean()->notNull()->defaultValue(true));
 
         return true;
     }
