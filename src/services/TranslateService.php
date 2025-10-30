@@ -80,7 +80,11 @@ class TranslateService extends Component
         // set field values for custom fields
         $targetElement->setFieldValues($translatedValues);
 
-        $revisionNotes = 'Translated by Multi Translator from "'.$sourceSite->name.'" ('.$sourceSite->getLocale()->getLanguageID().')';
+        $revisionNotes = 'Translated by Multi Translator from "'
+            .$sourceSite->name.'" ('.$sourceSite->getLocale()->getLanguageID().') to "'
+            .$targetSite->name.'" ('.$targetSite->getLocale()->getLanguageID().').'
+        ;
+        $draftName = 'Translated Draft ('.$sourceSite->getLocale()->getLanguageID().'->'.$targetSite->getLocale()->getLanguageID().')';
 
         if (!$this->onAfterElementTranslation($source, $targetElement, $sourceSite, $targetSite, $isRootElement)) {
             return null;
@@ -88,10 +92,10 @@ class TranslateService extends Component
 
         if ($targetElement instanceof Entry && $targetElement->getIsDraft()) {
             // only Entries can have drafts
-            \Craft::$app->drafts->saveElementAsDraft($targetElement, null, 'Translated Draft', $revisionNotes);
+            \Craft::$app->drafts->saveElementAsDraft($targetElement, null, $draftName, $revisionNotes);
         } elseif ($targetElement instanceof Entry && $this->getProviderSettings()->getSaveAsDraft()) {
             // only Entries can have drafts
-            $targetElement = \Craft::$app->drafts->createDraft($targetElement, null, 'Translated Draft', $revisionNotes);
+            $targetElement = \Craft::$app->drafts->createDraft($targetElement, null, $draftName, $revisionNotes);
             $targetElement->setFieldValues($translatedValues);
             \Craft::$app->elements->saveElement($targetElement);
         } else {
