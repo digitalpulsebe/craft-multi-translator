@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.20.2 - 2025-10-30
+
+### Changed
+
+- improve draft naming and revision notes during the translation process (fixes #72)
+
 ## 2.20.1 - 2025-10-28
 
 ### Fixed
