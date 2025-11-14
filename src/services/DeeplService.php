@@ -53,6 +53,7 @@ class DeeplService extends ApiService
 
         $defaultOptions = [
             'tag_handling' => 'html',
+            'tag_handling_version' => 'v2',
             'formality' => $this->getProviderSettings()->getDeeplFormality(),
             'preserve_formatting' => $this->getProviderSettings()->getDeeplPreserveFormatting(),
         ];

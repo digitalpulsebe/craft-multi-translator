@@ -1,5 +1,14 @@
 # Release Notes for Multi Translator
 
+## 2.21.0 - 2025-11-14
+
+### Changed
+
+- Introduce field serializer classes to refactor translation workflow
+- Convert all translatable content to HTML format before translation for improved efficiency
+- Replace field-by-field translation with unified serialization approach
+- Add extensible serializer system with support for custom field types via events
+
 ## 2.20.2 - 2025-10-30
 
 ### Changed

@@ -3,11 +3,16 @@
 namespace digitalpulsebe\craftmultitranslator\helpers;
 
 use craft\base\Element;
+use craft\base\Field;
+use craft\base\FieldInterface;
 use craft\commerce\elements\Product;
 use craft\commerce\elements\Variant;
 use craft\elements\Asset;
 use craft\elements\db\ElementQuery;
 use craft\elements\Entry;
+use digitalpulsebe\craftmultitranslator\MultiTranslator;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+use Illuminate\Support\Collection;
 
 class ElementHelper
 {
@@ -51,5 +56,32 @@ class ElementHelper
     public static function all(string $elementType, array $elementIds, int $siteId): array
     {
         return self::query($elementType, $elementIds, $siteId)->all();
+    }
+
+    /**
+     * @param Element $element
+     * @return Collection<FieldInterface>
+     */
+    public static function getElementTranslatableFields(Element $element): Collection
+    {
+        $disabledFields = MultiTranslator::getInstance()->settingsService->getProviderSettings()->getDisabledFieldHandles();
+
+        return collect($element->getFieldLayout()->getCustomFields())
+            ->filter(function ($field) use ($disabledFields) {
+                // filter out disabled fields
+                return !in_array($field->handle, $disabledFields);
+            })
+            ->filter(function ($field) {
+                if (in_array(get_class($field), TranslateService::$matrixFields)){
+                    // always go deeper in matrix fields, because there might be translatable fields inside the matrix blocks
+                    return true;
+                }
+                // filter only translatable fields
+                return $field->translationMethod != Field::TRANSLATION_METHOD_NONE;
+            })
+            ->keyBy(function ($field) {
+                return $field->handle;
+            })
+        ;
     }
 }
