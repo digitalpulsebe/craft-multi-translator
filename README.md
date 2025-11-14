@@ -1,10 +1,10 @@
 # Multi Translator
 
-Translate your site content using Deepl, Google Translate or ChatGPT
+Translate your site content using Deepl, Google Translate or ChatGPT.
 
 ## Requirements
 
-This plugin requires Craft CMS 4 or Craft CMS 5
+This plugin requires Craft CMS 4 or Craft CMS 5.
 
 ## Installation
 
