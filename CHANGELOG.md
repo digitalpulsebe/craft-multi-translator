@@ -1,6 +1,6 @@
 # Release Notes for Multi Translator
 
-## Unreleased
+## 2.21.0 - 2025-11-14
 
 ### Changed
 
