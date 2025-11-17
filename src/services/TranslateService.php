@@ -40,11 +40,11 @@ use yii\web\ForbiddenHttpException;
 
 class TranslateService extends Component
 {
-    public const string EVENT_BEFORE_ELEMENT_TRANSLATION = 'beforeElementTranslation';
-    public const string EVENT_AFTER_ELEMENT_TRANSLATION = 'afterElementTranslation';
-    public const string EVENT_BEFORE_FIELD_TRANSLATION = 'beforeFieldTranslation';
-    public const string EVENT_AFTER_FIELD_TRANSLATION = 'afterFieldTranslation';
-    public const string EVENT_REGISTER_SERIALIZERS = 'registerTranslationSerializers';
+    public const EVENT_BEFORE_ELEMENT_TRANSLATION = 'beforeElementTranslation';
+    public const EVENT_AFTER_ELEMENT_TRANSLATION = 'afterElementTranslation';
+    public const EVENT_BEFORE_FIELD_TRANSLATION = 'beforeFieldTranslation';
+    public const EVENT_AFTER_FIELD_TRANSLATION = 'afterFieldTranslation';
+    public const EVENT_REGISTER_SERIALIZERS = 'registerTranslationSerializers';
 
     static array $matrixFields = [
         'craft\fields\Matrix',
