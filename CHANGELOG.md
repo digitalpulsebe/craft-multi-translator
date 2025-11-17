@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.21.1 - 2025-11-17
+
+### Fixed
+
+- TranslateService constants declaration without type to be compatible with PHP < 8.3 (fixes #83)
+
 ## 2.21.0 - 2025-11-14
 
 ### Changed
