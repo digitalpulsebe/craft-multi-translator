@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.21.2 - 2025-12-03
+
+### Fixed
+
+- Fix "Setting unknown property: craft\behaviors\CustomFieldBehavior::id" use setElementTranslation for Drafts too (fixes #86)
+
 ## 2.21.1 - 2025-11-17
 
 ### Fixed
