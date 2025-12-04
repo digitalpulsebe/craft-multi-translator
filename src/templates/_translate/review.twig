@@ -92,7 +92,7 @@
                 {% set fieldsOptions = [{label: "Title", value: "title"}]
                     |merge(fields|map(field => {label: "#{field.name} (#{field.handle})", value: field.handle})) %}
 
-                {{ forms.checkboxGroup({
+                {{ forms.checkboxGroupField({
                     label: "Disabled fields",
                     instructions: "Select the fields to ignore",
                     id: "disabledFields",
