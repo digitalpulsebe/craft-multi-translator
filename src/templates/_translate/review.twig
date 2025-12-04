@@ -88,7 +88,7 @@
                     <h2>Ignore Fields</h2>
                 </legend>
 
-                {% set fields = element.type.fieldLayout.customFields %}
+                {% set fields = element.fieldLayout.customFields %}
                 {% set fieldsOptions = [{label: "Title", value: "title"}]
                     |merge(fields|map(field => {label: "#{field.name} (#{field.handle})", value: field.handle})) %}
 
