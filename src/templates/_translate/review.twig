@@ -18,7 +18,7 @@
                 <thead>
                     <tr>
                         <th>Title</th>
-                        <th>Section</th>
+                        <th>{{ element is instance of('craft\\elements\\Asset') ? 'Volume' : 'Section' }}</th>
                         <th>Propagation method</th>
                     </tr>
                 </thead>
@@ -30,8 +30,8 @@
                                 size: 'small',
                             }) }}
                         </td>
-                        <td>{{ element.section.name }}</td>
-                        <td>{{ element.section.propagationMethod.value }}</td>
+                        <td>{{ element.section.name ?? element.volume.name }}</td>
+                        <td>{{ element.section.propagationMethod.value ?? element.volume.altTranslationMethod }}</td>
                     </tr>
                 </tbody>
             </table>
