@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.21.4 - 2025-12-08
+
+### Fixed
+
+- Reset slug when the setting is enabled. (fixes #89)
+
 ## 2.21.3 - 2025-12-08
 
 ### Fixed
