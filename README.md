@@ -39,7 +39,7 @@ For now, we support these API services:
 
 ## Roadmap
 
-Please let us now which API's and features are desired for this plugin!
+Please let us know which API's and features are desired for this plugin!
 
 ## Plugin Settings
 

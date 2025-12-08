@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.21.3 - 2025-12-08
+
+### Fixed
+
+- Ensure linkText is nullable and fix linkSiteId reference in Hyper deserialization (fixes #90)
+
 ## 2.21.2 - 2025-12-03
 
 ### Fixed

@@ -13,7 +13,7 @@ class Hyper extends FieldSerializer
         $values = $element->getSerializedFieldValues()[$this->field->handle];
         return collect($values)->map(function ($value) {
             return [
-                'text' => $value['linkText']
+                'text' => $value['linkText'] ?? null
             ];
         })->all();
     }
@@ -25,7 +25,7 @@ class Hyper extends FieldSerializer
 
             foreach($serialized as $i => $serializedValue) {
                 $serialized[$i]['linkText'] = $value[$i]['text'] ?? null;
-                if (!empty($value['linkSiteId']) && $value['linkSiteId'] == $source->siteId) {
+                if (!empty($serialized[$i]['linkSiteId']) && $serialized[$i]['linkSiteId'] == $source->siteId) {
                     $serialized[$i]['linkSiteId'] = $target->siteId;
                 }
             }
