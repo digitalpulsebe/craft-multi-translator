@@ -241,6 +241,10 @@ class TranslateService extends Component
     {
         if (isset($translatedValues['title'])) {
             $target->title = $translatedValues['title'];
+
+            if ($target->slug && $this->getProviderSettings()->getResetSlug()) {
+                $target->slug = null;
+            }
         }
 
         if (isset($translatedValues['alt'])) {
