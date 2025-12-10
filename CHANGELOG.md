@@ -6,6 +6,10 @@
 
 - Add setting to selecting DeepL language models.
 
+### Changed
+
+- Correct a few issues found on the Translate Review screen. (#88) (Thanks @taylordaughtry) 
+
 ## 2.21.4 - 2025-12-08
 
 ### Fixed
