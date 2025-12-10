@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- Add setting to selecting DeepL language models.
+
 ## 2.21.4 - 2025-12-08
 
 ### Fixed
