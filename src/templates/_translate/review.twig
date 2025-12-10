@@ -18,7 +18,7 @@
                 <thead>
                     <tr>
                         <th>Title</th>
-                        <th>Section</th>
+                        <th>{{ element is instance of('craft\\elements\\Asset') ? 'Volume' : 'Section' }}</th>
                         <th>Propagation method</th>
                     </tr>
                 </thead>
@@ -30,8 +30,8 @@
                                 size: 'small',
                             }) }}
                         </td>
-                        <td>{{ element.section.name }}</td>
-                        <td>{{ element.section.propagationMethod.value }}</td>
+                        <td>{{ element.section.name ?? element.volume.name }}</td>
+                        <td>{{ element.section.propagationMethod.value ?? element.volume.altTranslationMethod }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -88,11 +88,11 @@
                     <h2>Ignore Fields</h2>
                 </legend>
 
-                {% set fields = element.type.fieldLayout.customFields %}
+                {% set fields = element.fieldLayout.customFields %}
                 {% set fieldsOptions = [{label: "Title", value: "title"}]
                     |merge(fields|map(field => {label: "#{field.name} (#{field.handle})", value: field.handle})) %}
 
-                {{ forms.checkboxGroup({
+                {{ forms.checkboxGroupField({
                     label: "Disabled fields",
                     instructions: "Select the fields to ignore",
                     id: "disabledFields",
