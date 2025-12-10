@@ -52,6 +52,20 @@
                     value: settings.deeplApiKey,
                 }) }}
 
+                {{ forms.selectField({
+                    label: "DeepL Language Model",
+                    instructions: "Specifies which DeepL model should be used for translation. [See docs](https://support.deepl.com/hc/en-us/articles/14241705319580-About-DeepL-language-models)",
+                    id: "deeplModelType",
+                    name: "deeplModelType",
+                    value: settings.deeplModelType,
+                    options: [
+                        {'label': 'Classic (latency optimized)', 'value': 'latency_optimized'},
+                        {'label': 'Next-generation (improved quality)', 'value': 'quality_optimized'},
+                        {'label': 'Prefer Next-generation (fallback to classic for non-supported language pairs)', 'value': 'prefer_quality_optimized'},
+                    ],
+                    errors: settings.getErrors("deeplModelType"),
+                }) }}
+
                 {{ forms.lightswitchField({
                     label: "Preserve formatting",
                     instructions: "Controls automatic-formatting-correction. Set to true to prevent automatic-correction of formatting. [See docs](https://github.com/DeepLcom/deepl-php#text-translation-options)",

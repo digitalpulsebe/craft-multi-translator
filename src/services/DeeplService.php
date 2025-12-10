@@ -53,10 +53,14 @@ class DeeplService extends ApiService
 
         $defaultOptions = [
             'tag_handling' => 'html',
-            'tag_handling_version' => 'v2',
+            'model_type' => $this->getProviderSettings()->getDeeplModelType(),
             'formality' => $this->getProviderSettings()->getDeeplFormality(),
             'preserve_formatting' => $this->getProviderSettings()->getDeeplPreserveFormatting(),
         ];
+
+        if ($this->getProviderSettings()->getDeeplModelType() == 'quality_optimized') {
+            $defaultOptions['tag_handling_version'] = 'v2';
+        }
 
         if ($glossary) {
             $defaultOptions['glossary'] = $glossary->deeplId;

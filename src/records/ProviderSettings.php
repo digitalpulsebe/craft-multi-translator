@@ -42,6 +42,16 @@ class ProviderSettings extends ActiveRecord
     }
 
     /**
+     * Specifies which DeepL model should be used for translation.
+     * https://developers.deepl.com/api-reference/translate#param-model-type
+     * @return string
+     */
+    public function getDeeplModelType(): string
+    {
+        return $this->getSetting('deeplModelType', 'latency_optimized');
+    }
+
+    /**
      * controls whether translations should lean toward informal or formal language. This option is only available for some target languages
      * https://github.com/DeepLcom/deepl-php#text-translation-options
      * @return string
