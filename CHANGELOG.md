@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.22.1 - 2025-12-17
+
+### Changed
+
+- change minimum deepl-php dependency version to ^1.15
+
 ## 2.22.0 - 2025-12-10
 
 ### Added

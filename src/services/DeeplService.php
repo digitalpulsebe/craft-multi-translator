@@ -58,8 +58,11 @@ class DeeplService extends ApiService
             'preserve_formatting' => $this->getProviderSettings()->getDeeplPreserveFormatting(),
         ];
 
+        // model_type=latency_optimized does not support tag_handling_version=v2. Set model_type=quality_optimized or tag_handling_version=v1.
         if ($this->getProviderSettings()->getDeeplModelType() == 'quality_optimized') {
             $defaultOptions['tag_handling_version'] = 'v2';
+        } else {
+            $defaultOptions['tag_handling_version'] = 'v1';
         }
 
         if ($glossary) {
