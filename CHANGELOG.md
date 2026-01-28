@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 1.19.1 - 2025-01-28
+
+### Fixed
+
+- Fixed issue after update to craft 4.17.0: it's no longer possible to instantiate objects that don’t extend yii\base\BaseObject via the create() Twig function
+
 ## 1.19.0 - 2025-09-19
 
 ### Changed

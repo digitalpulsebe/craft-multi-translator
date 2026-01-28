@@ -1,6 +1,7 @@
 <?php
 namespace digitalpulsebe\craftmultitranslator\variables;
 
+use craft\helpers\ElementHelper;
 use DeepL\Translator;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\models\Settings;
@@ -28,5 +29,10 @@ class Variable
     public function getGlossaries(): array
     {
         return Glossary::find()->all();
+    }
+
+    public function getElementHelper()
+    {
+        return new ElementHelper();
     }
 }
