@@ -40,8 +40,10 @@
 
     <hr>
 
-    {% set existingSiteIds = create('craft\\helpers\\ElementHelper').siteStatusesForElement(element)|keys %}
-    {% set supportedSiteIds = create('craft\\helpers\\ElementHelper').supportedSitesForElement(element, true)|map(site => site.siteId) %}
+    {% set elementHelper = craft.multiTranslator.getElementHelper() %}
+
+    {% set existingSiteIds = elementHelper.siteStatusesForElement(element)|keys %}
+    {% set supportedSiteIds = elementHelper.supportedSitesForElement(element, true)|map(site => site.siteId) %}
     {% set sites = craft.app.sites.allSites %}
 
     {% set existingSiteOptions = sites|filter(site => (site.id in existingSiteIds and currentUser.can('editSite:'~site.uid)))|map(site => {label: site.name, value: site.id}) %}

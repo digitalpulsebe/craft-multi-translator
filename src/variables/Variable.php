@@ -7,7 +7,7 @@ use digitalpulsebe\craftmultitranslator\models\Settings;
 use digitalpulsebe\craftmultitranslator\records\Glossary;
 use digitalpulsebe\craftmultitranslator\records\ProviderSettings;
 use digitalpulsebe\craftmultitranslator\services\ApiService;
-
+use craft\helpers\ElementHelper;
 class Variable
 {
     public function getSettings(): Settings
@@ -28,5 +28,10 @@ class Variable
     public function getGlossaries(): array
     {
         return Glossary::find()->all();
+    }
+
+    public function getElementHelper()
+    {
+        return new ElementHelper();
     }
 }

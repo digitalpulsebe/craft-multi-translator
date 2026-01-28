@@ -1,10 +1,16 @@
 # Release Notes for Multi Translator
 
+## 2.22.2 - 2025-01-28
+
+### Fixed
+
+- Fixed issue after update to craft 5.9, it's no longer possible to instantiate objects that don’t extend yii\base\BaseObject via the create() Twig function, use craft variable instead
+
 ## 2.22.1 - 2025-12-17
 
 ### Changed
 
-- change minimum deepl-php dependency version to ^1.15
+- Change minimum deepl-php dependency version to ^1.15
 
 ## 2.22.0 - 2025-12-10
 
