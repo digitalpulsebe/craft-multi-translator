@@ -11,8 +11,11 @@
             {% if element.id != element.canonicalId %}
                 <div class="warning">Warning: revision changes will apply on top of the translated Entry</div>
             {% endif %}
-            {% set existingSiteIds = create('craft\\helpers\\ElementHelper').siteStatusesForElement(element)|keys %}
-            {% set supportedSiteIds = create('craft\\helpers\\ElementHelper').supportedSitesForElement(element, true)|map(site => site.siteId) %}
+
+            {% set elementHelper = craft.multiTranslator.getElementHelper() %}
+
+            {% set existingSiteIds = elementHelper.siteStatusesForElement(element)|keys %}
+            {% set supportedSiteIds = elementHelper.supportedSitesForElement(element, true)|map(site => site.siteId) %}
             {% set sites = craft.app.sites.allSites %}
 
             {% set currentDescription = "#{element.site.name} (#{element.site.language})" %}
