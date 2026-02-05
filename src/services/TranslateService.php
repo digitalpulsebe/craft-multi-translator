@@ -32,6 +32,7 @@ use digitalpulsebe\craftmultitranslator\serializers\EtherSeo as EtherSeoSerializ
 use digitalpulsebe\craftmultitranslator\serializers\Seomatic as SeomaticSerializer;
 use digitalpulsebe\craftmultitranslator\serializers\Vizy as VizySerializer;
 use digitalpulsebe\craftmultitranslator\serializers\ContentBlock as ContentBlockSerializer;
+use digitalpulsebe\craftmultitranslator\serializers\Link as LinkSerializer;
 use digitalpulsebe\craftmultitranslator\serializers\Linkit as LinkitSerializer;
 use Throwable;
 use yii\base\Exception;
@@ -468,6 +469,7 @@ class TranslateService extends Component
         $this->serializers['verbb\hyper\fields\HyperField'] = HyperSerializer::class;
         $this->serializers['craft\fields\Table'] = TableSerializer::class;
         $this->serializers['craft\fields\ContentBlock'] = ContentBlockSerializer::class;
+        $this->serializers['craft\fields\Link'] = LinkSerializer::class;
         $this->serializers['presseddigital\linkit\fields\LinkitField'] = LinkitSerializer::class;
         $this->serializers['ether\seo\fields\SeoField'] = EtherSeoSerializer::class;
         $this->serializers['nystudio107\seomatic\fields\SeoSettings'] = SeomaticSerializer::class;

@@ -1,5 +1,16 @@
 # Release Notes for Multi Translator
 
+## 2.23.0 - 2025-02-05
+
+### Added
+
+- Add support for Link (native) fields
+
+### Fixed
+
+- map 'no' to 'nb' for DeepL
+- fix translating empty linkit fields
+
 ## 2.22.2 - 2025-01-28
 
 ### Fixed

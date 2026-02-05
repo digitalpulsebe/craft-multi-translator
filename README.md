@@ -1,10 +1,10 @@
 # Multi Translator
 
-Translate your site content using Deepl, Google Translate or ChatGPT
+Translate your site content using Deepl, Google Translate or ChatGPT.
 
 ## Requirements
 
-This plugin requires Craft CMS 4 or Craft CMS 5
+This plugin requires Craft CMS 4 or Craft CMS 5.
 
 ## Installation
 
@@ -64,6 +64,7 @@ For non-admin users, enable permissions under the 'Multi Translator' section:
 - craft\fields\Table
 - craft\redactor\Field
 - craft\ckeditor\Field
+- craft\fields\Link
 - verbb\vizy\fields\VizyField
 - craft\fields\Matrix (recursive)
 - benf\neo\Field (recursive)
