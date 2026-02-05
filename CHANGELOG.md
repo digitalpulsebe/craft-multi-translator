@@ -4,6 +4,7 @@
 
 - Add support for Link (native) fields
 - map 'no' to 'nb' for DeepL
+- fix translating empty linkit fields (fixes #98)
 
 ## 2.22.2 - 2025-01-28
 

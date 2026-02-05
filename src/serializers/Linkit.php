@@ -11,7 +11,7 @@ class Linkit extends FieldSerializer
     public function serialize(Element $element, Site $sourceSite, Site $targetSite): mixed
     {
         $value = $element->getFieldValue($this->field->handle);
-        if ($this->field->allowCustomText && $value->customText != null) {
+        if ($this->field->allowCustomText && $value && $value->customText != null) {
             return ['text' => $value->customText];
         }
         return null;
