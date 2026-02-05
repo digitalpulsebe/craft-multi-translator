@@ -151,7 +151,7 @@ class DeeplService extends ApiService
             return $raw;
         }
 
-        $locale = substr($raw, 0, 2);
+        $locale = strtolower(substr($raw, 0, 2));
 
         if ($locale == 'en') {
             return $this->getProviderSettings()->getDefaultEnglish();
@@ -159,6 +159,10 @@ class DeeplService extends ApiService
 
         if ($locale == 'pt') {
             return 'pt-PT';
+        }
+
+        if ($locale == 'no') {
+            return 'nb';
         }
 
         return $locale;

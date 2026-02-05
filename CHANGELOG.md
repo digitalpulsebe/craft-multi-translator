@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add support for Link (native) fields
+- map 'no' to 'nb' for DeepL
 
 ## 2.22.2 - 2025-01-28
 
