@@ -64,6 +64,7 @@ For non-admin users, enable permissions under the 'Multi Translator' section:
 - craft\fields\Table
 - craft\redactor\Field
 - craft\ckeditor\Field
+- craft\fields\Link
 - verbb\vizy\fields\VizyField
 - craft\fields\Matrix (recursive)
 - benf\neo\Field (recursive)

@@ -1,5 +1,9 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+- Add support for Link (native) fields
+
 ## 2.22.2 - 2025-01-28
 
 ### Fixed
