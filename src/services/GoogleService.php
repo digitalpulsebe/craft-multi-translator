@@ -4,12 +4,14 @@ namespace digitalpulsebe\craftmultitranslator\services;
 
 use craft\helpers\App;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
-use Google\Cloud\Translate\V2\TranslateClient;
+use Google\Auth\Credentials\ServiceAccountCredentials;
+use Google\Cloud\Translate\V3\Client\TranslationServiceClient;
+use Google\Cloud\Translate\V3\TranslateTextRequest;
 
 class GoogleService extends ApiService
 {
 
-    protected ?TranslateClient $_client = null;
+    protected ?TranslationServiceClient $_client = null;
 
     public function getName(): string
     {
@@ -18,19 +20,18 @@ class GoogleService extends ApiService
 
     public function isConnected(): bool
     {
-        try {
+//        try {
             return $this->translate('en', 'nl', 'test') !== null;
-        } catch (\Throwable $exception) {
-            return false;
-        }
+//        } catch (\Throwable $exception) {
+//            return false;
+//        }
     }
 
     public function getClient()
     {
         if (!$this->_client) {
-            $apiKey = App::parseEnv($this->getProviderSettings()->getGoogleApiKey());
-            $this->_client = new TranslateClient([
-                'key' => $apiKey
+            $this->_client = new TranslationServiceClient([
+                'credentials' => json_decode(file_get_contents(App::parseEnv('@storage/credentials/digital-pulse-101ace80a2fd.json')), true),
             ]);
         }
 
@@ -39,18 +40,27 @@ class GoogleService extends ApiService
 
     public function translate(string $sourceLocale = null, string $targetLocale = null, string $text = null): ?string
     {
-        if ($text) {
-            $options = [
-                'target' => $this->targetLocale($targetLocale),
-            ];
+        if (!$text) {
+            return null;
+        }
 
-            if ($sourceLocale) {
-                $options['source'] = $sourceLocale;
-            }
+        $client = $this->getClient();
 
-            $response = $this->getClient()->translate($text, $options);
+        $parent = $client->locationName('digital-pulse', 'global');
 
-            return html_entity_decode($response['text']);
+        $request = new TranslateTextRequest([
+            'parent' => $parent,
+            'contents' => [$text],
+            'source_language_code' => $sourceLocale ?: null,
+            'target_language_code' => $this->targetLocale($targetLocale),
+        ]);
+
+        $response = $client->translateText($request);
+
+        $translations = $response->getTranslations();
+
+        if (!empty($translations)) {
+            return html_entity_decode($translations[0]->getTranslatedText());
         }
 
         return null;
