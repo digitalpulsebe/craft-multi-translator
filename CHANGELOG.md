@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.23.1 - 2025-03-13
+
+### Fixed
+
+- fix: changed template placeholders in instructions (thanks @shoored)
+
 ## 2.23.0 - 2025-02-05
 
 ### Added
