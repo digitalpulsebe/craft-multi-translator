@@ -5,6 +5,7 @@
 ### Fixed
 
 - Handle regional Chinese and Spanish target languages supported by Deepl
+- split large serialized docs in parts
 
 ## 2.23.2 - 2026-03-20
 
