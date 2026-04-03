@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.25.0 - 2026-04-03
+
+### Added
+
+- Google Cloud Translation v3 API support
+
 ## 2.24.0 - 2026-04-03
 
 ### Fixed
