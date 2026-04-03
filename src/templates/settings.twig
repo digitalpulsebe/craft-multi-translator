@@ -31,6 +31,9 @@
                         value: 'google',
                         label: 'Google Cloud Translations',
                     }, {
+                        value: 'google-v3',
+                        label: 'Google Cloud Translations V3',
+                    }, {
                         value: 'openai',
                         label: 'OpenAI API (ChatGPT)',
                     }],
@@ -101,6 +104,40 @@
                     instructions: 'Create an API Key from the [Google Cloud Console](https://console.cloud.google.com/)',
                     suggestEnvVars: true,
                     value: settings.googleApiKey,
+                }) }}
+            </fieldset>
+
+            <fieldset id="translation-provider-google-v3"{% if settings.translationProvider != 'google-v3' %} class="hidden"{% endif %}>
+                <legend>
+                    <h2>Google Cloud Translation V3</h2>
+                </legend>
+
+                {{ forms.textAreaField({
+                    label: 'Google Cloud Service Account',
+                    name: 'googleServiceAccount',
+                    instructions: 'Paste the Service Account data from your [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)',
+                    value: settings.googleServiceAccount,
+                    rows: 3,
+                }) }}
+
+                {{ forms.textfield({
+                    label: "Location",
+                    instructions: "Location (optional)",
+                    id: "googleLocation",
+                    name: "googleLocation",
+                    value: settings.googleLocation,
+                    placeholder: 'global (default)',
+                    errors: settings.getErrors("googleLocation"),
+                }) }}
+
+                {{ forms.textfield({
+                    label: "Translation model",
+                    instructions: "[Translation model](https://docs.cloud.google.com/translate/docs/advanced/compare-models) (format: projects/PROJECT_ID/location/LOCATION_ID/models/MODEL_ID) (optional)",
+                    id: "googleModel",
+                    name: "googleModel",
+                    value: settings.googleModel,
+                    placeholder: 'default',
+                    errors: settings.getErrors("googleModel"),
                 }) }}
             </fieldset>
 
