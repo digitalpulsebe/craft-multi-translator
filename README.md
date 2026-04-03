@@ -34,7 +34,8 @@ For now, we support these API services:
 
 - Deepl - Create your account at [Deepl](https://www.deepl.com/nl/pro-api) to get an API Key
   - with support for [Glossaries](#manage-glossaries)
-- Google Cloud Translation - Create an API key in your [Cloud Console](https://console.cloud.google.com/)
+- Google Cloud Translation v2 - Create an API key in your [Cloud Console](https://console.cloud.google.com/)
+- Google Cloud Translation v3 - Create a Service Account your [Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)
 - OpenAI (ChatGPT) - Create an API key in at [OpenAI](https://platform.openai.com/)
 
 ## Roadmap
@@ -69,7 +70,6 @@ For non-admin users, enable permissions under the 'Multi Translator' section:
 - craft\fields\Matrix (recursive)
 - benf\neo\Field (recursive)
 - verbb\supertable\fields\SuperTableField (recursive)
-- lenz\linkfield\fields\LinkField
 - verbb\hyper\fields\HyperField
 - nystudio107\seomatic\fields\SeoSettings
 - ether\seo\fields\SeoField
