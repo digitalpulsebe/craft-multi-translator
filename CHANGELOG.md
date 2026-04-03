@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- Handle regional Chinese and Spanish target languages supported by Deepl
+
 ## 2.23.2 - 2026-03-20
 
 ### Added
