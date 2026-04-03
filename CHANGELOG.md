@@ -1,6 +1,25 @@
 # Release Notes for Multi Translator
 
-## 2.23.0 - 2025-02-05
+## 2.24.0 - 2026-04-03
+
+### Fixed
+
+- Handle regional Chinese and Spanish target languages supported by Deepl
+- split large serialized docs in parts
+
+## 2.23.2 - 2026-03-20
+
+### Added
+
+- Adding GPT models 5.1, 5.2, 5.4, 5.4 mini and 5.4 nano (thanks @birgerstoeckelmann)
+
+## 2.23.1 - 2026-03-13
+
+### Fixed
+
+- fix: changed template placeholders in instructions (thanks @shoored)
+
+## 2.23.0 - 2026-02-05
 
 ### Added
 
@@ -11,7 +30,7 @@
 - map 'no' to 'nb' for DeepL
 - fix translating empty linkit fields
 
-## 2.22.2 - 2025-01-28
+## 2.22.2 - 2026-01-28
 
 ### Fixed
 

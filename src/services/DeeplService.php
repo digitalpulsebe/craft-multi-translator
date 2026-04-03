@@ -145,24 +145,45 @@ class DeeplService extends ApiService
 
         return null;
     }
+
     public function targetLocale($raw): string
     {
-        if (in_array($raw, ['en-GB', 'en-US', 'pt-PT', 'pt-BR'])) {
-            return $raw;
+        $ucRaw = strtoupper($raw);
+
+        // matches zh-Hans|zh-Hant and all variants of zh-Hans-*|zh-Hant-*
+        if (str_contains($ucRaw, 'ZH-HANS')) {
+            return 'ZH-HANS';
+        }
+        if (str_contains($ucRaw, 'ZH-HANT')) {
+            return 'ZH-HANT';
         }
 
-        $locale = strtolower(substr($raw, 0, 2));
+        // site has regional locale that is supported by Deepl
+        if (in_array($ucRaw, ['EN-GB', 'EN-US', 'PT-PT', 'PT-BR'])) {
+            return $ucRaw;
+        }
 
-        if ($locale == 'en') {
+        // map regional Spanish to ES-419 Spanish (Latin American); except European Spanish
+        if (str_contains($ucRaw, 'ES-') && !in_array($ucRaw, ['ES-ES', 'ES-IC', 'ES-EA'])) {
+            return 'ES-419';
+        }
+
+        // all other languages only support non-regional locales (https://developers.deepl.com/docs/getting-started/supported-languages)
+        $locale = strtoupper(explode('-', $raw)[0]);
+
+        // English must always be regional
+        if ($locale == 'EN') {
             return $this->getProviderSettings()->getDefaultEnglish();
         }
 
-        if ($locale == 'pt') {
-            return 'pt-PT';
+        // PT must always be regional
+        if ($locale == 'PT') {
+            return 'PT-PT';
         }
 
-        if ($locale == 'no') {
-            return 'nb';
+        // Deepl doesn't know NO
+        if ($locale == 'NO') {
+            return 'NB';
         }
 
         return $locale;

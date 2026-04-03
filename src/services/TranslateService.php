@@ -79,9 +79,11 @@ class TranslateService extends Component
             return null;
         }
 
-        $originalHtml = SerializerHelper::serialize($this->serializeElement($source, $sourceSite, $targetSite));
-        $translatedHtml = $this->translateText($sourceSite->language, $targetSite->language, $originalHtml);
-        $translatedValues = SerializerHelper::unserialize($translatedHtml);
+        $originalHtmls = SerializerHelper::serialize($this->serializeElement($source, $sourceSite, $targetSite));
+        $translatedHtmls = array_map(function ($originalHtml) use ($sourceSite, $targetSite) {
+            return $this->translateText($sourceSite->language, $targetSite->language, $originalHtml);
+        }, $originalHtmls);
+        $translatedValues = SerializerHelper::unserialize($translatedHtmls);
 
         // find or create target (destination)
         $targetElement = $this->findTargetElement($source, $targetSite->id);
@@ -136,7 +138,7 @@ class TranslateService extends Component
                 'propagationMethod' => $source?->section->propagationMethod ?? null,
                 'sourceEntry' => ['id' => $source->id, 'siteId' => $source->siteId, 'draft' => $source->getIsDraft(), 'customFields' => $source->getSerializedFieldValues()],
                 'targetElement' => ['id' => $targetElement->id, 'siteId' => $targetElement->siteId, 'draft' => $targetElement->getIsDraft()],
-                'serialized' => $originalHtml,
+                'serialized' => $originalHtmls,
                 'translatedValues' => $translatedValues,
             ]);
         }
