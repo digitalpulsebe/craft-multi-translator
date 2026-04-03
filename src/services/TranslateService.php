@@ -378,6 +378,8 @@ class TranslateService extends Component
 
         if ($provider == 'google') {
             return MultiTranslator::getInstance()->google;
+        } elseif ($provider == 'google-v3') {
+            return MultiTranslator::getInstance()->googleV3;
         } elseif ($provider == 'openai') {
             return MultiTranslator::getInstance()->openai;
         } elseif ($provider == 'deepl') {

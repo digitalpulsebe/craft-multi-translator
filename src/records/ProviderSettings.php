@@ -94,6 +94,21 @@ class ProviderSettings extends ActiveRecord
         return $this->getSetting('googleApiKey', '');
     }
 
+    public function getGoogleServiceAccount(): ?string
+    {
+        return $this->getSetting('googleServiceAccount', null);
+    }
+
+    public function getGoogleLocation(): string
+    {
+        return $this->getSetting('googleLocation', null);
+    }
+
+    public function getGoogleModel(): string
+    {
+        return $this->getSetting('googleModel', null);
+    }
+
     public function getOpenAiKey(): string
     {
         return $this->getSetting('openAiKey', '');
@@ -245,7 +260,7 @@ class ProviderSettings extends ActiveRecord
     public function asArrayForLogs(): array
     {
         $settings = $this->settings ?? [];
-        $keysToRemove = ['deeplApiKey', 'googleApiKey', 'openAiKey'];
+        $keysToRemove = ['deeplApiKey', 'googleApiKey', 'openAiKey', 'googleServiceAccount'];
         foreach ($keysToRemove as $key) {
             if (array_key_exists($key, $settings)) {
                 unset($settings[$key]);
