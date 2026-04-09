@@ -99,12 +99,12 @@ class ProviderSettings extends ActiveRecord
         return $this->getSetting('googleServiceAccount', null);
     }
 
-    public function getGoogleLocation(): string
+    public function getGoogleLocation(): ?string
     {
         return $this->getSetting('googleLocation', null);
     }
 
-    public function getGoogleModel(): string
+    public function getGoogleModel(): ?string
     {
         return $this->getSetting('googleModel', null);
     }

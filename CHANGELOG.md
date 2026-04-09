@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.25.1 - 2026-04-09
+
+### Fixed
+
+- fix: google setting return type error (fixes #106)
+
 ## 2.25.0 - 2026-04-03
 
 ### Added
