@@ -2,11 +2,9 @@
 
 namespace digitalpulsebe\craftmultitranslator\controllers;
 
-use craft\base\Element;
+use Craft;
 use craft\elements\Entry;
-use craft\web\View;
 use digitalpulsebe\craftmultitranslator\helpers\ElementHelper;
-use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use yii\web\Response;
 
 class BlockController extends BaseController
@@ -37,7 +35,32 @@ class BlockController extends BaseController
         $sourceSiteId = $this->request->post('sourceSiteId');
         $targetSiteId = $this->request->post('targetSiteId');
 
-        return $this->translateElement($elementId, $elementType, $sourceSiteId, $targetSiteId);
+        if ($targetSiteId == 'all') {
+            $element = Entry::find()->siteId($sourceSiteId)->id($elementId)->one();
+            $currentUser = Craft::$app->getUser()->getIdentity();
+
+            // fallback return result
+            $result = $this->redirect($element->cpEditUrl);
+
+            $targetSiteIds = collect(\craft\helpers\ElementHelper::supportedSitesForElement($element))
+                ->filter(function (array $site) use ($currentUser) {
+                    return $currentUser->can('editSite:' . $site['siteUid']);
+                })
+                ->filter(function (array $site) use ($sourceSiteId) {
+                    return $site['siteId'] != $sourceSiteId;
+                })
+                ->pluck('siteId')
+                ->values()
+                ->all();
+
+            foreach ($targetSiteIds as $targetSiteId) {
+                // only last result will return
+                $result = $this->translateElement($elementId, $elementType, $sourceSiteId, $targetSiteId);
+            }
+            return $result;
+        } else {
+            return $this->translateElement($elementId, $elementType, $sourceSiteId, $targetSiteId);
+        }
     }
 
 }

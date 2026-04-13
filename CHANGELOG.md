@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- add support for translating blocks to all sites
+
 ## 2.25.1 - 2026-04-09
 
 ### Fixed
