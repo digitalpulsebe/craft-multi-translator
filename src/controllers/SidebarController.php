@@ -31,9 +31,13 @@ class SidebarController extends BaseController
         $this->requirePermission('multiTranslateContent');
 
         $element = ElementHelper::one($elementType, $elementId, $sourceSiteId);
+        $currentUser = Craft::$app->getUser()->getIdentity();
 
         $sourceSite = Craft::$app->sites->getSiteById($sourceSiteId);
         $targetSites = collect(\craft\helpers\ElementHelper::supportedSitesForElement($element, true))
+            ->filter(function (array $site) use ($currentUser) {
+                return $currentUser->can('editSite:' . $site['siteUid']);
+            })
             ->filter(function ($site) use ($sourceSiteId) { return $site['siteId'] != $sourceSiteId; })
             ->map(function ($site) { return Craft::$app->sites->getSiteById($site['siteId']); });
 

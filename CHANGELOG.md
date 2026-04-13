@@ -6,6 +6,11 @@
 
 - add support for translating blocks to all sites
 
+### Changed
+
+- move 'all sites' options to the top
+- let users translate to all the sites they have access to
+
 ## 2.25.1 - 2026-04-09
 
 ### Fixed

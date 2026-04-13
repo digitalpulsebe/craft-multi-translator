@@ -55,7 +55,12 @@ JS, [static::class]);
 
         if ($this->targetSiteHandle == '_ALL_') {
             $sourceSiteHandle = $this->sourceSiteHandle;
+            $currentUser = Craft::$app->getUser()->getIdentity();
+
             $siteHandles = collect(Craft::$app->sites->getAllSites())
+                ->filter(function (Site $site) use ($currentUser) {
+                    return $currentUser->can('editSite:' . $site->uid);
+                })
                 ->filter(function (Site $site) use ($sourceSiteHandle) { return $site->handle != $sourceSiteHandle; })
                 ->map(function (Site $site) { return $site->handle; })
                 ->all();
