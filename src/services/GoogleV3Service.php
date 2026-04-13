@@ -29,7 +29,17 @@ class GoogleV3Service extends ApiService
 
     public function getClient()
     {
-        $credentials = json_decode($this->getProviderSettings()->getGoogleServiceAccount(), true);
+        if ($this->_client !== null) {
+            return $this->_client;
+        }
+
+        $credentialsPath = App::parseEnv($this->getProviderSettings()->getGoogleServiceAccountFilePath());
+
+        if ($credentialsPath) {
+            $credentials = json_decode(file_get_contents($credentialsPath), true);
+        } else {
+            $credentials = json_decode($this->getProviderSettings()->getGoogleServiceAccount(), true);
+        }
 
         if (empty($credentials)) {
             throw new \Exception('Google Service Account credentials are invalid.');
@@ -43,12 +53,12 @@ class GoogleV3Service extends ApiService
             $this->_client = new TranslationServiceClient([
                 'credentials' => $credentials,
             ]);
-
-            $this->_parent = $this->_client->locationName(
-                $credentials['project_id'],
-                empty($this->getProviderSettings()->getGoogleLocation()) ? 'global' : $this->getProviderSettings()->getGoogleLocation()
-            );
         }
+
+        $this->_parent = $this->_client->locationName(
+            $credentials['project_id'],
+            empty($this->getProviderSettings()->getGoogleLocation()) ? 'global' : $this->getProviderSettings()->getGoogleLocation()
+        );
 
         return $this->_client;
     }

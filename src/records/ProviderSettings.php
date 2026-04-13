@@ -94,6 +94,11 @@ class ProviderSettings extends ActiveRecord
         return $this->getSetting('googleApiKey', '');
     }
 
+    public function getGoogleServiceAccountFilePath(): ?string
+    {
+        return $this->getSetting('googleServiceAccountFilePath', null);
+    }
+
     public function getGoogleServiceAccount(): ?string
     {
         return $this->getSetting('googleServiceAccount', null);

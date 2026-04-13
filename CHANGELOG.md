@@ -5,6 +5,7 @@
 ### Added
 
 - add support for translating blocks to all sites (fixes #79)
+- add support for Google Cloud Service Account file path configuration (fixes #110)
 
 ### Changed
 
