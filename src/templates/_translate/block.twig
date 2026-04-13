@@ -4,6 +4,8 @@
 {% set settings = craft.multiTranslator.providerSettings %}
 {% set sites = craft.app.sites.allSites %}
 
+{% set sites = sites|filter(site => currentUser.can('editSite:'~site.uid)) %}
+
 <form action="" method="POST">
     {{ actionInput('multi-translator/block/translate') }}
     {{ hiddenInput('blockId', element.id) }}
@@ -18,10 +20,16 @@
                 label: 'Target site',
                 id: "translationTarget-${elementId}",
                 name: 'targetSiteId',
-                options: [{
-                    label: 'select target',
-                    value: ''
-                }]|merge(
+                options: [
+                    {
+                        label: 'select target',
+                        value: ''
+                    },
+                    {
+                        label: "__All sites__",
+                        value: 'all'
+                    }
+                ]|merge(
                     sites|map(site => {
                         label: "#{site.name} (#{site.locale})",
                         value: site.id

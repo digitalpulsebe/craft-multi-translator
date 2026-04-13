@@ -38,7 +38,17 @@
                         <button type="button" class="btn menubtn" aria-label="Translate">select target</button>
                         <div class="menu">
                             <ul>
-                                {% set userCanEditAllSites = true %}
+                                <li>
+                                    <a href="{{ actionUrl('multi-translator/sidebar/translate-to-all', {
+                                        'elementId': element.canonicalId,
+                                        'elementType': className(element),
+                                        'sourceSiteId': element.siteId
+                                    }) }}"
+                                       onclick="return confirm('Translate to all sites? Confirm your action.')"
+                                    >
+                                        <strong>All sites</strong>
+                                    </a>
+                                </li>
                                 {% for site in sites %}
                                     {% if currentUser.can('editSite:'~site.uid) %}
                                         {% if site.id in supportedSiteIds %}
@@ -55,21 +65,8 @@
                                                 </a>
                                             </li>
                                         {% endif %}
-                                    {% else %}
-                                        {% set userCanEditAllSites = false %}
                                     {% endif %}
                                 {% endfor %}
-                                {% if userCanEditAllSites %}
-                                    <li>
-                                        <a href="{{ actionUrl('multi-translator/sidebar/translate-to-all', {
-                                            'elementId': element.canonicalId,
-                                            'elementType': className(element),
-                                            'sourceSiteId': element.siteId
-                                        }) }}">
-                                            <strong>All sites</strong>
-                                        </a>
-                                    </li>
-                                {% endif %}
                             </ul>
                         </div>
                     </div>

@@ -112,6 +112,18 @@
                     <h2>Google Cloud Translation V3</h2>
                 </legend>
 
+                <p>Provide a Service Account file path OR paste the content inside the text area:</p>
+
+                {{ forms.autosuggestfield({
+                    label: 'Google Cloud Service Account file path',
+                    name: 'googleServiceAccountFilePath',
+                    instructions: 'File path to the Service Account data from your [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)',
+                    suggestEnvVars: true,
+                    value: settings.googleServiceAccountFilePath,
+                }) }}
+
+                <h3>OR:</h3>
+
                 {{ forms.textAreaField({
                     label: 'Google Cloud Service Account',
                     name: 'googleServiceAccount',
@@ -132,7 +144,7 @@
 
                 {{ forms.textfield({
                     label: "Translation model",
-                    instructions: "[Translation model](https://docs.cloud.google.com/translate/docs/advanced/compare-models) (format: projects/PROJECT_ID/location/LOCATION_ID/models/MODEL_ID) (optional)",
+                    instructions: "[Translation model](https://docs.cloud.google.com/translate/docs/advanced/compare-models) (format: projects/PROJECT_ID/locations/REGION_NAME/models/MODEL_ID) (optional)",
                     id: "googleModel",
                     name: "googleModel",
                     value: settings.googleModel,

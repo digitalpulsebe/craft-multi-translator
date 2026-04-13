@@ -1,7 +1,11 @@
 <button type="button" class="btn menubtn" aria-label="Translate">Translate to</button>
 <div class="menu">
     <ul>
-        {% set userCanEditAllSites = true %}
+        <li>
+            <a class="formsubmit" data-param="targetSiteHandle" data-value="_ALL_">
+                <strong>All sites</strong>
+            </a>
+        </li>
         {% for site in craft.app.sites.allSites %}
             {% if currentUser.can('editSite:'~site.uid) %}
                 {% if site.handle != craft.app.request.getParam('site') %}
@@ -11,16 +15,7 @@
                         </a>
                     </li>
                 {% endif %}
-            {% else %}
-                {% set userCanEditAllSites = false %}
             {% endif %}
         {% endfor %}
-        {% if userCanEditAllSites %}
-            <li>
-                <a class="formsubmit" data-param="targetSiteHandle" data-value="_ALL_">
-                    <strong>All sites</strong>
-                </a>
-            </li>
-        {% endif %}
     </ul>
 </div>
