@@ -4,12 +4,16 @@
 
 ### Added
 
-- add support for translating blocks to all sites
+- add support for translating blocks to all sites (fixes #79)
 
 ### Changed
 
-- move 'all sites' options to the top
+- move 'all sites' options to the top (fixes #76)
 - let users translate to all the sites they have access to
+
+### Fixed
+
+- fix: update translation model instructions to the correct format (fixes #107)
 
 ## 2.25.1 - 2026-04-09
 
