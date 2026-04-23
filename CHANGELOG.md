@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 1.19.2 - 2025-01-28
+
+### Fixed
+
+- Fixed: Translation fails when entry contains empty Linkit field (fixes #112)
+
 ## 1.19.1 - 2025-01-28
 
 ### Fixed
