@@ -276,7 +276,7 @@ class TranslateService extends Component
     public function translateLinkitField(Element $element, FieldInterface $field, Site $sourceSite, Site $targetSite): ?array
     {
         $value = $element->getFieldValue($field->handle);
-        if ($field->allowCustomText && $value->customText != null) {
+        if ($field->allowCustomText && $value && $value->customText != null) {
             $value->customText = $this->translateText($sourceSite->language, $targetSite->language, $value->customText);
         }
         return $field->serializeValue($value, $element);
