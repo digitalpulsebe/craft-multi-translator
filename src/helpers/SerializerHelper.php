@@ -34,7 +34,7 @@ class SerializerHelper
 
             $html->appendChild($node);
 
-            if (strlen($doc->saveHTML()) > 300000) {
+            if (strlen($doc->saveHTML()) > 50000) {
                 // split in new document too avoid large payloads to the api
                 $htmls[] = $doc->saveHTML();
 

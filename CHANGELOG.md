@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- split payloads after 50k characters (#75)
+
 ## 2.25.2 - 2026-04-13
 
 ### Added
