@@ -74,6 +74,7 @@ class GoogleV3Service extends ApiService
         $requestParams = [
             'parent' => $this->_parent,
             'contents' => [$text],
+            'mime_type' => 'text/plain',
             'source_language_code' => $sourceLocale ?: null,
             'target_language_code' => $this->targetLocale($targetLocale),
         ];
