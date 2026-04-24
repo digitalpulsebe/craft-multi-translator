@@ -2,9 +2,16 @@
 
 ## Unreleased
 
-### Fixed
+### Added
+
+- add support for Doxter field translation (fixes #108)
+
+### Changed
 
 - split payloads after 50k characters (#75)
+
+### Fixed
+
 - set 'mime_type' as 'text/plain' to keep newlines in Google v3 api when translating plain text (#109)
 
 ## 2.25.2 - 2026-04-13

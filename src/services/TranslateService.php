@@ -478,6 +478,7 @@ class TranslateService extends Component
         $this->serializers['ether\seo\fields\SeoField'] = EtherSeoSerializer::class;
         $this->serializers['nystudio107\seomatic\fields\SeoSettings'] = SeomaticSerializer::class;
         $this->serializers['verbb\vizy\fields\VizyField'] = VizySerializer::class;
+        $this->serializers['verbb\doxter\fields\Doxter'] = TextSerializer::class;
 
         // trigger event to add custom serializers
         $event = new RegisterSerializersEvent([
