@@ -159,9 +159,18 @@
                 </legend>
 
                 {{ forms.autosuggestfield({
-                    label: 'Open AI API Key',
+                    label: 'API Base URL',
+                    name: 'openAiBaseUrl',
+                    instructions: 'Base URL for the API. Leave empty for the official OpenAI API. Set a custom URL to use any OpenAI-compatible provider (e.g. Infomaniak, Ollama, Azure OpenAI, Groq, Mistral).',
+                    suggestEnvVars: true,
+                    value: settings.openAiBaseUrl,
+                    placeholder: 'https://api.openai.com/v1',
+                }) }}
+
+                {{ forms.autosuggestfield({
+                    label: 'API Key',
                     name: 'openAiKey',
-                    instructions: 'Create an API Key from your [OpenAI platform](https://platform.openai.com/api-keys)',
+                    instructions: 'API key or bearer token for the endpoint.',
                     suggestEnvVars: true,
                     value: settings.openAiKey,
                 }) }}
@@ -179,10 +188,10 @@
 
                 {{ forms.selectField({
                     label: "API model",
-                    instructions: "",
+                    instructions: "Select a model. Choose 'Custom' to enter a custom model name for non-OpenAI providers.",
                     id: "openAiModel",
                     name: "openAiModel",
-                    value: settings.openAiModel,
+                    value: settings.getSetting('openAiModel', 'gpt-4o'),
                     options: [
                         {'label': 'GPT 3.5 Turbo', 'value': 'gpt-3.5-turbo'},
                         {'label': 'GPT 4', 'value': 'gpt-4'},
@@ -197,9 +206,23 @@
                         {'label': 'GPT 5.4', 'value': 'gpt-5.4'},
                         {'label': 'GPT 5.4 Mini', 'value': 'gpt-5.4-mini'},
                         {'label': 'GPT 5.4 Nano', 'value': 'gpt-5.4-nano'},
+                        {'label': 'Custom', 'value': 'custom'},
                     ],
+                    toggle: true,
+                    targetPrefix: 'openai-model-',
                     errors: settings.getErrors("openAiModel"),
                 }) }}
+
+                <div id="openai-model-custom"{% if settings.getSetting('openAiModel', 'gpt-4o') != 'custom' %} class="hidden"{% endif %}>
+                    {{ forms.autosuggestfield({
+                        label: 'Custom model name',
+                        name: 'openAiCustomModel',
+                        instructions: 'Enter the model identifier for your provider (e.g. `mistral3`, `qwen3`, `llama3`).',
+                        suggestEnvVars: true,
+                        value: settings.openAiCustomModel,
+                        placeholder: '',
+                    }) }}
+                </div>
 
                 {{ forms.textfield({
                     label: 'Custom prompt',
