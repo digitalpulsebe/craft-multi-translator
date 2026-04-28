@@ -12,13 +12,18 @@ class OpenAiService extends ApiService
 
     public function getName(): string
     {
+        $baseUrl = $this->getBaseUrl();
+        if (!str_contains($baseUrl, 'api.openai.com')) {
+            $host = parse_url($baseUrl, PHP_URL_HOST);
+            return 'OpenAI Compatible' . ($host ? " ($host)" : '');
+        }
         return 'ChatGPT (Open AI)';
     }
 
     public function isConnected(): bool
     {
         try {
-            return $this->getClient()->get('https://api.openai.com/v1/models')->getStatusCode() == 200;
+            return $this->getClient()->get($this->getBaseUrl() . '/models')->getStatusCode() == 200;
         } catch (\Throwable $exception) {
             return false;
         }
@@ -57,8 +62,10 @@ class OpenAiService extends ApiService
             $sourceLanguage ?? '[guess the language]', $targetLanguage, $text
         ], $prompt);
 
+        $model = App::parseEnv($this->getProviderSettings()->getOpenAiModel());
+
         $body = [
-            'model' => $this->getProviderSettings()->getOpenAiModel(),
+            'model' => $model,
             'messages' => [
                 [
                     'role' => 'user',
@@ -68,7 +75,13 @@ class OpenAiService extends ApiService
             'temperature' => floatval($this->getProviderSettings()->getOpenAiTemperature()),
         ];
 
-        $response = $this->getClient()->post('https://api.openai.com/v1/chat/completions', ['json' => $body]);
+        try {
+            $response = $this->getClient()->post($this->getBaseUrl() . '/chat/completions', ['json' => $body]);
+        } catch (\GuzzleHttp\Exception\ClientException $e) {
+            $responseBody = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : 'no response body';
+            MultiTranslator::error('OpenAI API error: ' . $responseBody);
+            throw $e;
+        }
 
         if ($response->getStatusCode() < 300) {
 
@@ -92,5 +105,13 @@ class OpenAiService extends ApiService
             return null;
         }
         return locale_get_display_name($locale, 'en');
+    }
+
+    /**
+     * Get the base URL for the OpenAI-compatible API, with env var support.
+     */
+    private function getBaseUrl(): string
+    {
+        return App::parseEnv($this->getProviderSettings()->getOpenAiBaseUrl());
     }
 }

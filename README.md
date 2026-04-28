@@ -37,6 +37,30 @@ For now, we support these API services:
 - Google Cloud Translation v2 - Create an API key in your [Cloud Console](https://console.cloud.google.com/)
 - Google Cloud Translation v3 - Create a Service Account your [Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)
 - OpenAI (ChatGPT) - Create an API key in at [OpenAI](https://platform.openai.com/)
+  - also supports any [OpenAI-compatible endpoint](#openai-compatible-providers) (Azure OpenAI, Ollama, Groq, Mistral, Infomaniak AI Service, …)
+
+### OpenAI-compatible providers
+
+The **OpenAI API** provider supports a configurable base URL and custom model name, allowing you to point it at any OpenAI-compatible endpoint.
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **API Base URL** | Base URL of the API endpoint | `https://api.openai.com/v1` |
+| **API model** | Model dropdown, or select "Custom" to enter a free-text model identifier | `gpt-4o` |
+| **Custom model name** | Free-text model identifier (shown when "Custom" is selected) | — |
+
+Both the base URL and model fields support Craft environment variables (e.g. `$OPENAI_BASE_URL`).
+
+#### Example: Infomaniak AI Service
+
+In your `.env`:
+
+```bash
+OPENAI_BASE_URL="https://api.infomaniak.com/2/ai/{product_id}/openai/v1"
+OPENAI_API_KEY="your-infomaniak-api-token"
+```
+
+In the plugin settings: set Base URL to `$OPENAI_BASE_URL`, API Key to `$OPENAI_API_KEY`, select **Custom** as the model and enter e.g. `mistral3` or `qwen3`.
 
 ## Roadmap
 
