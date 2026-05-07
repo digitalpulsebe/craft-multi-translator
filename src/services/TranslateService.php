@@ -240,7 +240,15 @@ class TranslateService extends Component
             foreach ($translatedMatrixValues as $matrixFieldHandle => $value) {
                 // only set translated values in matrix array
                 if ($value && isset($serialized[$matrixElement->id])) {
-                    $serialized[$matrixElement->id]['fields'][$matrixFieldHandle] = $value;
+                    // title/slug are native attributes on the nested entry — set them at the
+                    // block root, not inside `fields`. Otherwise Craft's
+                    // Matrix::_createEntriesFromSerializedData() throws UnknownPropertyException
+                    // when it iterates the `fields` array and calls setFieldValue('title', ...).
+                    if (in_array($matrixFieldHandle, ['title', 'slug'], true)) {
+                        $serialized[$matrixElement->id][$matrixFieldHandle] = $value;
+                    } else {
+                        $serialized[$matrixElement->id]['fields'][$matrixFieldHandle] = $value;
+                    }
                 }
             }
         }
