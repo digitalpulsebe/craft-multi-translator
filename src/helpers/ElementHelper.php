@@ -26,7 +26,7 @@ class ElementHelper
     public static function query(string $elementType, int|array $elementIds, int $siteId): ElementQuery
     {
         if ($elementType == 'craft\commerce\elements\Product') {
-            return Product::find()->status(null)->id($elementIds)->siteId($siteId);
+            return Product::find()->drafts(null)->status(null)->id($elementIds)->siteId($siteId);
         } elseif ($elementType == 'craft\commerce\elements\Variant') {
             return Variant::find()->status(null)->id($elementIds)->siteId($siteId);
         } elseif ($elementType == Asset::class) {

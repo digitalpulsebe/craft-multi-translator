@@ -5,6 +5,7 @@
 ### Fixed
 
 - fix error when reviewing product translations (fixes #115)
+- fix translate draft products
 
 ## 2.26.0 - 2026-04-24
 
