@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Added
+
+- support OpenAI-compatible endpoints (base URL and custom model)
+
 ### Fixed
 
 - fix error when reviewing product translations (fixes #115)

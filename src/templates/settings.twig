@@ -175,17 +175,6 @@
                     value: settings.openAiKey,
                 }) }}
 
-                <p>
-                    Warning: The OpenAI API can take a long time to respond.
-                    It may require several seconds for each request.
-                    Each field and each field within each matrix block are sent separately.
-                </p>
-
-                <p>
-                    Warning: The OpenAI API occasionally fails to translate and instead returns the original text.
-                    You can attempt again later or adjust the temperature setting for better results.
-                </p>
-
                 {{ forms.selectField({
                     label: "API model",
                     instructions: "Select a model. Choose 'Custom' to enter a custom model name for non-OpenAI providers.",

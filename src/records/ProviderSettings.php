@@ -127,8 +127,7 @@ class ProviderSettings extends ActiveRecord
      */
     public function getOpenAiBaseUrl(): string
     {
-        $value = $this->getSetting('openAiBaseUrl', '');
-        return !empty($value) ? rtrim($value, '/') : 'https://api.openai.com/v1';
+        return $this->getSetting('openAiBaseUrl', '');
     }
 
     /**

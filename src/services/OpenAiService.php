@@ -112,6 +112,7 @@ class OpenAiService extends ApiService
      */
     private function getBaseUrl(): string
     {
-        return App::parseEnv($this->getProviderSettings()->getOpenAiBaseUrl());
+        $baseUrl = App::parseEnv($this->getProviderSettings()->getOpenAiBaseUrl());
+        return !empty($baseUrl) ? rtrim($baseUrl, '/') : 'https://api.openai.com/v1';
     }
 }
