@@ -120,13 +120,40 @@ class ProviderSettings extends ActiveRecord
     }
 
     /**
+     * Base URL for OpenAI-compatible API
+     * Defaults to the official OpenAI API. Override to use any compatible provider
+     * (e.g. Infomaniak, Ollama, Azure OpenAI, Groq, Mistral).
+     * @return string
+     */
+    public function getOpenAiBaseUrl(): string
+    {
+        return $this->getSetting('openAiBaseUrl', '');
+    }
+
+    /**
+     * Custom model name that overrides the dropdown selection.
+     * Useful for non-OpenAI providers that use different model identifiers.
+     * @return string|null
+     */
+    public function getOpenAiCustomModel(): ?string
+    {
+        $value = $this->getSetting('openAiCustomModel', null);
+        return !empty($value) ? $value : null;
+    }
+
+    /**
      * Model for the OpenAI API
      * read more: https://platform.openai.com/docs/models/model-endpoint-compatibility
      * @return string
      */
     public function getOpenAiModel(): string
     {
-        return $this->getSetting('openAiModel', 'gpt-4o');
+        $dropdown = $this->getSetting('openAiModel', 'gpt-4o');
+        if ($dropdown === 'custom') {
+            $custom = $this->getOpenAiCustomModel();
+            return !empty($custom) ? $custom : 'gpt-4o';
+        }
+        return $dropdown;
     }
 
     /**

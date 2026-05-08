@@ -1,5 +1,16 @@
 # Release Notes for Multi Translator
 
+## 2.27.0 - 2026-04-24
+
+### Added
+
+- support OpenAI-compatible endpoints (base URL and custom model)
+
+### Fixed
+
+- fix error when reviewing product translations (fixes #115)
+- fix translate draft products
+
 ## 2.26.0 - 2026-04-24
 
 ### Added
