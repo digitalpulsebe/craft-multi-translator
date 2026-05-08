@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- fix error when reviewing product translations (fixes #115)
+
 ## 2.26.0 - 2026-04-24
 
 ### Added
