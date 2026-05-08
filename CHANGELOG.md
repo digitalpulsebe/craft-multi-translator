@@ -4,7 +4,7 @@
 
 ### Added
 
-- support OpenAI-compatible endpoints (base URL and custom model)
+- support OpenAI-compatible endpoints (base URL and custom model) (thanks @riccardolardi)
 
 ### Fixed
 
