@@ -8,6 +8,7 @@ use craft\base\FieldInterface;
 use craft\commerce\elements\Product;
 use craft\commerce\elements\Variant;
 use craft\elements\Asset;
+use craft\elements\Category;
 use craft\elements\db\ElementQuery;
 use craft\elements\Entry;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
@@ -25,12 +26,17 @@ class ElementHelper
      */
     public static function query(string $elementType, int|array $elementIds, int $siteId): ElementQuery
     {
+        // NOTE: any element class added to MultiTranslator::getSupportedElementClasses() MUST
+        // also have a branch here. The else-fallback to Entry::find() is a latent footgun —
+        // unsupported types silently get misrouted as Entry queries.
         if ($elementType == 'craft\commerce\elements\Product') {
             return Product::find()->drafts(null)->status(null)->id($elementIds)->siteId($siteId);
         } elseif ($elementType == 'craft\commerce\elements\Variant') {
             return Variant::find()->status(null)->id($elementIds)->siteId($siteId);
         } elseif ($elementType == Asset::class) {
             return Asset::find()->status(null)->id($elementIds)->siteId($siteId);
+        } elseif ($elementType == Category::class) {
+            return Category::find()->drafts(null)->status(null)->id($elementIds)->siteId($siteId);
         } else {
             return Entry::find()->drafts(null)->status(null)->id($elementIds)->siteId($siteId);
         }

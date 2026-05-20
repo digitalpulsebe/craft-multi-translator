@@ -9,6 +9,7 @@ use craft\base\FieldInterface;
 use craft\commerce\elements\Product;
 use craft\commerce\elements\Variant;
 use craft\elements\Asset;
+use craft\elements\Category;
 use craft\elements\ContentBlock;
 use craft\elements\Entry;
 use craft\enums\PropagationMethod;
@@ -107,6 +108,15 @@ class TranslateService extends Component
             $targetElement = \Craft::$app->drafts->createDraft($targetElement, null, $draftName, $revisionNotes);
             $this->setElementTranslation($source, $targetElement, $translatedValues);
             \Craft::$app->elements->saveElement($targetElement);
+        } elseif ($targetElement instanceof Category) {
+            // Category: the per-site row already exists (findTargetCategory ensured it).
+            // saveElement($element, true, true) — propagate=true — silently returns false
+            // when re-saving a per-site Category row with diverged translated values
+            // (Craft's category propagation pipeline reconciles cross-site rows differently
+            // than Entry's, and rejects the update with no error surfacing). Saving with
+            // propagate=false updates just this site's row, which is exactly what we want.
+            $targetElement->setRevisionNotes($revisionNotes);
+            \Craft::$app->elements->saveElement($targetElement, true, false);
         } else {
             $targetElement->setRevisionNotes($revisionNotes);
             \Craft::$app->elements->saveElement($targetElement);
@@ -135,7 +145,13 @@ class TranslateService extends Component
                 }, $source->fieldLayout->getCustomFields()),
                 'sourceSiteLanguage' => $sourceSite->language,
                 'targetSiteLanguage' => $targetSite->language,
-                'propagationMethod' => $source?->section->propagationMethod ?? null,
+                // type-aware: Section propagation enum for Entry, group handle for Category,
+                // null for element types without a propagation concept (Asset, Product, Variant).
+                'propagationMethod' => match (true) {
+                    $source instanceof Entry => $source?->section?->propagationMethod ?? null,
+                    $source instanceof Category => 'group:' . ($source->getGroup()?->handle ?? 'unknown'),
+                    default => null,
+                },
                 'sourceEntry' => ['id' => $source->id, 'siteId' => $source->siteId, 'draft' => $source->getIsDraft(), 'customFields' => $source->getSerializedFieldValues()],
                 'targetElement' => ['id' => $targetElement->id, 'siteId' => $targetElement->siteId, 'draft' => $targetElement->getIsDraft()],
                 'serialized' => $originalHtmls,
@@ -296,6 +312,8 @@ class TranslateService extends Component
             return ElementHelper::one(Asset::class, $source->id, $targetSiteId);
         } elseif ($source instanceof Variant) {
             return Variant::find()->status(null)->id($source->id)->siteId($targetSiteId)->one();
+        } elseif ($source instanceof Category) {
+            return $this->findTargetCategory($source, $targetSiteId);
         } else {
             return $this->findTargetEntry($source, $targetSiteId);
         }
@@ -350,6 +368,54 @@ class TranslateService extends Component
         }
 
         return $targetEntry;
+    }
+
+    /**
+     * Find the target Category in the target site for a source Category.
+     *
+     * Categories don't have a propagationMethod enum (unlike Entry's Section); a category
+     * group is either enabled or not enabled for a given site. If the row already exists
+     * in the target site (the common case — Craft auto-propagates on save), we just return
+     * it. If it doesn't exist but the group is enabled there, we propagate the source row.
+     *
+     * Never falls back to duplicateElement(): categories live in a structure, and
+     * duplication reshuffles lft/rgt/level and breaks the parent/child topology that's
+     * identical-across-sites by design.
+     *
+     * @throws UnsupportedSiteException when the source's category group is not enabled
+     *                                  for the target site.
+     */
+    public function findTargetCategory(Category $source, int $targetSiteId): Category
+    {
+        $target = ElementHelper::one(Category::class, $source->id, $targetSiteId);
+        if ($target) {
+            return $target;
+        }
+
+        $group = $source->getGroup();
+        $siteSettings = $group->getSiteSettings();
+        if (!isset($siteSettings[$targetSiteId])) {
+            throw new UnsupportedSiteException(
+                $source,
+                $targetSiteId,
+                sprintf('Category group "%s" is not enabled for the target site (id=%d).',
+                    $group->handle,
+                    $targetSiteId
+                )
+            );
+        }
+
+        Craft::$app->elements->propagateElement($source, $targetSiteId, false);
+
+        $target = ElementHelper::one(Category::class, $source->id, $targetSiteId);
+        if (!$target) {
+            throw new Exception(sprintf(
+                'Could not locate target Category for source id %d on site id %d after propagation.',
+                $source->id,
+                $targetSiteId
+            ));
+        }
+        return $target;
     }
 
     /**

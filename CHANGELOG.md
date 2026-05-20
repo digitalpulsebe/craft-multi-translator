@@ -1,5 +1,17 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- add support for translating `craft\elements\Category` elements — sidebar button, bulk action, review screen, and all four lifecycle events
+- `BulkTranslateJob` now catches `UnsupportedSiteException` / `InvalidConfigException` per element so one unsupported target site no longer fails the whole job
+
+### Fixed
+
+- debug-log `propagationMethod` field is now type-aware: it emits the Section propagation enum for Entries, `group:<handle>` for Categories, and `null` for Assets/Products/Variants (previously could throw under `debug=true` on any element without a `->section`)
+- `ElementHelper::query()` now has an explicit `craft\elements\Category` branch — the previous `else` fallback to `Entry::find()` would have silently misrouted Category lookups
+
 ## 2.27.0 - 2026-04-24
 
 ### Added

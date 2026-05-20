@@ -1,6 +1,6 @@
 # Multi Translator
 
-Translate your site content using Deepl, Google Translate or ChatGPT.
+Translate your Entry, Category, Asset, and Commerce Product/Variant content using DeepL, Google Translate, or ChatGPT.
 
 ## Requirements
 
@@ -82,6 +82,15 @@ For non-admin users, enable permissions under the 'Multi Translator' section:
   - enables the element actions to [translate one-by-one](#translate-one-by-one)
 - 'Translate Content in bulk (element action)'
   - enables the bulk actions to [translate one-by-one](#translate-in-bulk)
+
+## Supported element types
+
+- `craft\elements\Entry`
+- `craft\elements\Category`
+- `craft\elements\Asset` (title and translatable `alt` text)
+- `craft\commerce\elements\Product` (and its `Variant`s — variants are recursively translated when their parent product is translated)
+
+For Categories: translation works on category groups whose `propagationMethod` lets per-site values diverge (i.e. any setting other than "all sites identical"). The Translate button only acts on sites the source's category group is enabled for; bulk translation to an unsupported site logs the failure and continues to the next target.
 
 ## Supported field types
 
@@ -176,6 +185,38 @@ Event::on(
     }
 );
 ```
+
+#### Translate category slugs (Category-specific recipe)
+
+Category URIs commonly use templates like `{parent.uri}/{slug}`, so a translated tree wants translated slugs to produce a fully localised URL path. The same `afterElementTranslation` event works — and because Craft rebuilds `uri` on save, no plugin code touches URIs directly:
+
+```php
+use craft\elements\Category;
+use digitalpulsebe\craftmultitranslator\events\ElementTranslationEvent;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+use digitalpulsebe\craftmultitranslator\MultiTranslator;
+
+Event::on(
+    TranslateService::class,
+    TranslateService::EVENT_AFTER_ELEMENT_TRANSLATION,
+    function (ElementTranslationEvent $event) {
+        if (!$event->targetElement instanceof Category) {
+            return;
+        }
+        $translated = MultiTranslator::getInstance()->translate->translateText(
+            $event->sourceSite->language,
+            $event->targetSite->language,
+            $event->sourceElement->slug
+        );
+        if ($translated) {
+            // Craft's slug helper normalises spacing/casing for URLs
+            $event->targetElement->slug = \craft\helpers\StringHelper::slugify($translated);
+        }
+    }
+);
+```
+
+When bulk-translating a category tree, Craft's element index returns categories in structure order (parents first), so `BulkTranslateJob` propagates parents before children — the URI template `{parent.uri}/{slug}` resolves correctly on each save.
 
 ### The `beforeFieldTranslation` event
 

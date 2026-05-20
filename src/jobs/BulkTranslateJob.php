@@ -3,10 +3,12 @@
 namespace digitalpulsebe\craftmultitranslator\jobs;
 
 use \Craft;
+use craft\errors\UnsupportedSiteException;
 use craft\queue\BaseJob;
 use digitalpulsebe\craftmultitranslator\helpers\ElementHelper;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use Exception;
+use yii\base\InvalidConfigException;
 
 class BulkTranslateJob extends BaseJob
 {
@@ -36,10 +38,23 @@ class BulkTranslateJob extends BaseJob
 
             $this->setProgress($queue, $i/$elementCount, "Translating element $iHuman/$elementCount to $targetSite->name");
 
-            $translatedElement = MultiTranslator::getInstance()->translate->translateElement($element, $sourceSite, $targetSite);
+            try {
+                $translatedElement = MultiTranslator::getInstance()->translate->translateElement($element, $sourceSite, $targetSite);
 
-            if (!empty($translatedElement->errors)) {
-                $errors[$translatedElement->id] = $translatedElement->errors;
+                if (!empty($translatedElement?->errors)) {
+                    $errors[$translatedElement->id] = $translatedElement->errors;
+                }
+            } catch (UnsupportedSiteException | InvalidConfigException $e) {
+                // Surfaces when a Category's group is not enabled for the target site,
+                // or any other "this element can't live on that site" condition. Per-element
+                // recovery — log and continue so one bad target doesn't tank the whole job.
+                MultiTranslator::error([
+                    'message'   => 'BulkTranslateJob: skipping unsupported site for element',
+                    'elementId' => $element->id,
+                    'siteHandle' => $this->targetSiteHandle,
+                    'exception' => $e->getMessage(),
+                ]);
+                $errors[$element->id] = ['unsupportedSite' => $e->getMessage()];
             }
         }
 
