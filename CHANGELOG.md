@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.27.1 - 2026-05-29
+
+### Fixed
+
+- fix error when reviewing variant translations (fixes #115)
+
 ## 2.27.0 - 2026-04-24
 
 ### Added
