@@ -36,165 +36,12 @@ class ProviderSettings extends ActiveRecord
         return $item->save();
     }
 
-    public function getDeeplApiKey(): string
-    {
-        return $this->getSetting('deeplApiKey', '');
-    }
+    // =========================================================================
+    // General options
+    // =========================================================================
 
     /**
-     * Specifies which DeepL model should be used for translation.
-     * https://developers.deepl.com/api-reference/translate#param-model-type
-     * @return string
-     */
-    public function getDeeplModelType(): string
-    {
-        return $this->getSetting('deeplModelType', 'latency_optimized');
-    }
-
-    /**
-     * controls whether translations should lean toward informal or formal language. This option is only available for some target languages
-     * https://github.com/DeepLcom/deepl-php#text-translation-options
-     * @return string
-     */
-    public function getDeeplFormality(): string
-    {
-        return $this->getSetting('deeplFormality', 'default');
-    }
-
-    /**
-     * controls automatic-formatting-correction. Set to true to prevent automatic-correction of formatting, default: false.
-     * https://github.com/DeepLcom/deepl-php#text-translation-options
-     * @return bool
-     */
-    public function getDeeplPreserveFormatting(): bool
-    {
-        return $this->getSetting('deeplPreserveFormatting', false);
-    }
-
-    /**
-     * default English region for non-regional English
-     * @return string
-     */
-    public function getDefaultEnglish(): string
-    {
-        return $this->getSetting('defaultEnglish','en-US');
-    }
-
-    /**
-     * when enabled, we don't send the source language to the api
-     * @return bool
-     */
-    public function getDetectSourceLanguage(): bool
-    {
-        return $this->getSetting('detectSourceLanguage', false);
-    }
-
-    public function getGoogleApiKey(): string
-    {
-        return $this->getSetting('googleApiKey', '');
-    }
-
-    public function getGoogleServiceAccountFilePath(): ?string
-    {
-        return $this->getSetting('googleServiceAccountFilePath', null);
-    }
-
-    public function getGoogleServiceAccount(): ?string
-    {
-        return $this->getSetting('googleServiceAccount', null);
-    }
-
-    public function getGoogleLocation(): ?string
-    {
-        return $this->getSetting('googleLocation', null);
-    }
-
-    public function getGoogleModel(): ?string
-    {
-        return $this->getSetting('googleModel', null);
-    }
-
-    public function getOpenAiKey(): string
-    {
-        return $this->getSetting('openAiKey', '');
-    }
-
-    /**
-     * Base URL for OpenAI-compatible API
-     * Defaults to the official OpenAI API. Override to use any compatible provider
-     * (e.g. Infomaniak, Ollama, Azure OpenAI, Groq, Mistral).
-     * @return string
-     */
-    public function getOpenAiBaseUrl(): string
-    {
-        return $this->getSetting('openAiBaseUrl', '');
-    }
-
-    /**
-     * Custom model name that overrides the dropdown selection.
-     * Useful for non-OpenAI providers that use different model identifiers.
-     * @return string|null
-     */
-    public function getOpenAiCustomModel(): ?string
-    {
-        $value = $this->getSetting('openAiCustomModel', null);
-        return !empty($value) ? $value : null;
-    }
-
-    /**
-     * Model for the OpenAI API
-     * read more: https://platform.openai.com/docs/models/model-endpoint-compatibility
-     * @return string
-     */
-    public function getOpenAiModel(): string
-    {
-        $dropdown = $this->getSetting('openAiModel', 'gpt-4o');
-        if ($dropdown === 'custom') {
-            $custom = $this->getOpenAiCustomModel();
-            return !empty($custom) ? $custom : 'gpt-4o';
-        }
-        return $dropdown;
-    }
-
-    /**
-     * Custom prompt
-     * @return string|null
-     */
-    public function getOpenAiPrompt(): ?string
-    {
-        return $this->getSetting('openAiPrompt', null);
-    }
-
-    /**
-     * Temperature setting for the OpenAI API
-     * read more: https://platform.openai.com/docs/api-reference/chat/create#chat-create-temperature
-     * @return float
-     */
-    public function getOpenAiTemperature(): float
-    {
-        return floatval($this->getSetting('openAiTemperature', 0.5));
-    }
-
-    /**
-     * select direction 'to target' or 'from source', in the sidebar actions of entry detail view.
-     * @return string
-     */
-    public function getTranslationDirectionButtons(): string
-    {
-        return $this->getSetting('translationDirectionButtons', 'fromThis');
-    }
-
-    /**
-     * clear the slug when setting a translated title
-     * @return bool
-     */
-    public function getResetSlug(): bool
-    {
-        return $this->getSetting('resetSlug', false);
-    }
-
-    /**
-     * @return string provider google|deepl|openai
+     * @return string provider handle, e.g. 'deepl'
      */
     public function getTranslationProvider(): string
     {
@@ -202,64 +49,76 @@ class ProviderSettings extends ActiveRecord
     }
 
     /**
-     * Find and update internal links inside CKeditor value
-     * @return bool
+     * When enabled, we don't send the source language to the API.
+     */
+    public function getDetectSourceLanguage(): bool
+    {
+        return (bool) $this->getSetting('detectSourceLanguage', false);
+    }
+
+    /**
+     * Select direction 'to target' or 'from source' in the sidebar actions.
+     */
+    public function getTranslationDirectionButtons(): string
+    {
+        return $this->getSetting('translationDirectionButtons', 'fromThis');
+    }
+
+    /**
+     * Clear the slug when setting a translated title.
+     */
+    public function getResetSlug(): bool
+    {
+        return (bool) $this->getSetting('resetSlug', false);
+    }
+
+    /**
+     * Find and update internal links inside CKeditor values.
      */
     public function getUpdateInternalLinks(): bool
     {
-        return $this->getSetting('updateInternalLinks', true);
+        return (bool) $this->getSetting('updateInternalLinks', true);
     }
 
     /**
-     * Translate nested Entries inside CKeditor value
-     * @return bool
+     * Translate nested Entries inside CKeditor values.
      */
     public function getProcessNestedEntries(): bool
     {
-        return $this->getSetting('processNestedEntries', true);
+        return (bool) $this->getSetting('processNestedEntries', true);
     }
 
     /**
-     * Save translated result always as a Draft
-     * @return bool
+     * Save translated result always as a Draft.
      */
     public function getSaveAsDraft(): bool
     {
-        return $this->getSetting('saveAsDraft', false);
+        return (bool) $this->getSetting('saveAsDraft', false);
     }
 
     /**
-     * Ignore these fields
-     * @return string[] of handles
+     * Ignore these field handles during translation.
+     *
+     * @return array<int, array{handle: string}|string>
      */
     public function getDisabledFields(): array
     {
         $value = $this->getSetting('disabledFields', []);
-        if (is_array($value)) {
-            return $value;
-        }
-        return [];
+        return is_array($value) ? $value : [];
     }
 
     /**
-     * Ignore these fields
      * @return string[] of handles
      */
     public function getDisabledFieldHandles(): array
     {
-        $value = $this->getSetting('disabledFields', []);
-
         $returnHandles = [];
 
-        if (is_array($value)) {
-            foreach ($value as $item) {
-                if (is_array($item) && isset($item['handle'])) {
-                    // these are from the general settings (editableTableField value)
-                    $returnHandles[] = $item['handle'];
-                } elseif (is_string($item)) {
-                    // these are from the review settings (checkbox values)
-                    $returnHandles[] = $item;
-                }
+        foreach ($this->getDisabledFields() as $item) {
+            if (is_array($item) && isset($item['handle'])) {
+                $returnHandles[] = $item['handle'];
+            } elseif (is_string($item)) {
+                $returnHandles[] = $item;
             }
         }
 
@@ -267,42 +126,75 @@ class ProviderSettings extends ActiveRecord
     }
 
     /**
-     * Query and translate disabled variants of Commerce Products
-     * @return bool
+     * Query and translate disabled variants of Commerce Products.
      */
     public function getTranslateDisabledVariants(): bool
     {
-        return $this->getSetting('translateDisabledVariants', false);
+        return (bool) $this->getSetting('translateDisabledVariants', false);
     }
 
     /**
-     * Query and translate disabled Matrix Elements inside fields (Matrix, Neo and SuperTableField)
-     * @return bool
+     * Query and translate disabled Matrix Elements inside fields.
      */
     public function getTranslateDisabledMatrixElements(): bool
     {
-        return $this->getSetting('translateDisabledMatrixElements', false);
+        return (bool) $this->getSetting('translateDisabledMatrixElements', false);
     }
 
-    public function getSetting($key, $default = null): mixed
+    // =========================================================================
+    // Provider settings
+    // =========================================================================
+
+    /**
+     * Return the settings array for a specific provider.
+     * Providers call this via TranslateService when they are instantiated.
+     */
+    public function getProviderSettings(string $handle): array
+    {
+        $providers = $this->getSetting('providers', []);
+        return is_array($providers[$handle] ?? null) ? $providers[$handle] : [];
+    }
+
+    // =========================================================================
+    // Generic read / utility
+    // =========================================================================
+
+    public function getSetting(string $key, mixed $default = null): mixed
     {
         return ArrayHelper::getValue($this->settings, $key, $default);
     }
 
     public function asArrayForLogs(): array
     {
-        $settings = $this->settings ?? [];
-        $keysToRemove = ['deeplApiKey', 'googleApiKey', 'openAiKey', 'googleServiceAccount'];
-        foreach ($keysToRemove as $key) {
-            if (array_key_exists($key, $settings)) {
-                unset($settings[$key]);
+        return $this->scrubSensitive($this->settings ?? []);
+    }
+
+    /**
+     * Recursively remove any key whose name contains a sensitive word,
+     * regardless of nesting depth or which provider added it.
+     */
+    private function scrubSensitive(array $data): array
+    {
+        $sensitivePatterns = ['/key/i', '/secret/i', '/token/i', '/password/i', '/credential/i', '/account/i'];
+
+        foreach ($data as $k => $v) {
+            if (is_array($v)) {
+                $data[$k] = $this->scrubSensitive($v);
+            } elseif (is_string($k)) {
+                foreach ($sensitivePatterns as $pattern) {
+                    if (preg_match($pattern, $k)) {
+                        unset($data[$k]);
+                        break;
+                    }
+                }
             }
         }
-        return $settings;
+
+        return $data;
     }
 
     public function overrideWithConfig(array $config): void
     {
-        $this->settings = array_merge($this->settings, $config);
+        $this->settings = array_merge($this->settings ?? [], $config);
     }
 }

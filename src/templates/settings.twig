@@ -9,11 +9,12 @@
     { label: 'Multi Translator', url: url('multi-translator') },
 ] %}
 
-{% set settings = craft.multiTranslator.providerSettings %}
+{% set providerSettings = craft.multiTranslator.providerSettings %}
+{% set apiServices = craft.multiTranslator.apiServices %}
 
 {% block content %}
     <form method="post" data-saveshortcut>
-        {% namespace 'settings' %}
+        {% namespace "settings" %}
             <fieldset>
                 <legend>
                     <h2>API Provider</h2>
@@ -23,216 +24,31 @@
                     label: 'Provider',
                     instructions: '',
                     name: 'translationProvider',
-                    value: settings.translationProvider ?? 'deepl',
-                    options: [{
-                        value: 'deepl',
-                        label: 'Deepl',
-                    }, {
-                        value: 'google',
-                        label: 'Google Cloud Translations',
-                    }, {
-                        value: 'google-v3',
-                        label: 'Google Cloud Translations V3',
-                    }, {
-                        value: 'openai',
-                        label: 'OpenAI API (ChatGPT)',
-                    }],
+                    value: providerSettings.translationProvider ?? 'deepl',
+                    options: apiServices|map(s => {value: s.handle, label: s.displayName})|values,
                     toggle: true,
                     targetPrefix: 'translation-provider-'
                 }) }}
             </fieldset>
+        {% endnamespace %}
 
-            <fieldset id="translation-provider-deepl"{% if settings.translationProvider != 'deepl' %} class="hidden"{% endif %}>
-                <legend>
-                    <h2>Deepl</h2>
-                </legend>
+        {% for handle, service in apiServices %}
+            {% if service.settingsTemplatePath %}
+                <fieldset id="settings-translation-provider-{{ handle }}"{% if providerSettings.translationProvider != handle %} class="hidden"{% endif %}>
+                    <legend>
+                        <h2>{{ service.displayName }}</h2>
+                    </legend>
 
-                {{ forms.autosuggestfield({
-                    label: 'DeepL API Key',
-                    name: 'deeplApiKey',
-                    instructions: 'Copy the API Key from your DeepL [account settings page](https://www.deepl.com/account/summary)',
-                    suggestEnvVars: true,
-                    value: settings.deeplApiKey,
-                }) }}
+                    {% namespace "settings[providers][#{handle}]" %}
+                        {{ include(service.settingsTemplatePath, service.settingsTemplateVariables) }}
+                    {% endnamespace %}
+                </fieldset>
+            {% endif %}
+        {% endfor %}
 
-                {{ forms.selectField({
-                    label: "DeepL Language Model",
-                    instructions: "Specifies which DeepL model should be used for translation. [See docs](https://support.deepl.com/hc/en-us/articles/14241705319580-About-DeepL-language-models)",
-                    id: "deeplModelType",
-                    name: "deeplModelType",
-                    value: settings.deeplModelType,
-                    options: [
-                        {'label': 'Classic (latency optimized)', 'value': 'latency_optimized'},
-                        {'label': 'Next-generation (improved quality)', 'value': 'quality_optimized'},
-                        {'label': 'Prefer Next-generation (fallback to classic for non-supported language pairs)', 'value': 'prefer_quality_optimized'},
-                    ],
-                    errors: settings.getErrors("deeplModelType"),
-                }) }}
+        <hr>
 
-                {{ forms.lightswitchField({
-                    label: "Preserve formatting",
-                    instructions: "Controls automatic-formatting-correction. Set to true to prevent automatic-correction of formatting. [See docs](https://github.com/DeepLcom/deepl-php#text-translation-options)",
-                    id: "deeplPreserveFormatting",
-                    name: "deeplPreserveFormatting",
-                    on: settings.deeplPreserveFormatting,
-                    errors: settings.getErrors("deeplPreserveFormatting"),
-                }) }}
-
-                {{ forms.selectField({
-                    label: "Formality",
-                    instructions: "Controls whether translations should lean toward informal or formal language. This option is only available for some target languages. [See docs](https://github.com/DeepLcom/deepl-php#text-translation-options)",
-                    id: "deeplFormality",
-                    name: "deeplFormality",
-                    value: settings.deeplFormality,
-                    options: [
-                        {'label': 'Default', 'value': 'default'},
-                        {'label': 'Less formal', 'value': 'prefer_less'},
-                        {'label': 'More formal', 'value': 'prefer_more'},
-                    ],
-                    errors: settings.getErrors("deeplFormality"),
-                }) }}
-            </fieldset>
-
-            <fieldset id="translation-provider-google"{% if settings.translationProvider != 'google' %} class="hidden"{% endif %}>
-                <legend>
-                    <h2>Google Cloud Translation</h2>
-                </legend>
-
-                {{ forms.autosuggestfield({
-                    label: 'Google API Key',
-                    name: 'googleApiKey',
-                    instructions: 'Create an API Key from the [Google Cloud Console](https://console.cloud.google.com/)',
-                    suggestEnvVars: true,
-                    value: settings.googleApiKey,
-                }) }}
-            </fieldset>
-
-            <fieldset id="translation-provider-google-v3"{% if settings.translationProvider != 'google-v3' %} class="hidden"{% endif %}>
-                <legend>
-                    <h2>Google Cloud Translation V3</h2>
-                </legend>
-
-                <p>Provide a Service Account file path OR paste the content inside the text area:</p>
-
-                {{ forms.autosuggestfield({
-                    label: 'Google Cloud Service Account file path',
-                    name: 'googleServiceAccountFilePath',
-                    instructions: 'File path to the Service Account data from your [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)',
-                    suggestEnvVars: true,
-                    value: settings.googleServiceAccountFilePath,
-                }) }}
-
-                <h3>OR:</h3>
-
-                {{ forms.textAreaField({
-                    label: 'Google Cloud Service Account',
-                    name: 'googleServiceAccount',
-                    instructions: 'Paste the Service Account data from your [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)',
-                    value: settings.googleServiceAccount,
-                    rows: 3,
-                }) }}
-
-                {{ forms.textfield({
-                    label: "Location",
-                    instructions: "Location (optional)",
-                    id: "googleLocation",
-                    name: "googleLocation",
-                    value: settings.googleLocation,
-                    placeholder: 'global (default)',
-                    errors: settings.getErrors("googleLocation"),
-                }) }}
-
-                {{ forms.textfield({
-                    label: "Translation model",
-                    instructions: "[Translation model](https://docs.cloud.google.com/translate/docs/advanced/compare-models) (format: projects/PROJECT_ID/locations/REGION_NAME/models/MODEL_ID) (optional)",
-                    id: "googleModel",
-                    name: "googleModel",
-                    value: settings.googleModel,
-                    placeholder: 'default',
-                    errors: settings.getErrors("googleModel"),
-                }) }}
-            </fieldset>
-
-            <fieldset id="translation-provider-openai"{% if settings.translationProvider != 'openai' %} class="hidden"{% endif %}>
-                <legend>
-                    <h2>OpenAI API</h2>
-                </legend>
-
-                {{ forms.autosuggestfield({
-                    label: 'API Base URL',
-                    name: 'openAiBaseUrl',
-                    instructions: 'Base URL for the API. Leave empty for the official OpenAI API. Set a custom URL to use any OpenAI-compatible provider (e.g. Infomaniak, Ollama, Azure OpenAI, Groq, Mistral).',
-                    suggestEnvVars: true,
-                    value: settings.openAiBaseUrl,
-                    placeholder: 'https://api.openai.com/v1',
-                }) }}
-
-                {{ forms.autosuggestfield({
-                    label: 'API Key',
-                    name: 'openAiKey',
-                    instructions: 'API key or bearer token for the endpoint.',
-                    suggestEnvVars: true,
-                    value: settings.openAiKey,
-                }) }}
-
-                {{ forms.selectField({
-                    label: "API model",
-                    instructions: "Select a model. Choose 'Custom' to enter a custom model name for non-OpenAI providers.",
-                    id: "openAiModel",
-                    name: "openAiModel",
-                    value: settings.getSetting('openAiModel', 'gpt-4o'),
-                    options: [
-                        {'label': 'GPT 3.5 Turbo', 'value': 'gpt-3.5-turbo'},
-                        {'label': 'GPT 4', 'value': 'gpt-4'},
-                        {'label': 'GPT 4 Turbo', 'value': 'gpt-4-turbo'},
-                        {'label': 'GPT 4o Mini', 'value': 'gpt-4o-mini'},
-                        {'label': 'GPT 4o', 'value': 'gpt-4o'},
-                        {'label': 'GPT 4.1', 'value': 'gpt-4.1'},
-                        {'label': 'GPT 4.1 Mini', 'value': 'gpt-4.1-mini'},
-                        {'label': 'GPT 4.1 Nano', 'value': 'gpt-4.1-nano'},
-                        {'label': 'GPT 5.1', 'value': 'gpt-5.1'},
-                        {'label': 'GPT 5.2', 'value': 'gpt-5.2'},
-                        {'label': 'GPT 5.4', 'value': 'gpt-5.4'},
-                        {'label': 'GPT 5.4 Mini', 'value': 'gpt-5.4-mini'},
-                        {'label': 'GPT 5.4 Nano', 'value': 'gpt-5.4-nano'},
-                        {'label': 'Custom', 'value': 'custom'},
-                    ],
-                    toggle: true,
-                    targetPrefix: 'openai-model-',
-                    errors: settings.getErrors("openAiModel"),
-                }) }}
-
-                <div id="openai-model-custom"{% if settings.getSetting('openAiModel', 'gpt-4o') != 'custom' %} class="hidden"{% endif %}>
-                    {{ forms.autosuggestfield({
-                        label: 'Custom model name',
-                        name: 'openAiCustomModel',
-                        instructions: 'Enter the model identifier for your provider (e.g. `mistral3`, `qwen3`, `llama3`).',
-                        suggestEnvVars: true,
-                        value: settings.openAiCustomModel,
-                        placeholder: '',
-                    }) }}
-                </div>
-
-                {{ forms.textfield({
-                    label: 'Custom prompt',
-                    name: 'openAiPrompt',
-                    instructions: 'Write your own prompt. Make sure to include {source}, {target} and {text} tokens',
-                    type: 'text',
-                    value: settings.openAiPrompt,
-                }) }}
-
-                {{ forms.textfield({
-                    label: 'API temperature',
-                    name: 'openAiTemperature',
-                    instructions: 'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.',
-                    suggestEnvVars: true,
-                    type: 'number', min: 0, max: 2, step: 0.1,
-                    value: settings.openAiTemperature,
-                }) }}
-            </fieldset>
-
-            <hr>
-
+        {% namespace 'settings' %}
             <fieldset>
                 <legend>
                     <h2>General Options</h2>
@@ -243,13 +59,13 @@
                     instructions: "Select direction 'to target' or 'from source', in the sidebar actions of entry detail view.",
                     id: "translationDirectionButtons",
                     name: "translationDirectionButtons",
-                    value: settings.translationDirectionButtons,
+                    value: providerSettings.translationDirectionButtons,
                     options: [
                         {'label': 'From current entry to <other sites>', 'value': 'fromThis'},
                         {'label': 'From <other sites> to current entry', 'value': 'toThis'},
                         {'label': 'Both (might be confusing)', 'value': 'both'},
                     ],
-                    errors: settings.getErrors("translationDirectionButtons"),
+                    errors: providerSettings.getErrors("translationDirectionButtons"),
                 }) }}
 
                 {{ forms.lightswitchField({
@@ -257,8 +73,8 @@
                     instructions: "Always create a new draft when translating entries.",
                     id: "saveAsDraft",
                     name: "saveAsDraft",
-                    on: settings.saveAsDraft,
-                    errors: settings.getErrors("saveAsDraft"),
+                    on: providerSettings.saveAsDraft,
+                    errors: providerSettings.getErrors("saveAsDraft"),
                 }) }}
 
                 {{ forms.lightswitchField({
@@ -266,21 +82,8 @@
                     instructions: "Reset slug after translation, in order for a new slug to be generated from the translated title.",
                     id: "resetSlug",
                     name: "resetSlug",
-                    on: settings.resetSlug,
-                    errors: settings.getErrors("resetSlug"),
-                }) }}
-
-                {{ forms.selectField({
-                    label: "Default English",
-                    instructions: "Default English for translating to English.",
-                    id: "defaultEnglish",
-                    name: "defaultEnglish",
-                    value: settings.defaultEnglish,
-                    options: [
-                        {'label': 'American English (en-US)', 'value': 'en-US'},
-                        {'label': 'British English (en-GB)', 'value': 'en-GB'},
-                    ],
-                    errors: settings.getErrors("defaultEnglish"),
+                    on: providerSettings.resetSlug,
+                    errors: providerSettings.getErrors("resetSlug"),
                 }) }}
 
                 {{ forms.lightswitchField({
@@ -288,8 +91,8 @@
                     instructions: "Don't send the source language to the API and let Deepl/Google detect the source language.",
                     id: "detectSourceLanguage",
                     name: "detectSourceLanguage",
-                    on: settings.detectSourceLanguage,
-                    errors: settings.getErrors("detectSourceLanguage"),
+                    on: providerSettings.detectSourceLanguage,
+                    errors: providerSettings.getErrors("detectSourceLanguage"),
                 }) }}
 
                 {{ forms.lightswitchField({
@@ -297,8 +100,8 @@
                     instructions: "Update internal links in CKeditor and point them to target site element.",
                     id: "updateInternalLinks",
                     name: "updateInternalLinks",
-                    on: settings.updateInternalLinks,
-                    errors: settings.getErrors("updateInternalLinks"),
+                    on: providerSettings.updateInternalLinks,
+                    errors: providerSettings.getErrors("updateInternalLinks"),
                 }) }}
 
                 {{ forms.lightswitchField({
@@ -306,8 +109,8 @@
                     instructions: "Find and process nested Entries inside CKeditor value.",
                     id: "processNestedEntries",
                     name: "processNestedEntries",
-                    on: settings.processNestedEntries,
-                    errors: settings.getErrors("processNestedEntries"),
+                    on: providerSettings.processNestedEntries,
+                    errors: providerSettings.getErrors("processNestedEntries"),
                 }) }}
 
                 {{ forms.editableTableField({
@@ -322,12 +125,12 @@
                             rows: 1
                         },
                     },
-                    rows: settings.disabledFields,
+                    rows: providerSettings.disabledFields,
                     allowAdd: true,
                     allowDelete: true,
                     allowReorder: true,
                     addRowLabel: 'Add a field',
-                    errors: settings.getErrors('disabledFields'),
+                    errors: providerSettings.getErrors('disabledFields'),
                     required: false
                 })|spaceless }}
 
@@ -336,8 +139,8 @@
                     instructions: "Query and translate disabled variants of Commerce Products.",
                     id: "translateDisabledVariants",
                     name: "translateDisabledVariants",
-                    on: settings.translateDisabledVariants,
-                    errors: settings.getErrors("translateDisabledVariants"),
+                    on: providerSettings.translateDisabledVariants,
+                    errors: providerSettings.getErrors("translateDisabledVariants"),
                 }) }}
 
                 {{ forms.lightswitchField({
@@ -345,8 +148,8 @@
                     instructions: "Query and translate disabled Matrix Elements inside fields",
                     id: "translateDisabledMatrixElements",
                     name: "translateDisabledMatrixElements",
-                    on: settings.translateDisabledMatrixElements,
-                    errors: settings.getErrors("translateDisabledMatrixElements"),
+                    on: providerSettings.translateDisabledMatrixElements,
+                    errors: providerSettings.getErrors("translateDisabledMatrixElements"),
                 }) }}
             </fieldset>
         {% endnamespace %}
