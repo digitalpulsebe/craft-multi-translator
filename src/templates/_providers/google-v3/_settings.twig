@@ -7,7 +7,7 @@
     name: 'googleServiceAccountFilePath',
     instructions: 'File path to the Service Account data from your [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)',
     suggestEnvVars: true,
-    value: settings.googleServiceAccountFilePath,
+    value: settings.googleServiceAccountFilePath ?? '',
 }) }}
 
 <h3>OR:</h3>
@@ -16,7 +16,7 @@
     label: 'Google Cloud Service Account',
     name: 'googleServiceAccount',
     instructions: 'Paste the Service Account data from your [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)',
-    value: settings.googleServiceAccount,
+    value: settings.googleServiceAccount ?? '',
     rows: 3,
 }) }}
 
@@ -25,7 +25,7 @@
     instructions: "Location (optional)",
     id: "googleLocation",
     name: "googleLocation",
-    value: settings.googleLocation,
+    value: settings.googleLocation ?? '',
     placeholder: 'global (default)',
 }) }}
 
@@ -34,6 +34,6 @@
     instructions: "[Translation model](https://docs.cloud.google.com/translate/docs/advanced/compare-models) (format: projects/PROJECT_ID/locations/REGION_NAME/models/MODEL_ID) (optional)",
     id: "googleModel",
     name: "googleModel",
-    value: settings.googleModel,
+    value: settings.googleModel ?? '',
     placeholder: 'default',
 }) }}
