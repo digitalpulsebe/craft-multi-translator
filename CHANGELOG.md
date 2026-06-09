@@ -1,6 +1,8 @@
 # Release Notes for Multi Translator
 
-## Unreleased
+## 2.28.0 - 2026-06-09
+
+### Added
 
 - refactor api services to providers and allow for custom API provider registration
 
