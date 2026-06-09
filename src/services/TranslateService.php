@@ -17,12 +17,18 @@ use craft\errors\InvalidElementException;
 use craft\errors\UnsupportedSiteException;
 use craft\models\Site;
 use digitalpulsebe\craftmultitranslator\base\FieldSerializer;
+use digitalpulsebe\craftmultitranslator\events\ElementTranslationEvent;
 use digitalpulsebe\craftmultitranslator\events\FieldTranslationEvent;
+use digitalpulsebe\craftmultitranslator\events\RegisterApiProvidersEvent;
 use digitalpulsebe\craftmultitranslator\events\RegisterSerializersEvent;
 use digitalpulsebe\craftmultitranslator\helpers\ElementHelper;
-use digitalpulsebe\craftmultitranslator\events\ElementTranslationEvent;
 use digitalpulsebe\craftmultitranslator\helpers\SerializerHelper;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
+use digitalpulsebe\craftmultitranslator\providers\DeeplProvider;
+use digitalpulsebe\craftmultitranslator\providers\GoogleProvider;
+use digitalpulsebe\craftmultitranslator\providers\GoogleV3Provider;
+use digitalpulsebe\craftmultitranslator\providers\OpenAiProvider;
+use digitalpulsebe\craftmultitranslator\providers\Provider;
 use digitalpulsebe\craftmultitranslator\serializers\Matrix as MatrixSerializer;
 use digitalpulsebe\craftmultitranslator\serializers\Hyper as HyperSerializer;
 use digitalpulsebe\craftmultitranslator\serializers\Text as TextSerializer;
@@ -35,6 +41,7 @@ use digitalpulsebe\craftmultitranslator\serializers\ContentBlock as ContentBlock
 use digitalpulsebe\craftmultitranslator\serializers\Link as LinkSerializer;
 use digitalpulsebe\craftmultitranslator\serializers\Linkit as LinkitSerializer;
 use Throwable;
+use yii\base\Event;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\web\ForbiddenHttpException;
@@ -46,6 +53,7 @@ class TranslateService extends Component
     public const EVENT_BEFORE_FIELD_TRANSLATION = 'beforeFieldTranslation';
     public const EVENT_AFTER_FIELD_TRANSLATION = 'afterFieldTranslation';
     public const EVENT_REGISTER_SERIALIZERS = 'registerTranslationSerializers';
+    public const EVENT_REGISTER_API_PROVIDERS = 'registerApiProviders';
 
     static array $matrixFields = [
         'craft\fields\Matrix',
@@ -54,6 +62,7 @@ class TranslateService extends Component
     ];
 
     protected array $serializers = [];
+    protected array $providers = [];
 
     public function init(): void
     {
@@ -365,28 +374,56 @@ class TranslateService extends Component
             $sourceLocale = null;
         }
 
-        return $this->getApiService()->translate($sourceLocale, $targetLocale, $text);
+        return $this->getApiProvider()->translate($sourceLocale, $targetLocale, $text);
     }
 
     /**
-     * Get the configured translation provider API service
-     * @return ApiService|null
+     * Return all registered translation provider instances keyed by handle.
+     * Third-party plugins may add their own provider classes via EVENT_REGISTER_API_SERVICES
+     * on TranslateService::class.
+     *
+     * @return Provider[] keyed by handle string
      */
-    public function getApiService(): ?ApiService
+    public function getApiProviders(): array
     {
-        $provider = $this->getProviderSettings()->getTranslationProvider();
-
-        if ($provider == 'google') {
-            return MultiTranslator::getInstance()->google;
-        } elseif ($provider == 'google-v3') {
-            return MultiTranslator::getInstance()->googleV3;
-        } elseif ($provider == 'openai') {
-            return MultiTranslator::getInstance()->openai;
-        } elseif ($provider == 'deepl') {
-            return MultiTranslator::getInstance()->deepl;
+        if (!empty($this->providers)) {
+            return $this->providers;
         }
 
-        return null;
+        $providerClasses = [
+            DeeplProvider::class,
+            GoogleProvider::class,
+            GoogleV3Provider::class,
+            OpenAiProvider::class,
+        ];
+
+        if ($this->hasEventHandlers(self::EVENT_REGISTER_API_PROVIDERS)) {
+            $event = new RegisterApiProvidersEvent(['providers' => $providerClasses]);
+            $this->trigger(self::EVENT_REGISTER_API_PROVIDERS, $event);
+            $providerClasses = $event->providers;
+        }
+
+        $providerRecord = $this->getProviderSettings();
+        $this->providers = [];
+        foreach ($providerClasses as $class) {
+            $handle = $class::getHandle();
+            $this->providers[$handle] = Craft::createObject([
+                'class' => $class,
+                'settings' => $providerRecord->getProviderSettings($handle),
+            ]);
+        }
+
+        return $this->providers;
+    }
+
+    /**
+     * Get the configured translation provider instance.
+     */
+    public function getApiProvider(): ?Provider
+    {
+        $handle = $this->getProviderSettings()->getTranslationProvider();
+        $providers = $this->getApiProviders();
+        return $providers[$handle] ?? null;
     }
 
     public function onBeforeElementTranslation(Element $source, Site $sourceSite, Site $targetSite, bool $isRootElement): bool

@@ -18,10 +18,6 @@ use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
 use digitalpulsebe\craftmultitranslator\elements\actions\Translate;
 use digitalpulsebe\craftmultitranslator\models\Settings;
-use digitalpulsebe\craftmultitranslator\services\DeeplService;
-use digitalpulsebe\craftmultitranslator\services\GoogleService;
-use digitalpulsebe\craftmultitranslator\services\GoogleV3Service;
-use digitalpulsebe\craftmultitranslator\services\OpenAiService;
 use digitalpulsebe\craftmultitranslator\services\SettingsService;
 use digitalpulsebe\craftmultitranslator\services\TranslateService;
 use digitalpulsebe\craftmultitranslator\variables\Variable;
@@ -35,10 +31,6 @@ use yii\log\Logger;
  *
  * @method static MultiTranslator getInstance()
  * @method Settings getSettings()
- * @property DeeplService $deepl
- * @property OpenAiService $openai
- * @property GoogleService $google
- * @property GoogleV3Service $googleV3
  * @property TranslateService $translate
  * @property SettingsService $settingsService
  * @author Digital Pulse nv <support@digitalpulse.be>
@@ -47,7 +39,7 @@ use yii\log\Logger;
  */
 class MultiTranslator extends Plugin
 {
-    public string $schemaVersion = '1.4.0';
+    public string $schemaVersion = '1.5.0';
     public bool $hasCpSettings = true;
     public bool $hasCpSection = true;
     public ?string $name = 'Multi Translator';
@@ -56,10 +48,6 @@ class MultiTranslator extends Plugin
     {
         return [
             'components' => [
-                'deepl' => DeeplService::class,
-                'google' => GoogleService::class,
-                'googleV3' => GoogleV3Service::class,
-                'openai' => OpenAiService::class,
                 'translate' => TranslateService::class,
                 'settingsService' => SettingsService::class,
             ],

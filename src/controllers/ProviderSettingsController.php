@@ -2,6 +2,7 @@
 
 namespace digitalpulsebe\craftmultitranslator\controllers;
 
+use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\records\ProviderSettings;
 use yii\db\Exception;
 use yii\web\BadRequestHttpException;
@@ -21,7 +22,33 @@ class ProviderSettingsController extends Controller
     {
         $this->requirePermission('multiTranslateSettings');
 
-        $settings = $this->request->post('settings');
+        $posted = $this->request->post('settings', []);
+
+        // Preserve any existing settings not present in this POST
+        $existing = ProviderSettings::find()->one();
+        $existingSettings = $existing ? ($existing->settings ?? []) : [];
+
+        // Merge root-level general options
+        $settings = array_merge($existingSettings, $posted);
+
+        // Merge provider sub-arrays under the 'providers' key, per registered handle,
+        // so a save of one provider does not wipe settings of other providers.
+        if (isset($posted['providers']) && is_array($posted['providers'])) {
+            $existingProviders = is_array($existingSettings['providers'] ?? null)
+                ? $existingSettings['providers']
+                : [];
+
+            foreach (array_keys(MultiTranslator::getInstance()->translate->getApiProviders()) as $handle) {
+                if (isset($posted['providers'][$handle]) && is_array($posted['providers'][$handle])) {
+                    $existingProviders[$handle] = array_merge(
+                        $existingProviders[$handle] ?? [],
+                        $posted['providers'][$handle]
+                    );
+                }
+            }
+
+            $settings['providers'] = $existingProviders;
+        }
 
         if (ProviderSettings::createOrUpdate($settings)) {
             $this->setSuccessFlash('Settings saved.');

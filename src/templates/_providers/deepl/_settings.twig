@@ -1,0 +1,55 @@
+{% import '_includes/forms.twig' as forms %}
+
+{{ forms.autosuggestfield({
+    label: 'DeepL API Key',
+    name: 'deeplApiKey',
+    instructions: 'Copy the API Key from your DeepL [account settings page](https://www.deepl.com/account/summary)',
+    suggestEnvVars: true,
+    value: settings.deeplApiKey ?? '',
+}) }}
+
+{{ forms.selectField({
+    label: "DeepL Language Model",
+    instructions: "Specifies which DeepL model should be used for translation. [See docs](https://support.deepl.com/hc/en-us/articles/14241705319580-About-DeepL-language-models)",
+    id: "deeplModelType",
+    name: "deeplModelType",
+    value: settings.deeplModelType ?? 'latency_optimized',
+    options: [
+        {'label': 'Classic (latency optimized)', 'value': 'latency_optimized'},
+        {'label': 'Next-generation (improved quality)', 'value': 'quality_optimized'},
+        {'label': 'Prefer Next-generation (fallback to classic for non-supported language pairs)', 'value': 'prefer_quality_optimized'},
+    ],
+}) }}
+
+{{ forms.lightswitchField({
+    label: "Preserve formatting",
+    instructions: "Controls automatic-formatting-correction. Set to true to prevent automatic-correction of formatting. [See docs](https://github.com/DeepLcom/deepl-php#text-translation-options)",
+    id: "deeplPreserveFormatting",
+    name: "deeplPreserveFormatting",
+    on: settings.deeplPreserveFormatting ?? false,
+}) }}
+
+{{ forms.selectField({
+    label: "Formality",
+    instructions: "Controls whether translations should lean toward informal or formal language. This option is only available for some target languages. [See docs](https://github.com/DeepLcom/deepl-php#text-translation-options)",
+    id: "deeplFormality",
+    name: "deeplFormality",
+    value: settings.deeplFormality ?? 'default',
+    options: [
+        {'label': 'Default', 'value': 'default'},
+        {'label': 'Less formal', 'value': 'prefer_less'},
+        {'label': 'More formal', 'value': 'prefer_more'},
+    ],
+}) }}
+
+{{ forms.selectField({
+    label: "Default English",
+    instructions: "Default English for translating to English.",
+    id: "defaultEnglish",
+    name: "defaultEnglish",
+    value: settings.defaultEnglish ?? 'en-US',
+    options: [
+        {'label': 'American English (en-US)', 'value': 'en-US'},
+        {'label': 'British English (en-GB)', 'value': 'en-GB'},
+    ],
+}) }}

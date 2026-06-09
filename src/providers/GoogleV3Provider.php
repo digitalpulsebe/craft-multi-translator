@@ -1,21 +1,29 @@
 <?php
 
-namespace digitalpulsebe\craftmultitranslator\services;
+namespace digitalpulsebe\craftmultitranslator\providers;
 
 use craft\helpers\App;
 use Google\Cloud\Translate\V3\Client\TranslationServiceClient;
-use Google\Cloud\Translate\V3\ListModelsRequest;
 use Google\Cloud\Translate\V3\TranslateTextRequest;
 
-class GoogleV3Service extends ApiService
+class GoogleV3Provider extends Provider
 {
-
     protected ?TranslationServiceClient $_client = null;
     protected ?string $_parent = null;
 
-    public function getName(): string
+    public static function getHandle(): string
+    {
+        return 'google-v3';
+    }
+
+    public static function getDisplayName(): string
     {
         return 'Google Translate V3';
+    }
+
+    public function getSettingsTemplatePath(): ?string
+    {
+        return 'multi-translator/_providers/google-v3/_settings';
     }
 
     public function isConnected(): bool
@@ -27,18 +35,18 @@ class GoogleV3Service extends ApiService
         }
     }
 
-    public function getClient()
+    public function getClient(): TranslationServiceClient
     {
         if ($this->_client !== null) {
             return $this->_client;
         }
 
-        $credentialsPath = App::parseEnv($this->getProviderSettings()->getGoogleServiceAccountFilePath());
+        $credentialsPath = App::parseEnv($this->getSetting('googleServiceAccountFilePath', ''));
 
         if ($credentialsPath) {
             $credentials = json_decode(file_get_contents($credentialsPath), true);
         } else {
-            $credentials = json_decode($this->getProviderSettings()->getGoogleServiceAccount(), true);
+            $credentials = json_decode($this->getSetting('googleServiceAccount', ''), true);
         }
 
         if (empty($credentials)) {
@@ -49,16 +57,12 @@ class GoogleV3Service extends ApiService
             throw new \Exception('Project ID missing in Google Service Account credentials.');
         }
 
-        if (!$this->_client) {
-            $this->_client = new TranslationServiceClient([
-                'credentials' => $credentials,
-            ]);
-        }
+        $this->_client = new TranslationServiceClient([
+            'credentials' => $credentials,
+        ]);
 
-        $this->_parent = $this->_client->locationName(
-            $credentials['project_id'],
-            empty($this->getProviderSettings()->getGoogleLocation()) ? 'global' : $this->getProviderSettings()->getGoogleLocation()
-        );
+        $location = $this->getSetting('googleLocation', '') ?: 'global';
+        $this->_parent = $this->_client->locationName($credentials['project_id'], $location);
 
         return $this->_client;
     }
@@ -79,8 +83,9 @@ class GoogleV3Service extends ApiService
             'target_language_code' => $this->targetLocale($targetLocale),
         ];
 
-        if ($this->getProviderSettings()->getGoogleModel()) {
-            $requestParams['model'] = $this->getProviderSettings()->getGoogleModel();
+        $model = $this->getSetting('googleModel', '');
+        if ($model) {
+            $requestParams['model'] = $model;
         }
 
         $request = new TranslateTextRequest($requestParams);
