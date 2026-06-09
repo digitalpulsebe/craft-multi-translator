@@ -1,26 +1,33 @@
 <?php
 
-namespace digitalpulsebe\craftmultitranslator\services;
+namespace digitalpulsebe\craftmultitranslator\providers;
 
 use craft\helpers\App;
 use DeepL\DeepLClient;
-use DeepL\DeepLException;
 use DeepL\GlossaryEntries;
 use DeepL\GlossaryInfo;
 use DeepL\MultilingualGlossaryDictionaryEntries;
-use DeepL\MultilingualGlossaryInfo;
 use DeepL\Translator;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\records\Glossary;
 
-class DeeplService extends ApiService
+class DeeplProvider extends Provider
 {
-
     protected ?Translator $_client = null;
 
-    public function getName(): string
+    public static function getHandle(): string
+    {
+        return 'deepl';
+    }
+
+    public static function getDisplayName(): string
     {
         return 'DeepL';
+    }
+
+    public function getSettingsTemplatePath(): ?string
+    {
+        return 'multi-translator/_providers/deepl/_settings';
     }
 
     public function isConnected(): bool
@@ -33,11 +40,11 @@ class DeeplService extends ApiService
         }
     }
 
-    public function getClient()
+    public function getClient(): DeepLClient
     {
         if (!$this->_client) {
-            $apiKey = App::parseEnv($this->getProviderSettings()->getDeeplApiKey());
-            $this->_client = new DeepLClient($apiKey);;
+            $apiKey = App::parseEnv($this->getSetting('deeplApiKey', ''));
+            $this->_client = new DeepLClient($apiKey);
         }
 
         return $this->_client;
@@ -51,15 +58,17 @@ class DeeplService extends ApiService
             'enabled' => 1,
         ])->one();
 
+        $modelType = $this->getSetting('deeplModelType', 'latency_optimized');
+
         $defaultOptions = [
             'tag_handling' => 'html',
-            'model_type' => $this->getProviderSettings()->getDeeplModelType(),
-            'formality' => $this->getProviderSettings()->getDeeplFormality(),
-            'preserve_formatting' => $this->getProviderSettings()->getDeeplPreserveFormatting(),
+            'model_type' => $modelType,
+            'formality' => $this->getSetting('deeplFormality', 'default'),
+            'preserve_formatting' => (bool) $this->getSetting('deeplPreserveFormatting', false),
         ];
 
-        // model_type=latency_optimized does not support tag_handling_version=v2. Set model_type=quality_optimized or tag_handling_version=v1.
-        if ($this->getProviderSettings()->getDeeplModelType() == 'quality_optimized') {
+        // model_type=latency_optimized does not support tag_handling_version=v2
+        if ($modelType === 'quality_optimized') {
             $defaultOptions['tag_handling_version'] = 'v2';
         } else {
             $defaultOptions['tag_handling_version'] = 'v1';
@@ -137,7 +146,16 @@ class DeeplService extends ApiService
         }
     }
 
-    public function sourceLocale($raw): ?string
+    public function getUsage(): \DeepL\Usage
+    {
+        return $this->getClient()->getUsage();
+    }
+
+    // =========================================================================
+    // DeepL-specific locale overrides
+    // =========================================================================
+
+    public function sourceLocale(?string $raw): ?string
     {
         if (!empty($raw)) {
             return substr($raw, 0, 2);
@@ -146,7 +164,7 @@ class DeeplService extends ApiService
         return null;
     }
 
-    public function targetLocale($raw): string
+    public function targetLocale(string $raw): string
     {
         $ucRaw = strtoupper($raw);
 
@@ -168,29 +186,24 @@ class DeeplService extends ApiService
             return 'ES-419';
         }
 
-        // all other languages only support non-regional locales (https://developers.deepl.com/docs/getting-started/supported-languages)
+        // all other languages only support non-regional locales
         $locale = strtoupper(explode('-', $raw)[0]);
 
         // English must always be regional
-        if ($locale == 'EN') {
-            return $this->getProviderSettings()->getDefaultEnglish();
+        if ($locale === 'EN') {
+            return $this->getSetting('defaultEnglish', 'en-US');
         }
 
         // PT must always be regional
-        if ($locale == 'PT') {
+        if ($locale === 'PT') {
             return 'PT-PT';
         }
 
         // Deepl doesn't know NO
-        if ($locale == 'NO') {
+        if ($locale === 'NO') {
             return 'NB';
         }
 
         return $locale;
-    }
-
-    public function getUsage(): \DeepL\Usage
-    {
-        return $this->getClient()->getUsage();
     }
 }

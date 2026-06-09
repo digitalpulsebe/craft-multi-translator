@@ -214,3 +214,112 @@ Event::on(
     }
 );
 ```
+
+### Registering a custom API provider
+
+The `EVENT_REGISTER_API_PROVIDERS` event on `TranslateService` lets you add your own translation provider without forking the plugin. This makes it possible to integrate services like Gemini, Claude, Azure AI, or any internal translator.
+
+#### 1. Create a provider class
+
+Extend `digitalpulsebe\craftmultitranslator\providers\Provider` and implement the required methods:
+
+```php
+<?php
+
+namespace myplugin\providers;
+
+use craft\helpers\App;
+use digitalpulsebe\craftmultitranslator\providers\Provider;
+
+class GeminiProvider extends Provider
+{
+    public static function getHandle(): string
+    {
+        return 'gemini';
+    }
+
+    public static function getDisplayName(): string
+    {
+        return 'Google Gemini';
+    }
+
+    public function getSettingsTemplatePath(): ?string
+    {
+        // Path to a Twig template that renders your provider's settings fields.
+        // Return null if the provider needs no configurable settings.
+        return 'my-plugin/_providers/gemini/_settings';
+    }
+
+    public function isConnected(): bool
+    {
+        try {
+            // Perform a lightweight connectivity check.
+            return !empty($this->getSetting('apiKey'));
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    public function translate(string $sourceLocale = null, string $targetLocale = null, string $text = null): ?string
+    {
+        if (empty($text)) {
+            return null;
+        }
+
+        $apiKey = App::parseEnv($this->getSetting('apiKey', ''));
+        $model  = $this->getSetting('model', 'gemini-2.0-flash');
+
+        // ... call the Gemini API and return the translated string ...
+
+        return null;
+    }
+}
+```
+
+**Key points:**
+
+- Use `$this->getSetting(string $key, mixed $default)` to read your own settings — providers only have access to their own settings slice and cannot read settings belonging to other providers.
+- Settings are stored in the database under `providers.{handle}` and are injected automatically when the provider is instantiated.
+- `sourceLocale()` and `targetLocale()` helper methods are available from the base class for basic locale normalisation. Override them if your API expects a different format.
+
+#### 2. Create a settings template
+
+```twig
+{# my-plugin/templates/_providers/gemini/_settings.twig #}
+{% import '_includes/forms.twig' as forms %}
+
+{{ forms.autosuggestField({
+    label: 'Gemini API Key',
+    name: 'apiKey',
+    suggestEnvVars: true,
+    value: settings.apiKey ?? '',
+}) }}
+
+{{ forms.textField({
+    label: 'Model',
+    name: 'model',
+    value: settings.model ?? 'gemini-2.0-flash',
+}) }}
+```
+
+The `settings` variable is your provider's own settings array.
+
+#### 3. Register the provider
+
+Listen for `EVENT_REGISTER_API_PROVIDERS` in your plugin or module's `init()`:
+
+```php
+use digitalpulsebe\craftmultitranslator\events\RegisterApiProvidersEvent;
+use digitalpulsebe\craftmultitranslator\services\TranslateService;
+use yii\base\Event;
+
+Event::on(
+    TranslateService::class,
+    TranslateService::EVENT_REGISTER_API_PROVIDERS,
+    function (RegisterApiProvidersEvent $event) {
+        $event->providers[] = \myplugin\providers\GeminiProvider::class;
+    }
+);
+```
+
+Once registered, the provider will appear in the **API Provider** dropdown in the plugin settings, and its settings template will be shown automatically when it is selected.

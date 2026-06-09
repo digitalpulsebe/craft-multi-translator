@@ -1,0 +1,72 @@
+{% import '_includes/forms.twig' as forms %}
+
+{{ forms.autosuggestfield({
+    label: 'API Base URL',
+    name: 'openAiBaseUrl',
+    instructions: 'Base URL for the API. Leave empty for the official OpenAI API. Set a custom URL to use any OpenAI-compatible provider (e.g. Infomaniak, Ollama, Azure OpenAI, Groq, Mistral).',
+    suggestEnvVars: true,
+    value: settings.openAiBaseUrl ?? '',
+    placeholder: 'https://api.openai.com/v1',
+}) }}
+
+{{ forms.autosuggestfield({
+    label: 'API Key',
+    name: 'openAiKey',
+    instructions: 'API key or bearer token for the endpoint.',
+    suggestEnvVars: true,
+    value: settings.openAiKey ?? '',
+}) }}
+
+{{ forms.selectField({
+    label: "API model",
+    instructions: "Select a model. Choose 'Custom' to enter a custom model name for non-OpenAI providers.",
+    id: "openAiModel",
+    name: "openAiModel",
+    value: settings.openAiModel ?? 'gpt-4o',
+    options: [
+        {'label': 'GPT 3.5 Turbo', 'value': 'gpt-3.5-turbo'},
+        {'label': 'GPT 4', 'value': 'gpt-4'},
+        {'label': 'GPT 4 Turbo', 'value': 'gpt-4-turbo'},
+        {'label': 'GPT 4o Mini', 'value': 'gpt-4o-mini'},
+        {'label': 'GPT 4o', 'value': 'gpt-4o'},
+        {'label': 'GPT 4.1', 'value': 'gpt-4.1'},
+        {'label': 'GPT 4.1 Mini', 'value': 'gpt-4.1-mini'},
+        {'label': 'GPT 4.1 Nano', 'value': 'gpt-4.1-nano'},
+        {'label': 'GPT 5.1', 'value': 'gpt-5.1'},
+        {'label': 'GPT 5.2', 'value': 'gpt-5.2'},
+        {'label': 'GPT 5.4', 'value': 'gpt-5.4'},
+        {'label': 'GPT 5.4 Mini', 'value': 'gpt-5.4-mini'},
+        {'label': 'GPT 5.4 Nano', 'value': 'gpt-5.4-nano'},
+        {'label': 'Custom', 'value': 'custom'},
+    ],
+    toggle: true,
+    targetPrefix: 'openai-model-',
+}) }}
+
+<div id="openai-model-custom"{% if (settings.openAiModel ?? 'gpt-4o') != 'custom' %} class="hidden"{% endif %}>
+    {{ forms.autosuggestfield({
+        label: 'Custom model name',
+        name: 'openAiCustomModel',
+        instructions: 'Enter the model identifier for your provider (e.g. `mistral3`, `qwen3`, `llama3`).',
+        suggestEnvVars: true,
+        value: settings.openAiCustomModel ?? '',
+        placeholder: '',
+    }) }}
+</div>
+
+{{ forms.textfield({
+    label: 'Custom prompt',
+    name: 'openAiPrompt',
+    instructions: 'Write your own prompt. Make sure to include {source}, {target} and {text} tokens',
+    type: 'text',
+    value: settings.openAiPrompt ?? '',
+}) }}
+
+{{ forms.textfield({
+    label: 'API temperature',
+    name: 'openAiTemperature',
+    instructions: 'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.',
+    suggestEnvVars: true,
+    type: 'number', min: 0, max: 2, step: 0.1,
+    value: settings.openAiTemperature ?? '0.5',
+}) }}

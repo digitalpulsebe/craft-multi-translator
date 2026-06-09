@@ -1,19 +1,27 @@
 <?php
 
-namespace digitalpulsebe\craftmultitranslator\services;
+namespace digitalpulsebe\craftmultitranslator\providers;
 
 use craft\helpers\App;
-use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use Google\Cloud\Translate\V2\TranslateClient;
 
-class GoogleService extends ApiService
+class GoogleProvider extends Provider
 {
-
     protected ?TranslateClient $_client = null;
 
-    public function getName(): string
+    public static function getHandle(): string
+    {
+        return 'google';
+    }
+
+    public static function getDisplayName(): string
     {
         return 'Google Translate';
+    }
+
+    public function getSettingsTemplatePath(): ?string
+    {
+        return 'multi-translator/_providers/google/_settings';
     }
 
     public function isConnected(): bool
@@ -25,12 +33,12 @@ class GoogleService extends ApiService
         }
     }
 
-    public function getClient()
+    public function getClient(): TranslateClient
     {
         if (!$this->_client) {
-            $apiKey = App::parseEnv($this->getProviderSettings()->getGoogleApiKey());
+            $apiKey = App::parseEnv($this->getSetting('googleApiKey', ''));
             $this->_client = new TranslateClient([
-                'key' => $apiKey
+                'key' => $apiKey,
             ]);
         }
 

@@ -7,22 +7,22 @@
 ] %}
 
 {% set settings = craft.multiTranslator.providerSettings %}
-{% set service = craft.multiTranslator.service %}
+{% set provider = craft.multiTranslator.provider %}
 
 {% block content %}
     <div class="main">
         <h2>Provider</h2>
         <p>
-            {% if service.isConnected %}
+            {% if provider.isConnected %}
                 <span class="status live" role="img" aria-label="Status: Connected"></span>
             {% else %}
                 <span class="status" role="img" aria-label="Status: Not Connected"></span>
             {% endif %}
-            {{ service.name }}
+            {{ provider.displayName }}
         </p>
 
-        {% if settings.translationProvider == 'deepl' and service.isConnected %}
-            {% set usage = service.usage %}
+        {% if settings.translationProvider == 'deepl' and provider.isConnected %}
+            {% set usage = provider.usage %}
 
             {% if usage %}
                 <p>

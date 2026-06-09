@@ -1,15 +1,28 @@
 <?php
 
-namespace digitalpulsebe\craftmultitranslator\services;
+namespace digitalpulsebe\craftmultitranslator\providers;
 
 use craft\helpers\App;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use GuzzleHttp\Client;
 
-class OpenAiService extends ApiService
+class OpenAiProvider extends Provider
 {
     protected ?Client $_client = null;
 
+    public static function getHandle(): string
+    {
+        return 'openai';
+    }
+
+    public static function getDisplayName(): string
+    {
+        return 'ChatGPT (Open AI)';
+    }
+
+    /**
+     * Override to include the custom base URL host when applicable.
+     */
     public function getName(): string
     {
         $baseUrl = $this->getBaseUrl();
@@ -17,7 +30,12 @@ class OpenAiService extends ApiService
             $host = parse_url($baseUrl, PHP_URL_HOST);
             return 'OpenAI Compatible' . ($host ? " ($host)" : '');
         }
-        return 'ChatGPT (Open AI)';
+        return static::getDisplayName();
+    }
+
+    public function getSettingsTemplatePath(): ?string
+    {
+        return 'multi-translator/_providers/openai/_settings';
     }
 
     public function isConnected(): bool
@@ -29,16 +47,16 @@ class OpenAiService extends ApiService
         }
     }
 
-    public function getClient()
+    public function getClient(): Client
     {
         if (!$this->_client) {
-            $apiKey = App::parseEnv($this->getProviderSettings()->getOpenAiKey());
+            $apiKey = App::parseEnv($this->getSetting('openAiKey', ''));
             $this->_client = new Client([
                 'headers' => [
                     'Authorization' => "Bearer $apiKey",
-                    'Content-Type' => "application/json",
+                    'Content-Type' => 'application/json',
                 ],
-				'http_errors' => true
+                'http_errors' => true,
             ]);
         }
 
@@ -54,15 +72,17 @@ class OpenAiService extends ApiService
         $sourceLanguage = $this->getLanguage($sourceLocale);
         $targetLanguage = $this->getLanguage($targetLocale);
 
-        $prompt = $this->getProviderSettings()->getOpenAiPrompt();
-        $prompt = empty($prompt) ? 'Translate the following text from {source} to {target}, keep html and only answer with the translated text, if you can not translate it, just return the text i\'ve provided you: {text}' : $prompt;
-        $prompt = str_replace([
-            '{source}', '{target}', '{text}'
-        ],[
-            $sourceLanguage ?? '[guess the language]', $targetLanguage, $text
-        ], $prompt);
+        $prompt = $this->getSetting('openAiPrompt', '');
+        $prompt = empty($prompt)
+            ? 'Translate the following text from {source} to {target}, keep html and only answer with the translated text, if you can not translate it, just return the text i\'ve provided you: {text}'
+            : $prompt;
+        $prompt = str_replace(
+            ['{source}', '{target}', '{text}'],
+            [$sourceLanguage ?? '[guess the language]', $targetLanguage, $text],
+            $prompt
+        );
 
-        $model = App::parseEnv($this->getProviderSettings()->getOpenAiModel());
+        $model = App::parseEnv($this->getModel());
 
         $body = [
             'model' => $model,
@@ -72,7 +92,7 @@ class OpenAiService extends ApiService
                     'content' => $prompt,
                 ],
             ],
-            'temperature' => floatval($this->getProviderSettings()->getOpenAiTemperature()),
+            'temperature' => floatval($this->getSetting('openAiTemperature', 0.5)),
         ];
 
         try {
@@ -84,9 +104,7 @@ class OpenAiService extends ApiService
         }
 
         if ($response->getStatusCode() < 300) {
-
-            $contents = $response->getBody()->getContents();
-            $contents = json_decode($contents);
+            $contents = json_decode($response->getBody()->getContents());
 
             foreach ($contents->choices as $choice) {
                 return $choice->message->content;
@@ -97,9 +115,9 @@ class OpenAiService extends ApiService
     }
 
     /**
-     * @return string|null full language name for given locale
+     * Return the full language name for a given locale string.
      */
-    public function getLanguage(string $locale = null): ?string
+    public function getLanguage(?string $locale): ?string
     {
         if (empty($locale)) {
             return null;
@@ -108,11 +126,24 @@ class OpenAiService extends ApiService
     }
 
     /**
+     * Resolve the active model name, handling the 'custom' dropdown sentinel.
+     */
+    public function getModel(): string
+    {
+        $dropdown = $this->getSetting('openAiModel', 'gpt-4o');
+        if ($dropdown === 'custom') {
+            $custom = $this->getSetting('openAiCustomModel', '');
+            return !empty($custom) ? $custom : 'gpt-4o';
+        }
+        return $dropdown;
+    }
+
+    /**
      * Get the base URL for the OpenAI-compatible API, with env var support.
      */
     private function getBaseUrl(): string
     {
-        $baseUrl = App::parseEnv($this->getProviderSettings()->getOpenAiBaseUrl());
+        $baseUrl = App::parseEnv($this->getSetting('openAiBaseUrl', ''));
         return !empty($baseUrl) ? rtrim($baseUrl, '/') : 'https://api.openai.com/v1';
     }
 }

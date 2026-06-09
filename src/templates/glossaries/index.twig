@@ -8,10 +8,10 @@
 ] %}
 
 {% set settings = craft.multiTranslator.providerSettings %}
-{% set service = craft.multiTranslator.service %}
+{% set provider = craft.multiTranslator.provider %}
 
 {% block actionButton %}
-    {% if settings.translationProvider == 'deepl' and service.isConnected %}
+    {% if settings.translationProvider == 'deepl' and provider.isConnected %}
         <a class="btn submit add icon" href="{{ url('multi-translator/glossaries/new') }}">Create new</a>
         <a class="btn submit sync icon" href="{{ url('multi-translator/glossaries/fetch') }}">Fetch from DeepL</a>
     {% endif %}
@@ -32,7 +32,7 @@
             Disabling a glossary will not affect glossaries in your DeepL account, deleting it will delete it from your DeepL account as well.
         </p>
 
-        {% if settings.translationProvider == 'deepl' and service.isConnected %}
+        {% if settings.translationProvider == 'deepl' and provider.isConnected %}
 
             {% if craft.multiTranslator.glossaries|length %}
                 <table class="table data fullwidth">
