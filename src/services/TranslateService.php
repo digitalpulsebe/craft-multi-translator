@@ -183,7 +183,7 @@ class TranslateService extends Component
             $serialized['title'] = $source->title;
         }
 
-        if ($source instanceof Asset && $source->alt && !in_array($source->getVolume()->altTranslationMethod, ['none', 'custom'])) {
+        if ($source instanceof Asset && $source->alt && $source->getVolume()->altTranslationMethod !== 'none') {
             // assets can have a translatable alt field
             $serialized['alt'] = $source->alt;
         }

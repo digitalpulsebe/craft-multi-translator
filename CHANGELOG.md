@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- allow translation of alt field with custom altTranslationMethod
+
 ## 2.28.0 - 2026-06-09
 
 ### Added
