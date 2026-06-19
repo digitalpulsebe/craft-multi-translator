@@ -125,19 +125,6 @@
                     errors: settings.getErrors("resetSlug"),
                 }) }}
 
-                {{ forms.selectField({
-                    label: "Default English",
-                    instructions: "Default English for translating to English.",
-                    id: "defaultEnglish",
-                    name: "defaultEnglish",
-                    value: settings.defaultEnglish,
-                    options: [
-                        {'label': 'American English (en-US)', 'value': 'en-US'},
-                        {'label': 'British English (en-GB)', 'value': 'en-GB'},
-                    ],
-                    errors: settings.getErrors("defaultEnglish"),
-                }) }}
-
                 {{ forms.lightswitchField({
                     label: "Detect Source Language",
                     instructions: "Don't send the source language to the API and let Deepl/Google detect the source language.",
