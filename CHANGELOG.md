@@ -1,5 +1,12 @@
 # Release Notes for Multi Translator
 
+## 2.28.1 - 2026-06-19
+
+### Fixed
+
+- allow translation of alt field with custom altTranslationMethod
+- only save rootElements to drafts when setting is enabled (fixes #123)
+
 ## 2.28.0 - 2026-06-09
 
 ### Added
