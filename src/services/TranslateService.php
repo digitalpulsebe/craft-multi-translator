@@ -231,7 +231,7 @@ class TranslateService extends Component
      * @param FieldInterface $field
      * @return FieldSerializer|null
      */
-    protected function getSerializer(FieldInterface $field): ?FieldSerializer
+    public function getSerializer(FieldInterface $field): ?FieldSerializer
     {
         $fieldClass = get_class($field);
         $serializerClass = $this->serializers[$fieldClass] ?? null;
