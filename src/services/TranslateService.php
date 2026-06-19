@@ -111,7 +111,7 @@ class TranslateService extends Component
         if ($targetElement instanceof Entry && $targetElement->getIsDraft()) {
             // only Entries can have drafts
             \Craft::$app->drafts->saveElementAsDraft($targetElement, null, $draftName, $revisionNotes);
-        } elseif ($targetElement instanceof Entry && $this->getProviderSettings()->getSaveAsDraft()) {
+        } elseif ($isRootElement && $targetElement instanceof Entry && $this->getProviderSettings()->getSaveAsDraft()) {
             // only Entries can have drafts
             $targetElement = \Craft::$app->drafts->createDraft($targetElement, null, $draftName, $revisionNotes);
             $this->setElementTranslation($source, $targetElement, $translatedValues);
