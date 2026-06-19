@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.28.2 - 2026-06-19
+
+### Fixed
+
+- fix error on advanced review: remove defaultEnglish setting
+
 ## 2.28.1 - 2026-06-19
 
 ### Fixed
