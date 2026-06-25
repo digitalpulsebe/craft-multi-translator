@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.28.3 - 2026-06-25
+
+### Fixed
+
+- fix deepl glossaries after provider refactoring (fixes #125)
+
 ## 2.28.2 - 2026-06-19
 
 ### Fixed

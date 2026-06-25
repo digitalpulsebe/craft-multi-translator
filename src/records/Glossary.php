@@ -101,19 +101,21 @@ class Glossary extends ActiveRecord
             return $item;
         }
 
+        $deeplClient = MultiTranslator::getInstance()->translate->getApiProviderByHandle('deepl')->getClient();
+
         $deeplGlossaryEntries = null;
         if ($isExisting && !empty($item->deeplId)) {
-            $deeplGlossaryEntries = MultiTranslator::getInstance()->deepl->getClient()->getMultilingualGlossaryEntries($item->deeplId, $item->sourceLanguage, $item->targetLanguage);
+            $deeplGlossaryEntries = $deeplClient->getMultilingualGlossaryEntries($item->deeplId, $item->sourceLanguage, $item->targetLanguage);
         }
 
         $newDictionaryEntries = new MultilingualGlossaryDictionaryEntries($item->sourceLanguage, $item->targetLanguage, $rows);
 
         if ($deeplGlossaryEntries) {
             // update in Deepl API
-            $deeplGlossary = MultiTranslator::getInstance()->deepl->getClient()->updateMultilingualGlossary($item->deeplId, $item->name, [$newDictionaryEntries]);
+            $deeplGlossary = $deeplClient->updateMultilingualGlossary($item->deeplId, $item->name, [$newDictionaryEntries]);
         } else {
             // create in Deepl API
-            $deeplGlossary = MultiTranslator::getInstance()->deepl->getClient()->createMultilingualGlossary($item->name, [$newDictionaryEntries]);
+            $deeplGlossary = $deeplClient->createMultilingualGlossary($item->name, [$newDictionaryEntries]);
 
         }
 
@@ -135,7 +137,8 @@ class Glossary extends ActiveRecord
     {
         if (!empty($this->deeplId)) {
             try {
-                MultiTranslator::getInstance()->deepl->deleteGlossary($this->id);
+                $deeplClient = MultiTranslator::getInstance()->translate->getApiProviderByHandle('deepl')->getClient();
+                $deeplClient->deleteGlossary($this->id);
             } catch (\Throwable $e) {
                 // might fail, but we still want to continue
                 MultiTranslator::error([
