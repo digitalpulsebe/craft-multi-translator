@@ -29,7 +29,7 @@ class GlossariesController extends Controller
         $this->requirePermission('multiTranslateContent');
 
         try {
-            MultiTranslator::getInstance()->deepl->fetchGlossaries();
+            MultiTranslator::getInstance()->translate->getApiProviderByHandle('deepl')->fetchGlossaries();
             $this->setSuccessFlash('Glossaries fetched from DeepL.');
         } catch (\Throwable $exception) {
             $this->setFailFlash($exception->getMessage());
