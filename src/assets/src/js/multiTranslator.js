@@ -5,114 +5,61 @@
     /**
      * Craft.MultiTranslatorFieldModal
      *
-     * Opens a small modal that lets the user pick a target site, then POSTs to
-     * multi-translator/field/translate to translate a single field value.
+     * Opens a modal whose body is fetched from multi-translator/field/review,
+     * identical to the block translation modal pattern.
      *
      * Expected settings keys:
      *   elementId    {number}
      *   elementType  {string}
      *   sourceSiteId {number}
      *   fieldHandle  {string}
-     *   fieldName    {string}
-     *   sites        {Array<{id: number, name: string}>}
      */
     Craft.MultiTranslatorFieldModal = Garnish.Modal.extend({
         $container: null,
-        $select: null,
-        $submitBtn: null,
-        $spinner: null,
-        settings: null,
 
         init: function (settings) {
-            this.settings = settings;
-
             this.$container = $('<div/>', {
-                class: 'modal fitted',
+                class: 'modal fitted loading',
             }).appendTo(Garnish.$bod);
 
             this.base(this.$container, {resizable: false});
 
-            this._buildContent();
-        },
+            var data = {
+                elementId:    settings.elementId,
+                elementType:  settings.elementType,
+                sourceSiteId: settings.sourceSiteId,
+                fieldHandle:  settings.fieldHandle,
+            };
 
-        _buildContent: function () {
-            var self = this;
-            var fieldLabel = Craft.escapeHtml(this.settings.fieldName || this.settings.fieldHandle);
+            var $this = this;
 
-            // Build site <option> list
-            var optionsHtml = '<option value="">' + Craft.escapeHtml(Craft.t('multi-translator', 'Select target site…')) + '</option>';
-            (this.settings.sites || []).forEach(function (site) {
-                optionsHtml += '<option value="' + parseInt(site.id) + '">' + Craft.escapeHtml(site.name) + '</option>';
-            });
+            Craft.sendActionRequest('POST', 'multi-translator/field/review', {data})
+                .then(function (response) {
+                    $this.$container.removeClass('loading');
+                    $this.$container.append(response.data.html);
 
-            var html = [
-                '<div class="body">',
-                '  <h2>' + Craft.t('multi-translator', 'Translate field') + ': <em>' + fieldLabel + '</em></h2>',
-                '  <div class="field">',
-                '    <div class="heading"><label for="mt-field-target-site">' + Craft.t('multi-translator', 'Target site') + '</label></div>',
-                '    <div class="input ltr">',
-                '      <div class="select">',
-                '        <select id="mt-field-target-site">' + optionsHtml + '</select>',
-                '      </div>',
-                '    </div>',
-                '  </div>',
-                '</div>',
-                '<div class="footer">',
-                '  <div class="buttons right">',
-                '    <button type="button" class="btn" data-mt-cancel>' + Craft.t('app', 'Cancel') + '</button>',
-                '    <button type="button" class="btn submit" data-mt-submit disabled>' + Craft.t('multi-translator', 'Translate') + '</button>',
-                '    <div class="spinner hidden"></div>',
-                '  </div>',
-                '</div>',
-            ].join('');
+                    var $buttons = $('.buttons', $this.$container),
+                        $cancelBtn = $(
+                            '<div class="btn">' + Craft.t('app', 'Cancel') + '</div>'
+                        ).prependTo($buttons);
 
-            this.$container.html(html);
-            this.$select    = this.$container.find('#mt-field-target-site');
-            this.$submitBtn = this.$container.find('[data-mt-submit]');
-            this.$spinner   = this.$container.find('.spinner');
+                    $this.addListener($cancelBtn, 'click', 'hide');
 
-            // Enable submit only when a site is selected
-            this.addListener(this.$select, 'change', function () {
-                if (self.$select.val()) {
-                    self.$submitBtn.prop('disabled', false);
-                } else {
-                    self.$submitBtn.prop('disabled', true);
-                }
-            });
+                    setTimeout(function () {
+                        Craft.initUiElements($this.$container);
+                        $this.updateSizeAndPosition();
+                    }, 200);
+                })
+                .catch(function (error) {
+                    $this.$container.removeClass('loading');
+                    var msg = Craft.t('app', 'An unknown error occurred.');
 
-            this.addListener(this.$container.find('[data-mt-cancel]'), 'click', 'hide');
-            this.addListener(this.$submitBtn, 'click', '_submit');
+                    if (error.response && error.response.data && error.response.data.message) {
+                        msg = error.response.data.message;
+                    }
 
-            this.updateSizeAndPosition();
-        },
-
-        _submit: function () {
-            var self       = this;
-            var targetSiteId = parseInt(this.$select.val());
-            if (!targetSiteId) return;
-
-            this.$submitBtn.prop('disabled', true);
-            this.$spinner.removeClass('hidden');
-
-            Craft.sendActionRequest('POST', 'multi-translator/field/translate', {
-                data: {
-                    elementId:    this.settings.elementId,
-                    elementType:  this.settings.elementType,
-                    sourceSiteId: this.settings.sourceSiteId,
-                    targetSiteId: targetSiteId,
-                    fieldHandle:  this.settings.fieldHandle,
-                },
-            }).then(function (response) {
-                self.hide();
-                Craft.cp.displayNotice(response.data.message);
-            }).catch(function (error) {
-                self.$spinner.addClass('hidden');
-                self.$submitBtn.prop('disabled', false);
-                var msg = (error.response && error.response.data && error.response.data.message)
-                    ? error.response.data.message
-                    : Craft.t('app', 'An unknown error occurred.');
-                Craft.cp.displayError(msg);
-            });
+                    $this.$container.append('<div class="body">' + msg + '</div>');
+                });
         },
     }, {});
 

@@ -235,11 +235,6 @@ JS;
                             'elementType'  => get_class($element),
                             'sourceSiteId' => $element->siteId,
                             'fieldHandle'  => $field->handle,
-                            'fieldName'    => $field->name,
-                            'sites'        => $targetSites->map(fn($site) => [
-                                'id'   => $site->id,
-                                'name' => $site->name . ' (' . $site->getLocale() . ')',
-                            ])->values()->all(),
                         ],
                     ]
                 );

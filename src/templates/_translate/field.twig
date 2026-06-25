@@ -1,0 +1,46 @@
+{% requirePermission 'multiTranslateContent' %}
+{% import '_includes/forms.twig' as forms %}
+
+{% set sites = craft.app.sites.allSites %}
+{% set sites = sites|filter(site => currentUser.can('editSite:'~site.uid)) %}
+
+{% set field = element.fieldLayout.getFieldByHandle(fieldHandle) %}
+
+<form action="" method="POST">
+    {{ actionInput('multi-translator/field/translate') }}
+    {{ hiddenInput('elementId', elementId) }}
+    {{ hiddenInput('elementType', elementType) }}
+    {{ hiddenInput('sourceSiteId', sourceSiteId) }}
+    {{ hiddenInput('fieldHandle', fieldHandle) }}
+    {{ csrfInput() }}
+
+    <div class="body">
+        <div class="flex-fields">
+            <h2>Translate field: <em>{{ field.name ?? fieldHandle }}</em></h2>
+
+            {{ forms.selectField({
+                label: 'Target site',
+                id: "fieldTranslationTarget-#{elementId}",
+                name: 'targetSiteId',
+                options: [
+                    {
+                        label: 'select target',
+                        value: ''
+                    }
+                ]|merge(
+                    sites|map(site => {
+                        label: "#{site.name} (#{site.locale})",
+                        value: site.id
+                    })
+                ),
+                inputAttributes: {required: 1},
+            }) }}
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="buttons right">
+            <button type="submit" class="btn submit">Translate field</button>
+        </div>
+    </div>
+</form>
