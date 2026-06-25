@@ -426,6 +426,15 @@ class TranslateService extends Component
         return $providers[$handle] ?? null;
     }
 
+    /**
+     * Get the configured translation provider instance.
+     */
+    public function getApiProviderByHandle($handle): ?Provider
+    {
+        $providers = $this->getApiProviders();
+        return $providers[$handle] ?? null;
+    }
+
     public function onBeforeElementTranslation(Element $source, Site $sourceSite, Site $targetSite, bool $isRootElement): bool
     {
         $event = new ElementTranslationEvent([
