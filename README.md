@@ -62,6 +62,32 @@ OPENAI_API_KEY="your-infomaniak-api-token"
 
 In the plugin settings: set Base URL to `$OPENAI_BASE_URL`, API Key to `$OPENAI_API_KEY`, select **Custom** as the model and enter e.g. `mistral3` or `qwen3`.
 
+### Vector Store (File Search)
+
+When using the official OpenAI endpoint you can connect a [Vector Store](https://platform.openai.com/docs/guides/tools-file-search) to enrich translations with your own glossaries, terminology, preferred/forbidden translations and writing guidelines, maintained centrally in OpenAI rather than in Craft.
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Vector Store ID** | Optional OpenAI Vector Store ID (e.g. `vs_...`). When set, the [Responses API](https://platform.openai.com/docs/api-reference/responses) with File Search is used instead of Chat Completions. Supports environment variables. | — |
+| **Enable File Search** | `Auto` uses File Search whenever a Vector Store ID is set on the official endpoint; `Off` forces the legacy Chat Completions API. | `Auto` |
+
+### Prompt Management (Prompt IDs)
+
+On the official OpenAI endpoint you can reference a centrally managed prompt from [OpenAI Prompt Management](https://platform.openai.com/docs/guides/prompt-engineering) instead of maintaining the full prompt in Craft. The stored prompt holds the translation *behaviour* (output rules, HTML handling, instruction to use File Search); the plugin still sends the source/target languages and text dynamically as the request input.
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Prompt ID** | Optional OpenAI Prompt ID (e.g. `pmpt_...`). When set, the Responses API is used with the stored prompt. Supports environment variables. | — |
+| **Prompt version** | Optional. Pin a specific stored prompt version; leave empty to use the currently published version. | — |
+
+Prompt ID and Vector Store ID can be combined: the prompt defines behaviour, the Vector Store supplies knowledge (terminology, glossaries, style guides).
+
+Notes:
+
+- Prompt Management and File Search are OpenAI-specific: they are only used on the official `api.openai.com` endpoint and are ignored for OpenAI-compatible providers.
+- Leaving both the Prompt ID and Vector Store ID empty keeps the existing Chat Completions behaviour unchanged.
+- Your existing prompt is still used and is sent as the request input; a Vector Store or stored prompt complements it, it does not replace it. When using a stored prompt, keep the target language out of the stored prompt — the plugin generates it dynamically.
+
 ## Roadmap
 
 Please let us know which API's and features are desired for this plugin!
