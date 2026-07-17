@@ -142,29 +142,13 @@ class OpenAiProvider extends Provider
             'model' => App::parseEnv($this->getModel()),
             'input' => $prompt,
             'temperature' => floatval($this->getSetting('openAiTemperature', 0.5)),
-        ];
-
-        // Reference a centrally managed prompt (Prompt Management) when configured.
-        // The stored prompt carries the behaviour; the target language and text are
-        // still supplied dynamically through the request input above.
-        if (!empty($this->getPromptId())) {
-            $body['prompt'] = ['id' => $this->getPromptId()];
-            if (!empty($this->getPromptVersion())) {
-                $body['prompt']['version'] = $this->getPromptVersion();
-            }
-        }
-
-        // Enable File Search over the configured Vector Store when applicable.
-        // Request-level tools override any tools defined on a stored prompt, so the
-        // plugin's Vector Store augments the prompt's knowledge base.
-        if ($this->fileSearchEnabled()) {
-            $body['tools'] = [
+            'tools' => [
                 [
                     'type' => 'file_search',
                     'vector_store_ids' => [$this->getVectorStoreId()],
                 ],
-            ];
-        }
+            ],
+        ];
 
         $response = $this->postJson('/responses', $body);
 
@@ -227,29 +211,23 @@ class OpenAiProvider extends Provider
     }
 
     /**
-     * Whether the Responses API should be used for this translation.
+     * Whether the Responses API (with File Search) should be used for this translation.
      *
-     * Prompt Management (Prompt IDs) and File Search are OpenAI-specific features,
-     * so the Responses API is only used on the official api.openai.com host, and only
-     * when a Prompt ID is configured or File Search is enabled.
+     * File Search is an OpenAI-specific feature, so it is only enabled when a Vector
+     * Store ID is configured, the "Enable File Search" switch is not off, and the
+     * endpoint is the official api.openai.com host.
      */
     protected function shouldUseResponsesApi(): bool
     {
-        if (!str_contains($this->getBaseUrl(), 'api.openai.com')) {
+        if (empty($this->getVectorStoreId())) {
             return false;
         }
 
-        return !empty($this->getPromptId()) || $this->fileSearchEnabled();
-    }
+        if ($this->getSetting('openAiEnableFileSearch', 'auto') === 'off') {
+            return false;
+        }
 
-    /**
-     * Whether File Search over a Vector Store should be enabled: a Vector Store ID is
-     * configured and the "Enable File Search" switch is not set to off.
-     */
-    protected function fileSearchEnabled(): bool
-    {
-        return !empty($this->getVectorStoreId())
-            && $this->getSetting('openAiEnableFileSearch', 'auto') !== 'off';
+        return str_contains($this->getBaseUrl(), 'api.openai.com');
     }
 
     /**
@@ -258,23 +236,6 @@ class OpenAiProvider extends Provider
     protected function getVectorStoreId(): string
     {
         return trim(App::parseEnv($this->getSetting('openAiVectorStoreId', '')) ?? '');
-    }
-
-    /**
-     * Resolve the configured OpenAI Prompt ID for Prompt Management (with env var support).
-     */
-    protected function getPromptId(): string
-    {
-        return trim(App::parseEnv($this->getSetting('openAiPromptId', '')) ?? '');
-    }
-
-    /**
-     * Resolve the optional stored prompt version. Empty means OpenAI uses the
-     * currently published version.
-     */
-    protected function getPromptVersion(): string
-    {
-        return trim(App::parseEnv($this->getSetting('openAiPromptVersion', '')) ?? '');
     }
 
     /**

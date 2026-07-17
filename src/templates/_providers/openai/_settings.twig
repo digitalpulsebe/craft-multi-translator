@@ -63,24 +63,6 @@
 }) }}
 
 {{ forms.autosuggestfield({
-    label: 'Prompt ID',
-    name: 'openAiPromptId',
-    instructions: 'Optional. Reference a centrally managed prompt from OpenAI Prompt Management (e.g. `pmpt_...`). When set, the official OpenAI Responses API is used and the stored prompt provides the translation behaviour, while the source/target languages and text are still sent dynamically. Only applies to the official `api.openai.com` endpoint; ignored for OpenAI-compatible providers.',
-    suggestEnvVars: true,
-    value: settings.openAiPromptId ?? '',
-    placeholder: 'pmpt_...',
-}) }}
-
-{{ forms.autosuggestfield({
-    label: 'Prompt version',
-    name: 'openAiPromptVersion',
-    instructions: 'Optional. Pin a specific version of the stored prompt. Leave empty to always use the currently published version.',
-    suggestEnvVars: true,
-    value: settings.openAiPromptVersion ?? '',
-    placeholder: '',
-}) }}
-
-{{ forms.autosuggestfield({
     label: 'Vector Store ID',
     name: 'openAiVectorStoreId',
     instructions: 'Optional. Enter an OpenAI Vector Store ID (e.g. `vs_...`) to retrieve terminology, glossaries and style guides via File Search. When set, the official OpenAI Responses API is used instead of Chat Completions. Only applies to the official `api.openai.com` endpoint; ignored for OpenAI-compatible providers.',

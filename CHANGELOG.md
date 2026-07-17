@@ -4,8 +4,7 @@
 
 ### Added
 
-- OpenAI: optional Vector Store ID enables File Search over glossaries, terminology and style guides via the OpenAI Responses API. Activated only when a Vector Store ID is set on the official `api.openai.com` endpoint; all existing setups are unaffected.
-- OpenAI: optional Prompt ID references a centrally managed prompt from OpenAI Prompt Management via the Responses API. Prompt ID and Vector Store ID can be combined (prompt = behaviour, Vector Store = knowledge). Activated only on the official `api.openai.com` endpoint; all existing setups are unaffected.
+- OpenAI: optional Vector Store ID enables File Search over glossaries, terminology and style guides via the OpenAI Responses API. The existing custom prompt is sent as the request input and complements the Vector Store. Activated only when a Vector Store ID is set on the official `api.openai.com` endpoint; all existing setups are unaffected.
 
 ## 2.28.3 - 2026-06-25
 
