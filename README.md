@@ -62,6 +62,21 @@ OPENAI_API_KEY="your-infomaniak-api-token"
 
 In the plugin settings: set Base URL to `$OPENAI_BASE_URL`, API Key to `$OPENAI_API_KEY`, select **Custom** as the model and enter e.g. `mistral3` or `qwen3`.
 
+### Vector Store (File Search)
+
+When using the official OpenAI endpoint you can connect a [Vector Store](https://platform.openai.com/docs/guides/tools-file-search) to enrich translations with your own glossaries, terminology, preferred/forbidden translations and writing guidelines, maintained centrally in OpenAI rather than in Craft.
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Vector Store ID** | Optional OpenAI Vector Store ID (e.g. `vs_...`). When set, the [Responses API](https://platform.openai.com/docs/api-reference/responses) with File Search is used instead of Chat Completions. Supports environment variables. | — |
+| **Enable File Search** | `Auto` uses File Search whenever a Vector Store ID is set on the official endpoint; `Off` forces the legacy Chat Completions API. | `Auto` |
+
+Notes:
+
+- File Search is OpenAI-specific: it is only used on the official `api.openai.com` endpoint and is ignored for OpenAI-compatible providers.
+- Leaving the Vector Store ID empty keeps the existing Chat Completions behaviour unchanged.
+- Your existing custom prompt (the **Custom prompt** field) is still used and is sent as the request input; the Vector Store complements the prompt, it does not replace it. Keep the prompt small and stable (behaviour, HTML/output rules) and maintain terminology and glossaries in the Vector Store.
+
 ## Roadmap
 
 Please let us know which API's and features are desired for this plugin!

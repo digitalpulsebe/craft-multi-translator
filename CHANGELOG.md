@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- OpenAI: optional Vector Store ID enables File Search over glossaries, terminology and style guides via the OpenAI Responses API. The existing custom prompt is sent as the request input and complements the Vector Store. Activated only when a Vector Store ID is set on the official `api.openai.com` endpoint; all existing setups are unaffected.
+
 ## 2.28.3 - 2026-06-25
 
 ### Fixed

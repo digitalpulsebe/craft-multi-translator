@@ -62,6 +62,27 @@
     value: settings.openAiPrompt ?? '',
 }) }}
 
+{{ forms.autosuggestfield({
+    label: 'Vector Store ID',
+    name: 'openAiVectorStoreId',
+    instructions: 'Optional. Enter an OpenAI Vector Store ID (e.g. `vs_...`) to retrieve terminology, glossaries and style guides via File Search. When set, the official OpenAI Responses API is used instead of Chat Completions. Only applies to the official `api.openai.com` endpoint; ignored for OpenAI-compatible providers.',
+    suggestEnvVars: true,
+    value: settings.openAiVectorStoreId ?? '',
+    placeholder: 'vs_...',
+}) }}
+
+{{ forms.selectField({
+    label: "Enable File Search",
+    instructions: "Controls the Vector Store File Search. 'Auto' enables it whenever a Vector Store ID is configured on the official OpenAI endpoint. 'Off' forces the legacy Chat Completions API even when a Vector Store ID is set.",
+    id: "openAiEnableFileSearch",
+    name: "openAiEnableFileSearch",
+    value: settings.openAiEnableFileSearch ?? 'auto',
+    options: [
+        {'label': 'Auto', 'value': 'auto'},
+        {'label': 'Off', 'value': 'off'},
+    ],
+}) }}
+
 {{ forms.textfield({
     label: 'API temperature',
     name: 'openAiTemperature',
