@@ -29,7 +29,7 @@ class ProviderSettingsController extends Controller
         $existingSettings = $existing ? ($existing->settings ?? []) : [];
 
         // Merge root-level general options
-        $settings = array_merge($existingSettings, $posted);
+        $settings = is_array($existingSettings) ? array_merge($existingSettings, $posted) : $posted;
 
         // Merge provider sub-arrays under the 'providers' key, per registered handle,
         // so a save of one provider does not wipe settings of other providers.
