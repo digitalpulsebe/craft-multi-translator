@@ -50,11 +50,11 @@ class GoogleV3Provider extends Provider
         }
 
         if (empty($credentials)) {
-            throw new \Exception('Google Service Account credentials are invalid.');
+            throw new \Exception(\Craft::t('multi-translator', 'Google Service Account credentials are invalid.'));
         }
 
         if (empty($credentials['project_id'])) {
-            throw new \Exception('Project ID missing in Google Service Account credentials.');
+            throw new \Exception(\Craft::t('multi-translator', 'Project ID missing in Google Service Account credentials.'));
         }
 
         $this->_client = new TranslationServiceClient([

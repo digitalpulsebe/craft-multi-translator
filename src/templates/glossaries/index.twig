@@ -1,10 +1,10 @@
 {% extends "_layouts/cp" %}
 
-{% set title = 'Glossaries' %}
+{% set title = 'Glossaries'|t('multi-translator') %}
 {% set selectedSubnavItem = 'glossaries' %}
 
 {% set crumbs = [
-    { label: 'Multi Translator', url: url('multi-translator') },
+    { label: 'Multi Translator'|t('multi-translator'), url: url('multi-translator') },
 ] %}
 
 {% set settings = craft.multiTranslator.providerSettings %}
@@ -12,24 +12,23 @@
 
 {% block actionButton %}
     {% if settings.translationProvider == 'deepl' and provider.isConnected %}
-        <a class="btn submit add icon" href="{{ url('multi-translator/glossaries/new') }}">Create new</a>
-        <a class="btn submit sync icon" href="{{ url('multi-translator/glossaries/fetch') }}">Fetch from DeepL</a>
+        <a class="btn submit add icon" href="{{ url('multi-translator/glossaries/new') }}">{{ 'Create new'|t('multi-translator') }}</a>
+        <a class="btn submit sync icon" href="{{ url('multi-translator/glossaries/fetch') }}">{{ 'Fetch from DeepL'|t('multi-translator') }}</a>
     {% endif %}
 {% endblock %}
 
 {% block content %}
     <div class="main">
-        <h2>Glossaries (DeepL)</h2>
+        <h2>{{ 'Glossaries (DeepL)'|t('multi-translator') }}</h2>
 
         <p>
-            Read more about this feature in
+            {{ 'Read more about this feature in'|t('multi-translator') }}
             <a href="https://support.deepl.com/hc/en-us/articles/360021634540-About-glossaries" target="_blank">
-                the DeepL documentation
+                {{ 'the DeepL documentation'|t('multi-translator') }}
             </a>
         </p>
         <p>
-            You can have only one glossary per language pair. So disable the glossaries you don't want to use.
-            Disabling a glossary will not affect glossaries in your DeepL account, deleting it will delete it from your DeepL account as well.
+            {{ 'You can have only one glossary per language pair. So disable the glossaries you don\'t want to use. Disabling a glossary will not affect glossaries in your DeepL account, deleting it will delete it from your DeepL account as well.'|t('multi-translator') }}
         </p>
 
         {% if settings.translationProvider == 'deepl' and provider.isConnected %}
@@ -38,9 +37,9 @@
                 <table class="table data fullwidth">
                     <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Source &rightarrow; Target</th>
-                        <th># entries</th>
+                        <th>{{ 'Name'|t('multi-translator') }}</th>
+                        <th>{{ 'Source → Target'|t('multi-translator') }}</th>
+                        <th>{{ '# entries'|t('multi-translator') }}</th>
                         <th>&nbsp;</th>
                     </tr>
                     </thead>
@@ -51,7 +50,7 @@
                                     <span
                                         class="status {{ glossary.enabled ? 'live' : 'disabled' }}"
                                         role="img"
-                                        aria-label="Status: {{ glossary.enabled ? 'live' : 'disabled' }}">
+                                        aria-label="{{ 'Status: '|t('multi-translator') }}{{ glossary.enabled ? 'live'|t('multi-translator') : 'disabled'|t('multi-translator') }}">
                                     </span>
                                     <a href="{{ url('multi-translator/glossaries/edit/'~glossary.id) }}" title="edit">
 
@@ -65,32 +64,32 @@
                                         <a
                                             href="{{ actionUrl('multi-translator/glossaries/disable/', {id: glossary.id}) }}"
                                             class="btn"
-                                            title="Disable this glossary"
-                                        >disable</a>
+                                            title="{{ 'Disable this glossary'|t('multi-translator') }}"
+                                        >{{ 'disable'|t('multi-translator') }}</a>
                                     {% else %}<a
                                             href="{{ actionUrl('multi-translator/glossaries/enable/', {id: glossary.id}) }}"
                                             class="btn"
-                                            title="Enable this glossary"
-                                        >enable</a>
+                                            title="{{ 'Enable this glossary'|t('multi-translator') }}"
+                                        >{{ 'enable'|t('multi-translator') }}</a>
                                     {% endif %}
                                     <a
                                         href="{{ actionUrl('multi-translator/glossaries/delete/', {id: glossary.id}) }}"
                                         class="btn"
-                                        title="Delete this glossary in your DeepL account"
-                                        onclick="return confirm('Are you sure you want to delete this? The glossary will be deleted from your DeepL account as well.')"
-                                    >delete</a>
+                                        title="{{ 'Delete this glossary in your DeepL account'|t('multi-translator') }}"
+                                        onclick="return confirm('{{ 'Are you sure you want to delete this? The glossary will be deleted from your DeepL account as well.'|t('multi-translator')|e('js') }}')"
+                                    >{{ 'delete'|t('multi-translator') }}</a>
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             {% else %}
-                <p>No glossaries found, create a new</p>
+                <p>{{ 'No glossaries found, create a new'|t('multi-translator') }}</p>
             {% endif %}
 
 
         {% else %}
-            <p>Only available with active DeepL account</p>
+            <p>{{ 'Only available with active DeepL account'|t('multi-translator') }}</p>
         {% endif %}
     </div>
 {% endblock %}

@@ -1,9 +1,9 @@
 {% extends "_layouts/cp" %}
 
-{% set title = 'Multi Translator' %}
+{% set title = 'Multi Translator'|t('multi-translator') %}
 
 {% set crumbs = [
-    { label: 'Multi Translator', url: url('multi-translator') },
+    { label: 'Multi Translator'|t('multi-translator'), url: url('multi-translator') },
 ] %}
 
 {% set settings = craft.multiTranslator.providerSettings %}
@@ -11,12 +11,12 @@
 
 {% block content %}
     <div class="main">
-        <h2>Provider</h2>
+        <h2>{{ 'Provider'|t('multi-translator') }}</h2>
         <p>
             {% if provider.isConnected %}
-                <span class="status live" role="img" aria-label="Status: Connected"></span>
+                <span class="status live" role="img" aria-label="{{ 'Status: Connected'|t('multi-translator') }}"></span>
             {% else %}
-                <span class="status" role="img" aria-label="Status: Not Connected"></span>
+                <span class="status" role="img" aria-label="{{ 'Status: Not Connected'|t('multi-translator') }}"></span>
             {% endif %}
             {{ provider.displayName }}
         </p>
@@ -27,7 +27,7 @@
             {% if usage %}
                 <p>
                     {% if usage.character %}
-                        Usage:
+                        {{ 'Usage:'|t('multi-translator') }}
                         {{ usage.character.count|number_format(0, '.', ',') }}
                         / {{ usage.character.limit|number_format(0, '.', ',') }}
                     {% endif %}

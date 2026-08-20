@@ -1,9 +1,9 @@
 {% import '_includes/forms.twig' as forms %}
 
 {{ forms.autosuggestfield({
-    label: 'Google API Key',
+    label: 'Google API Key'|t('multi-translator'),
     name: 'googleApiKey',
-    instructions: 'Create an API Key from the [Google Cloud Console](https://console.cloud.google.com/)',
+    instructions: 'Create an API Key from the [Google Cloud Console](https://console.cloud.google.com/)'|t('multi-translator'),
     suggestEnvVars: true,
     value: settings.googleApiKey ?? '',
 }) }}

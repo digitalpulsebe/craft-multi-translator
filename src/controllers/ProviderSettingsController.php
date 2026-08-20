@@ -51,7 +51,7 @@ class ProviderSettingsController extends Controller
         }
 
         if (ProviderSettings::createOrUpdate($settings)) {
-            $this->setSuccessFlash('Settings saved.');
+            $this->setSuccessFlash(\Craft::t('multi-translator', 'Settings saved.'));
         }
 
         return $this->redirectToPostedUrl();

@@ -28,7 +28,7 @@ class OpenAiProvider extends Provider
         $baseUrl = $this->getBaseUrl();
         if (!str_contains($baseUrl, 'api.openai.com')) {
             $host = parse_url($baseUrl, PHP_URL_HOST);
-            return 'OpenAI Compatible' . ($host ? " ($host)" : '');
+            return \Craft::t('multi-translator', 'OpenAI Compatible') . ($host ? " ($host)" : '');
         }
         return static::getDisplayName();
     }
@@ -74,7 +74,7 @@ class OpenAiProvider extends Provider
 
         $prompt = $this->getSetting('openAiPrompt', '');
         $prompt = empty($prompt)
-            ? 'Translate the following text from {source} to {target}, keep html and only answer with the translated text, if you can not translate it, just return the text i\'ve provided you: {text}'
+            ? \Craft::t('multi-translator', 'Translate the following text from {source} to {target}, keep html and only answer with the translated text, if you can not translate it, just return the text i\'ve provided you: {text}')
             : $prompt;
         $prompt = str_replace(
             ['{source}', '{target}', '{text}'],
@@ -92,14 +92,17 @@ class OpenAiProvider extends Provider
                     'content' => $prompt,
                 ],
             ],
-            'temperature' => floatval($this->getSetting('openAiTemperature', 0.5)),
         ];
+
+        if ($this->modelSupportsTemperature($model)) {
+            $body['temperature'] = floatval($this->getSetting('openAiTemperature', 0.5));
+        }
 
         try {
             $response = $this->getClient()->post($this->getBaseUrl() . '/chat/completions', ['json' => $body]);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $responseBody = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : 'no response body';
-            MultiTranslator::error('OpenAI API error: ' . $responseBody);
+            MultiTranslator::error(\Craft::t('multi-translator', 'OpenAI API error: {error}', ['error' => $responseBody]));
             throw $e;
         }
 
@@ -130,12 +133,21 @@ class OpenAiProvider extends Provider
      */
     public function getModel(): string
     {
-        $dropdown = $this->getSetting('openAiModel', 'gpt-4o');
+        $dropdown = $this->getSetting('openAiModel', 'gpt-5.6-terra');
         if ($dropdown === 'custom') {
             $custom = $this->getSetting('openAiCustomModel', '');
-            return !empty($custom) ? $custom : 'gpt-4o';
+            return !empty($custom) ? $custom : 'gpt-5.6-terra';
         }
         return $dropdown;
+    }
+
+    /**
+     * Return whether the given model identifier belongs to the GPT-5+ family,
+     * which does not support the temperature parameter.
+     */
+    public function modelSupportsTemperature(string $model): bool
+    {
+        return !preg_match('/^gpt-5/i', $model);
     }
 
     /**

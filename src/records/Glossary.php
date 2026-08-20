@@ -97,7 +97,7 @@ class Glossary extends ActiveRecord
 
             $rows = $item->setRows($data['rows']);
         } else {
-            $item->addError('rows', 'Content empty');
+            $item->addError('rows', \Craft::t('multi-translator', 'Content empty'));
             return $item;
         }
 

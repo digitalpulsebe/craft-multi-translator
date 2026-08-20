@@ -1,9 +1,9 @@
-<button type="button" class="btn menubtn" aria-label="Translate">Translate to</button>
+<button type="button" class="btn menubtn" aria-label="{{ 'Translate'|t('multi-translator') }}">{{ 'Translate to'|t('multi-translator') }}</button>
 <div class="menu">
     <ul>
         <li>
             <a class="formsubmit" data-param="targetSiteHandle" data-value="_ALL_">
-                <strong>All sites</strong>
+                <strong>{{ 'All sites'|t('multi-translator') }}</strong>
             </a>
         </li>
         {% for site in craft.app.sites.allSites %}

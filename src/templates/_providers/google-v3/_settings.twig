@@ -1,28 +1,28 @@
 {% import '_includes/forms.twig' as forms %}
 
-<p>Provide a Service Account file path OR paste the content inside the text area:</p>
+<p>{{ 'Provide a Service Account file path OR paste the content inside the text area:'|t('multi-translator') }}</p>
 
 {{ forms.autosuggestfield({
-    label: 'Google Cloud Service Account file path',
+    label: 'Google Cloud Service Account file path'|t('multi-translator'),
     name: 'googleServiceAccountFilePath',
-    instructions: 'File path to the Service Account data from your [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)',
+    instructions: 'File path to the Service Account data from your [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)'|t('multi-translator'),
     suggestEnvVars: true,
     value: settings.googleServiceAccountFilePath ?? '',
 }) }}
 
-<h3>OR:</h3>
+<h3>{{ 'OR:'|t('multi-translator') }}</h3>
 
 {{ forms.textAreaField({
-    label: 'Google Cloud Service Account',
+    label: 'Google Cloud Service Account'|t('multi-translator'),
     name: 'googleServiceAccount',
-    instructions: 'Paste the Service Account data from your [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)',
+    instructions: 'Paste the Service Account data from your [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts)'|t('multi-translator'),
     value: settings.googleServiceAccount ?? '',
     rows: 3,
 }) }}
 
 {{ forms.textfield({
-    label: "Location",
-    instructions: "Location (optional)",
+    label: "Location"|t('multi-translator'),
+    instructions: "Location (optional)"|t('multi-translator'),
     id: "googleLocation",
     name: "googleLocation",
     value: settings.googleLocation ?? '',
@@ -30,8 +30,8 @@
 }) }}
 
 {{ forms.textfield({
-    label: "Translation model",
-    instructions: "[Translation model](https://docs.cloud.google.com/translate/docs/advanced/compare-models) (format: projects/PROJECT_ID/locations/REGION_NAME/models/MODEL_ID) (optional)",
+    label: "Translation model"|t('multi-translator'),
+    instructions: "[Translation model](https://docs.cloud.google.com/translate/docs/advanced/compare-models) (format: projects/PROJECT_ID/locations/REGION_NAME/models/MODEL_ID) (optional)"|t('multi-translator'),
     id: "googleModel",
     name: "googleModel",
     value: settings.googleModel ?? '',

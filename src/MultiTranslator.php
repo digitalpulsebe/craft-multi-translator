@@ -180,16 +180,16 @@ class MultiTranslator extends Plugin
             UserPermissions::EVENT_REGISTER_PERMISSIONS,
             function (RegisterUserPermissionsEvent $event) {
                 $event->permissions[] = [
-                    'heading' => 'Multi Translator',
+                    'heading' => Craft::t('multi-translator', 'Multi Translator'),
                     'permissions' => [
                         'multiTranslateSettings' => [
-                            'label' => 'Manage settings',
+                            'label' => Craft::t('multi-translator', 'Manage settings'),
                         ],
                         'multiTranslateContent' => [
-                            'label' => 'Translate Content',
+                            'label' => Craft::t('multi-translator', 'Translate Content'),
                         ],
                         'multiTranslateContentBulk' => [
-                            'label' => 'Translate Content in bulk (element action)',
+                            'label' => Craft::t('multi-translator', 'Translate Content in bulk (element action)'),
                         ],
                     ],
                 ];
@@ -203,11 +203,11 @@ class MultiTranslator extends Plugin
     public function getCpNavItem(): ?array
     {
         $nav = parent::getCpNavItem();
-        $nav['subnav']['dashboard'] = ['label' => 'Dashboard', 'url' => 'multi-translator'];
-        $nav['subnav']['glossaries'] = ['label' => 'Glossaries', 'url' => 'multi-translator/glossaries'];
+        $nav['subnav']['dashboard'] = ['label' => Craft::t('multi-translator', 'Dashboard'), 'url' => 'multi-translator'];
+        $nav['subnav']['glossaries'] = ['label' => Craft::t('multi-translator', 'Glossaries'), 'url' => 'multi-translator/glossaries'];
 
         if (Craft::$app->user->checkPermission('multiTranslateSettings')) {
-            $nav['subnav']['settings'] = ['label' => 'Settings', 'url' => 'multi-translator/settings'];
+            $nav['subnav']['settings'] = ['label' => Craft::t('multi-translator', 'Settings'), 'url' => 'multi-translator/settings'];
         }
 
         return $nav;

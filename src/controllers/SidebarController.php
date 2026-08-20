@@ -49,7 +49,7 @@ class SidebarController extends BaseController
 
                 if (!empty($translatedElement)) {
                     if (!empty($translatedElement->errors)) {
-                        $this->setFailFlash('Validation errors '.json_encode($translatedElement->errors));
+                        $this->setFailFlash(Craft::t('multi-translator', 'Validation errors') . ' ' . json_encode($translatedElement->errors));
                     } else {
                         $successSites->push($targetSite);
                     }
@@ -60,7 +60,7 @@ class SidebarController extends BaseController
         }
 
         $targetSiteNames = $successSites->pluck('name')->join(', ');
-        $this->setSuccessFlash("Element translated to $targetSiteNames");
+        $this->setSuccessFlash(Craft::t('multi-translator', 'Element translated to {sites}', ['sites' => $targetSiteNames]));
 
         return $this->redirect($element->cpEditUrl);
     }

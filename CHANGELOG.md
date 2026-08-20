@@ -1,8 +1,15 @@
 # Release Notes for Multi Translator
 
-## Unreleased
+## 2.28.6 - 2026-08-20
 
-### 2.28.5 - 2026-08-20
+## Added
+
+- use translation function to allow localization across plugin UI labels and messages
+- new GPT-5.6 models in the settings list
+
+## 2.28.5 - 2026-08-20
+
+### Fixed
 
 - fix Content Block inside translatable Matrix loses values for untranslatable fields (fixes #132)
 

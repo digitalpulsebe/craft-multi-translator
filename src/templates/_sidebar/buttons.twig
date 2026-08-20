@@ -6,10 +6,10 @@
     {% set settings = craft.multiTranslator.providerSettings %}
 
     <fieldset>
-        <legend class="h6">Multi Translator</legend>
+        <legend class="h6">{{ 'Multi Translator'|t('multi-translator') }}</legend>
         <div class="meta">
             {% if element.id != element.canonicalId %}
-                <div class="warning">Warning: revision changes will apply on top of the translated Entry</div>
+                <div class="warning">{{ 'Warning: revision changes will apply on top of the translated Entry'|t('multi-translator') }}</div>
             {% endif %}
 
             {% set elementHelper = craft.multiTranslator.getElementHelper() %}
@@ -23,7 +23,7 @@
             {% if settings.translationDirectionButtons in ['fromThis', 'both'] %}
                 <div class="field">
                     <div class="heading">
-                        Translate from
+                        {{ 'Translate from'|t('multi-translator') }}
                     </div>
                     <div class="input">
                         <label>{{ currentDescription }}</label>
@@ -32,10 +32,10 @@
 
                 <div class="field">
                     <div class="heading">
-                        to:
+                        {{ 'to:'|t('multi-translator') }}
                     </div>
                     <div class="input">
-                        <button type="button" class="btn menubtn" aria-label="Translate">select target</button>
+                        <button type="button" class="btn menubtn" aria-label="{{ 'Translate'|t('multi-translator') }}">{{ 'select target'|t('multi-translator') }}</button>
                         <div class="menu">
                             <ul>
                                 <li>
@@ -44,9 +44,9 @@
                                         'elementType': className(element),
                                         'sourceSiteId': element.siteId
                                     }) }}"
-                                       onclick="return confirm('Translate to all sites? Confirm your action.')"
+                                       onclick="return confirm('{{ 'Translate to all sites? Confirm your action.'|t('multi-translator')|e('js') }}')"
                                     >
-                                        <strong>All sites</strong>
+                                        <strong>{{ 'All sites'|t('multi-translator') }}</strong>
                                     </a>
                                 </li>
                                 {% for site in sites %}
@@ -61,7 +61,7 @@
                                                        'targetSiteId': site.id
                                                    }) }}">
                                                     {{ site.name }} ({{ site.locale }})
-                                                    {%- if element.siteId == site.id %} (self){% endif %}
+                                                    {%- if element.siteId == site.id %} {{ '(self)'|t('multi-translator') }}{% endif %}
                                                 </a>
                                             </li>
                                         {% endif %}
@@ -77,10 +77,10 @@
                 {% if existingSiteIds|length > 1 %}
                     <div class="field">
                         <div class="heading">
-                            Translate from:
+                            {{ 'Translate from:'|t('multi-translator') }}
                         </div>
                         <div class="input">
-                            <button type="button" class="btn menubtn" aria-label="Translate">select source</button>
+                            <button type="button" class="btn menubtn" aria-label="{{ 'Translate'|t('multi-translator') }}">{{ 'select source'|t('multi-translator') }}</button>
                             <div class="menu">
                                 <ul>
                                     {% for site in sites %}
@@ -94,7 +94,7 @@
                                                        'targetSiteId': element.siteId
                                                    }) }}">
                                                     {{ site.name }} ({{ site.locale }})
-                                                    {%- if element.siteId == site.id %} (self){% endif %}
+                                                    {%- if element.siteId == site.id %} {{ '(self)'|t('multi-translator') }}{% endif %}
                                                 </a>
                                             </li>
                                         {% endif %}
@@ -106,7 +106,7 @@
 
                     <div class="field">
                         <div class="heading">
-                            to
+                            {{ 'to'|t('multi-translator') }}
                         </div>
                         <div class="input">
                             <label>{{ currentDescription }}</label>
@@ -115,7 +115,7 @@
                 {% else %}
                     <div class="field" style="border-block-start-width: 2px;">
                         <div class="heading">
-                            This entry has no other translations yet.
+                            {{ 'This entry has no other translations yet.'|t('multi-translator') }}
                         </div>
                     </div>
                 {% endif %}
@@ -130,7 +130,7 @@
                             'sourceSiteId': element.siteId,
                         }) }}">
                             <span aria-hidden="true" data-icon="gear"></span>
-                            More options...
+                            {{ 'More options...'|t('multi-translator') }}
                         </a>
                     </div>
 
