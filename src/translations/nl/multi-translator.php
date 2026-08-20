@@ -248,5 +248,5 @@ return [
     'Custom prompt' => 'Aangepaste prompt',
     'Write your own prompt. Make sure to include {source}, {target} and {text} tokens' => 'Schrijf uw eigen prompt. Zorg ervoor dat u de tokens {source}, {target} en {text} opneemt',
     'API temperature' => 'API-temperatuur',
-    'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'Welke samplingtemperatuur te gebruiken, tussen 0 en 2. Hogere waarden zoals 0,8 maken de uitvoer willekeuriger, terwijl lagere waarden zoals 0,2 de uitvoer gerichter en deterministischer maken.',
+    'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'Welke samplingtemperatuur te gebruiken, tussen 0 en 2. Hogere waarden zoals 0,8 maken de uitvoer willekeuriger, terwijl lagere waarden zoals 0,2 de uitvoer gerichter en deterministischer maken. Verouderd: niet ondersteund door GPT-5-modellen en wordt genegeerd wanneer een GPT-5-model is geselecteerd.',
 ];

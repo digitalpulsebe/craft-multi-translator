@@ -248,5 +248,5 @@ return [
     'Custom prompt' => 'Custom prompt',
     'Write your own prompt. Make sure to include {source}, {target} and {text} tokens' => 'Write your own prompt. Make sure to include {source}, {target} and {text} tokens',
     'API temperature' => 'API temperature',
-    'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.',
+    'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. Deprecated: not supported by GPT-5 models and will be ignored when a GPT-5 model is selected.',
 ];

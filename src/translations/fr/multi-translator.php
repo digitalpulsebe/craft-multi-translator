@@ -248,5 +248,5 @@ return [
     'Custom prompt' => 'Invite personnalisée',
     'Write your own prompt. Make sure to include {source}, {target} and {text} tokens' => 'Rédigez votre propre invite. Veillez à inclure les jetons {source}, {target} et {text}',
     'API temperature' => 'Température API',
-    'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'Température d\'échantillonnage à utiliser, entre 0 et 2. Des valeurs élevées comme 0,8 rendent la sortie plus aléatoire, tandis que des valeurs basses comme 0,2 la rendent plus précise et déterministe.',
+    'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'Température d\'échantillonnage à utiliser, entre 0 et 2. Des valeurs élevées comme 0,8 rendent la sortie plus aléatoire, tandis que des valeurs basses comme 0,2 la rendent plus précise et déterministe. Obsolète : non pris en charge par les modèles GPT-5 et sera ignoré lorsqu\'un modèle GPT-5 est sélectionné.',
 ];

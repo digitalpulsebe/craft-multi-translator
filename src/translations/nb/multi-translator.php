@@ -248,5 +248,5 @@ return [
     'Custom prompt' => 'Egendefinert ledetekst',
     'Write your own prompt. Make sure to include {source}, {target} and {text} tokens' => 'Skriv din egen ledetekst. Sørg for å inkludere tokenene {source}, {target} og {text}',
     'API temperature' => 'API-temperatur',
-    'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'Hvilken samplingstemperatur som skal brukes, mellom 0 og 2. Høyere verdier som 0,8 gjør utdataene mer tilfeldige, mens lavere verdier som 0,2 gjør dem mer presise og deterministiske.',
+    'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'Hvilken samplingstemperatur som skal brukes, mellom 0 og 2. Høyere verdier som 0,8 gjør utdataene mer tilfeldige, mens lavere verdier som 0,2 gjør dem mer presise og deterministiske. Avviklet: støttes ikke av GPT-5-modeller og vil bli ignorert når en GPT-5-modell er valgt.',
 ];

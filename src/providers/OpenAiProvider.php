@@ -92,8 +92,11 @@ class OpenAiProvider extends Provider
                     'content' => $prompt,
                 ],
             ],
-            'temperature' => floatval($this->getSetting('openAiTemperature', 0.5)),
         ];
+
+        if ($this->modelSupportsTemperature($model)) {
+            $body['temperature'] = floatval($this->getSetting('openAiTemperature', 0.5));
+        }
 
         try {
             $response = $this->getClient()->post($this->getBaseUrl() . '/chat/completions', ['json' => $body]);
@@ -130,12 +133,21 @@ class OpenAiProvider extends Provider
      */
     public function getModel(): string
     {
-        $dropdown = $this->getSetting('openAiModel', 'gpt-4o');
+        $dropdown = $this->getSetting('openAiModel', 'gpt-5.6-terra');
         if ($dropdown === 'custom') {
             $custom = $this->getSetting('openAiCustomModel', '');
-            return !empty($custom) ? $custom : 'gpt-4o';
+            return !empty($custom) ? $custom : 'gpt-5.6-terra';
         }
         return $dropdown;
+    }
+
+    /**
+     * Return whether the given model identifier belongs to the GPT-5+ family,
+     * which does not support the temperature parameter.
+     */
+    public function modelSupportsTemperature(string $model): bool
+    {
+        return !preg_match('/^gpt-5/i', $model);
     }
 
     /**
