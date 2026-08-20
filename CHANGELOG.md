@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- fix Content Block inside translatable Matrix loses values for untranslatable fields (fixes #132)
+
 ## 2.28.4 - 2026-07-23
 
 ### Fixed
