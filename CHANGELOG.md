@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-### Fixed
+### 2.28.5 - 2026-08-20
 
 - fix Content Block inside translatable Matrix loses values for untranslatable fields (fixes #132)
 
