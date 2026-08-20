@@ -14,19 +14,19 @@
 
     <div class="body">
         <div class="flex-fields">
-            <h2>Translate block</h2>
+            <h2>{{ 'Translate block'|t('multi-translator') }}</h2>
 
             {{ forms.selectField({
-                label: 'Target site',
+                label: 'Target site'|t('multi-translator'),
                 id: "translationTarget-${elementId}",
                 name: 'targetSiteId',
                 options: [
                     {
-                        label: 'select target',
+                        label: 'select target'|t('multi-translator'),
                         value: ''
                     },
                     {
-                        label: "__All sites__",
+                        label: 'All sites'|t('multi-translator'),
                         value: 'all'
                     }
                 ]|merge(
@@ -42,7 +42,7 @@
 
     <div class="footer">
         <div class="buttons right">
-            <button type="submit" class="btn submit submitTranslation">Start translation</button>
+            <button type="submit" class="btn submit submitTranslation">{{ 'Start translation'|t('multi-translator') }}</button>
         </div>
     </div>
 </form>

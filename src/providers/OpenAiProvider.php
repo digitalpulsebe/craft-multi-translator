@@ -28,7 +28,7 @@ class OpenAiProvider extends Provider
         $baseUrl = $this->getBaseUrl();
         if (!str_contains($baseUrl, 'api.openai.com')) {
             $host = parse_url($baseUrl, PHP_URL_HOST);
-            return 'OpenAI Compatible' . ($host ? " ($host)" : '');
+            return \Craft::t('multi-translator', 'OpenAI Compatible') . ($host ? " ($host)" : '');
         }
         return static::getDisplayName();
     }
@@ -74,7 +74,7 @@ class OpenAiProvider extends Provider
 
         $prompt = $this->getSetting('openAiPrompt', '');
         $prompt = empty($prompt)
-            ? 'Translate the following text from {source} to {target}, keep html and only answer with the translated text, if you can not translate it, just return the text i\'ve provided you: {text}'
+            ? \Craft::t('multi-translator', 'Translate the following text from {source} to {target}, keep html and only answer with the translated text, if you can not translate it, just return the text i\'ve provided you: {text}')
             : $prompt;
         $prompt = str_replace(
             ['{source}', '{target}', '{text}'],
@@ -99,7 +99,7 @@ class OpenAiProvider extends Provider
             $response = $this->getClient()->post($this->getBaseUrl() . '/chat/completions', ['json' => $body]);
         } catch (\GuzzleHttp\Exception\ClientException $e) {
             $responseBody = $e->getResponse() ? $e->getResponse()->getBody()->getContents() : 'no response body';
-            MultiTranslator::error('OpenAI API error: ' . $responseBody);
+            MultiTranslator::error(\Craft::t('multi-translator', 'OpenAI API error: {error}', ['error' => $responseBody]));
             throw $e;
         }
 

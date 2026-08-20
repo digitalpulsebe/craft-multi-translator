@@ -20,7 +20,7 @@ class Translate extends ElementAction
 
     public static function displayName(): string
     {
-        return 'Translate';
+        return Craft::t('multi-translator', 'Translate');
     }
 
     public function getTriggerHtml(): ?string
@@ -46,11 +46,11 @@ JS, [static::class]);
         $elementIds = $query->ids();
 
         if (!\Craft::$app->user->checkPermission('multiTranslateContent')) {
-            throw new UnauthorizedHttpException('You are not allowed to translate Elements');
+            throw new UnauthorizedHttpException(Craft::t('multi-translator', 'You are not allowed to translate Elements'));
         }
 
         if (!\Craft::$app->user->checkPermission('multiTranslateContentBulk')) {
-            throw new UnauthorizedHttpException('You are not allowed to translate Elements in bulk');
+            throw new UnauthorizedHttpException(Craft::t('multi-translator', 'You are not allowed to translate Elements in bulk'));
         }
 
         if ($this->targetSiteHandle == '_ALL_') {
@@ -72,7 +72,7 @@ JS, [static::class]);
             $targetSite = Craft::$app->sites->getSiteByHandle($siteHandle);
 
             if (!\Craft::$app->user->checkPermission('editSite:'.$targetSite->uid)) {
-                throw new UnauthorizedHttpException('You are not allowed to translate Elements for this site: '.$siteHandle);
+                throw new UnauthorizedHttpException(Craft::t('multi-translator', 'You are not allowed to translate Elements for this site: {site}', ['site' => $siteHandle]));
             }
 
             Craft::$app
@@ -83,13 +83,13 @@ JS, [static::class]);
                     'elementType' => $query->elementType,
                     'sourceSiteHandle' => $this->sourceSiteHandle,
                     'targetSiteHandle' => $siteHandle,
-                    'description' => 'Translating '.count($elementIds)." elements to $siteHandle..."
+                    'description' => Craft::t('multi-translator', 'Translating {count} elements to {site}...', ['count' => count($elementIds), 'site' => $siteHandle]),
                 ]))
             ;
         }
 
 
-        $this->setMessage('Added to queue');
+        $this->setMessage(Craft::t('multi-translator', 'Added to queue'));
 
         return true;
     }

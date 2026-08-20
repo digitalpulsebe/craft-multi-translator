@@ -26,19 +26,19 @@ abstract class BaseController extends Controller
             $translatedElement = MultiTranslator::getInstance()->translate->translateElement($element, $sourceSite, $targetSite);
 
             if (empty($translatedElement)) {
-                $this->setFailFlash('Translation cancelled');
+                $this->setFailFlash(Craft::t('multi-translator', 'Translation cancelled'));
                 return $this->redirect($element->cpEditUrl);
             }
 
             if (!empty($translatedElement->errors)) {
-                $this->setFailFlash('Validation errors '.json_encode($translatedElement->errors));
+                $this->setFailFlash(Craft::t('multi-translator', 'Validation errors') . ' ' . json_encode($translatedElement->errors));
                 return $this->redirect($translatedElement->cpEditUrl);
             }
 
             // get parent of translated element, if exists
             $rootOwner = $translatedElement->getRootOwner();
 
-            return $this->asSuccess('Element translated', ['elementId' => $elementId], $rootOwner ? $rootOwner->getCpEditUrl() : $translatedElement->getCpEditUrl());
+            return $this->asSuccess(Craft::t('multi-translator', 'Element translated'), ['elementId' => $elementId], $rootOwner ? $rootOwner->getCpEditUrl() : $translatedElement->getCpEditUrl());
         } catch (\Throwable $throwable) {
             $redirectElement = ElementHelper::one($elementType, $elementId, $targetSiteId);
             if (empty($redirectElement)) {
