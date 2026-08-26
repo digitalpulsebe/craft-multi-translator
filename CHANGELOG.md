@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.28.7 - 2026-08-26
+
+## Fixed
+
+- handle empty serialized content in ContentBlock to prevent merging issues (fixes #134)
+
 ## 2.28.6 - 2026-08-20
 
 ## Added
