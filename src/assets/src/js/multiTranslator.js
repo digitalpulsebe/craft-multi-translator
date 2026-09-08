@@ -96,7 +96,7 @@
 
                     var $buttons = $('.buttons', this.$container),
                         $cancelBtn = $(
-                            '<div class="btn">' + Craft.t('commerce', 'Cancel') + '</div>'
+                            '<div class="btn">' + Craft.t('app', 'Cancel') + '</div>'
                         ).prependTo($buttons);
 
                     this.addListener($cancelBtn, 'click', 'cancelTranslation');
@@ -109,7 +109,7 @@
                 .catch(({response}) => {
                     console.log(response);
                     this.$container.removeClass('loading');
-                    var error = Craft.t('commerce', 'An unknown error occurred.');
+                    var error = Craft.t('app', 'An unknown error occurred.');
 
                     if (response.data.message) {
                         error = response.data.message;

@@ -143,6 +143,7 @@ class MultiTranslator extends Plugin
                 $event->rules['multi-translator/glossaries/new'] = 'multi-translator/glossaries/new';
                 $event->rules['multi-translator/glossaries/fetch'] = 'multi-translator/glossaries/fetch';
                 $event->rules['multi-translator/translate/review'] = 'multi-translator/translate/review';
+                $event->rules['multi-translator/field/review'] = 'multi-translator/field/review';
                 $event->rules['multi-translator/field/translate'] = 'multi-translator/field/translate';
             }
         );
@@ -203,20 +204,8 @@ class MultiTranslator extends Plugin
                     return;
                 }
 
-                // Collect target sites the user may edit, excluding the current site
-                $currentUser = Craft::$app->getUser()->getIdentity();
-                $targetSites = collect(\craft\helpers\ElementHelper::supportedSitesForElement($element, true))
-                    ->filter(fn($site) => $site['siteId'] !== $element->siteId)
-                    ->filter(fn($site) => $currentUser->can('editSite:' . $site['siteUid']))
-                    ->map(fn($site) => Craft::$app->sites->getSiteById($site['siteId']))
-                    ->filter()
-                    ->values();
-
-                if ($targetSites->isEmpty()) {
-                    return;
-                }
-
                 // Build the action menu item; JS will open the modal
+                // Target-site resolution and permission checks are deferred to actionReview/actionTranslate.
                 $actionId = sprintf('multi-translator-field-%s', mt_rand());
                 $view = Craft::$app->getView();
 

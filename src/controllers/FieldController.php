@@ -4,7 +4,6 @@ namespace digitalpulsebe\craftmultitranslator\controllers;
 
 use Craft;
 use digitalpulsebe\craftmultitranslator\helpers\ElementHelper;
-use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use yii\web\Response;
 
 /**
@@ -44,18 +43,14 @@ class FieldController extends BaseController
     }
 
     /**
-     * Translate a single field on an element to the requested target site.
-     *
-     * Builds a disabledFields config override containing every field on the element
-     * except the one being translated, then delegates to the standard translateElement()
-     * flow — identical to TranslateController::actionConfirm().
+     * Translate a single field on an element to one or all target sites.
      *
      * Accepts POST params:
      *   - elementId    (int)
      *   - elementType  (string, FQCN)
      *   - sourceSiteId (int)
-     *   - targetSiteId (int)
-     *   - fieldHandle  (string)  the single field to translate
+     *   - targetSiteId (int|'all')  use 'all' to translate to every supported site
+     *   - fieldHandle  (string)     the single field to translate
      */
     public function actionTranslate(): Response
     {
@@ -64,7 +59,7 @@ class FieldController extends BaseController
         $elementId    = (int) $this->request->getRequiredBodyParam('elementId');
         $elementType  = $this->request->getRequiredBodyParam('elementType');
         $sourceSiteId = (int) $this->request->getRequiredBodyParam('sourceSiteId');
-        $targetSiteId = (int) $this->request->getRequiredBodyParam('targetSiteId');
+        $targetSiteId = $this->request->getRequiredBodyParam('targetSiteId');
         $fieldHandle  = $this->request->getRequiredBodyParam('fieldHandle');
 
         $element = ElementHelper::one($elementType, $elementId, $sourceSiteId);
@@ -73,24 +68,25 @@ class FieldController extends BaseController
             return $this->asFailure(Craft::t('multi-translator', 'Element not found.'));
         }
 
-        // Collect every field handle on the element except the one we want to translate,
-        // and pass them as the disabledFields override — identical to the review form config.
-        $allHandles = array_map(
-            fn($field) => $field->handle,
-            $element->getFieldLayout()->getCustomFields()
-        );
+        if ($targetSiteId === 'all') {
+            $currentUser = Craft::$app->getUser()->getIdentity();
 
-        $allHandles[] = 'title';
+            $result = $this->redirect($element->cpEditUrl);
 
-        $disabledFields = array_values(array_filter(
-            $allHandles,
-            fn($handle) => $handle !== $fieldHandle
-        ));
+            $targetSiteIds = collect(\craft\helpers\ElementHelper::supportedSitesForElement($element))
+                ->filter(fn(array $site) => $currentUser->can('editSite:' . $site['siteUid']))
+                ->filter(fn(array $site) => $site['siteId'] != $sourceSiteId)
+                ->pluck('siteId')
+                ->values()
+                ->all();
 
-        MultiTranslator::getInstance()->settingsService->getProviderSettings()->overrideWithConfig([
-            'disabledFields' => $disabledFields,
-        ]);
+            foreach ($targetSiteIds as $siteId) {
+                $result = $this->translateElement($elementId, $elementType, $sourceSiteId, $siteId, [$fieldHandle]);
+            }
 
-        return $this->translateElement($elementId, $elementType, $sourceSiteId, $targetSiteId);
+            return $result;
+        }
+
+        return $this->translateElement($elementId, $elementType, $sourceSiteId, (int) $targetSiteId, [$fieldHandle]);
     }
 }
