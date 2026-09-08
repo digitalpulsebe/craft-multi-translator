@@ -29,8 +29,8 @@ class GlossariesController extends Controller
         $this->requirePermission('multiTranslateContent');
 
         try {
-            MultiTranslator::getInstance()->deepl->fetchGlossaries();
-            $this->setSuccessFlash('Glossaries fetched from DeepL.');
+            MultiTranslator::getInstance()->translate->getApiProviderByHandle('deepl')->fetchGlossaries();
+            $this->setSuccessFlash(Craft::t('multi-translator', 'Glossaries fetched from DeepL.'));
         } catch (\Throwable $exception) {
             $this->setFailFlash($exception->getMessage());
         }
@@ -45,7 +45,7 @@ class GlossariesController extends Controller
         $record = $id ? Glossary::findOne(['id' => $id]) : null;
 
         if ($record && $record->delete()) {
-            $this->setSuccessFlash('Glossary deleted.');
+            $this->setSuccessFlash(Craft::t('multi-translator', 'Glossary deleted.'));
         }
 
         return $this->redirect('multi-translator/glossaries');
@@ -60,7 +60,7 @@ class GlossariesController extends Controller
         if ($record) {
             $record->setAttribute('enabled', 1);
             if ($record->save()) {
-                $this->setSuccessFlash('Glossary enabled.');
+                $this->setSuccessFlash(Craft::t('multi-translator', 'Glossary enabled.'));
             }
         }
 
@@ -76,7 +76,7 @@ class GlossariesController extends Controller
         if ($record) {
             $record->setAttribute('enabled', 0);
             if ($record->save()) {
-                $this->setSuccessFlash('Glossary disabled.');
+                $this->setSuccessFlash(Craft::t('multi-translator', 'Glossary disabled.'));
             }
         }
 
@@ -91,10 +91,10 @@ class GlossariesController extends Controller
             $record = Glossary::createOrUpdate($this->request->post());
 
             if ($record->hasErrors()) {
-                $this->setFailFlash('Validation errors');
+                $this->setFailFlash(Craft::t('multi-translator', 'Validation errors'));
                 return $this->renderTemplate('multi-translator/glossaries/_edit.twig', ['glossary' => $record]);
             } else {
-                $this->setSuccessFlash('Glossary saved/updated.');
+                $this->setSuccessFlash(Craft::t('multi-translator', 'Glossary saved/updated.'));
                 return $this->redirect('multi-translator/glossaries');
             }
         } catch (\Throwable $exception) {

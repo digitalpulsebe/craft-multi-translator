@@ -2,24 +2,24 @@
 {% extends "_layouts/cp" %}
 {% import '_includes/forms.twig' as forms %}
 
-{% set title = 'Translate Entry' %}
+{% set title = 'Translate Entry'|t('multi-translator') %}
 
 {% set crumbs = [
-    { label: 'Multi Translator', url: url('multi-translator') },
+    { label: 'Multi Translator'|t('multi-translator'), url: url('multi-translator') },
 ] %}
 
 {% set settings = craft.multiTranslator.providerSettings %}
 
 {% block content %}
-    <h2>Elements</h2>
+    <h2>{{ 'Elements'|t('multi-translator') }}</h2>
     <div class="main">
         <div class="tableview">
             <table class="data fullwidth">
                 <thead>
                     <tr>
-                        <th>Title</th>
-                        <th>{{ element is instance of('craft\\elements\\Asset') ? 'Volume' : (element is instance of('craft\\commerce\\elements\\Product') ? 'Product Type' : 'Section') }}</th>
-                        <th>Propagation method</th>
+                        <th>{{ 'Title'|t('multi-translator') }}</th>
+                        <th>{{ element is instance of('craft\\elements\\Asset') ? 'Volume'|t('multi-translator') : (element is instance of('craft\\commerce\\elements\\Product') ? 'Product Type'|t('multi-translator') : 'Section'|t('multi-translator')) }}</th>
+                        <th>{{ 'Propagation method'|t('multi-translator') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,7 +47,7 @@
     {% set sites = craft.app.sites.allSites %}
 
     {% set existingSiteOptions = sites|filter(site => (site.id in existingSiteIds and currentUser.can('editSite:'~site.uid)))|map(site => {label: site.name, value: site.id}) %}
-    {% set supportedSiteOptions = [{label: '- select target -', value: ''}] %}
+    {% set supportedSiteOptions = [{label: '- select target -'|t('multi-translator'), value: ''}] %}
     {% set supportedSiteOptions = supportedSiteOptions
         |merge(sites|filter(site => site.id in supportedSiteIds)
         |filter(site => currentUser.can('editSite:'~site.uid))
@@ -56,12 +56,12 @@
     <form method="post">
         <fieldset class="flex-fields">
             <legend>
-                <h2>Source and target</h2>
+                <h2>{{ 'Source and target'|t('multi-translator') }}</h2>
             </legend>
 
             {{ forms.selectField({
-                label: "Source site",
-                instructions: "Only sites with existing entry are shown",
+                label: "Source site"|t('multi-translator'),
+                instructions: "Only sites with existing entry are shown"|t('multi-translator'),
                 id: "sourceSiteId",
                 name: "sourceSiteId",
                 value: sourceSiteId,
@@ -72,8 +72,8 @@
             }) }}
 
             {{ forms.selectField({
-                label: "Target site",
-                instructions: "Only sites enabled for this section are shown",
+                label: "Target site"|t('multi-translator'),
+                instructions: "Only sites enabled for this section are shown"|t('multi-translator'),
                 id: "targetSiteId",
                 name: "targetSiteId",
                 value: null,
@@ -87,16 +87,16 @@
         {% namespace 'config' %}
         <fieldset>
                 <legend>
-                    <h2>Ignore Fields</h2>
+                    <h2>{{ 'Ignore Fields'|t('multi-translator') }}</h2>
                 </legend>
 
                 {% set fields = element.fieldLayout.customFields %}
-                {% set fieldsOptions = [{label: "Title", value: "title"}]
+                {% set fieldsOptions = [{label: "Title"|t('multi-translator'), value: "title"}]
                     |merge(fields|map(field => {label: "#{field.name} (#{field.handle})", value: field.handle})) %}
 
                 {{ forms.checkboxGroupField({
-                    label: "Disabled fields",
-                    instructions: "Select the fields to ignore",
+                    label: "Disabled fields"|t('multi-translator'),
+                    instructions: "Select the fields to ignore"|t('multi-translator'),
                     id: "disabledFields",
                     name: "disabledFields",
                     options: fieldsOptions,
@@ -104,12 +104,12 @@
             </fieldset>
             <fieldset>
                 <legend>
-                    <h2>Override settings once</h2>
+                    <h2>{{ 'Override settings once'|t('multi-translator') }}</h2>
                 </legend>
 
                 {{ forms.lightswitchField({
-                    label: "Save as draft",
-                    instructions: "Always create a new draft when translating entries",
+                    label: "Save as draft"|t('multi-translator'),
+                    instructions: "Always create a new draft when translating entries"|t('multi-translator'),
                     id: "saveAsDraft",
                     name: "saveAsDraft",
                     on: settings.saveAsDraft,
@@ -117,30 +117,17 @@
                 }) }}
 
                 {{ forms.lightswitchField({
-                    label: "Reset slug",
-                    instructions: "Reset slug after translation, in order for a new slug to be generated from the translated title.",
+                    label: "Reset slug"|t('multi-translator'),
+                    instructions: "Reset slug after translation, in order for a new slug to be generated from the translated title."|t('multi-translator'),
                     id: "resetSlug",
                     name: "resetSlug",
                     on: settings.resetSlug,
                     errors: settings.getErrors("resetSlug"),
                 }) }}
 
-                {{ forms.selectField({
-                    label: "Default English",
-                    instructions: "Default English for translating to English.",
-                    id: "defaultEnglish",
-                    name: "defaultEnglish",
-                    value: settings.defaultEnglish,
-                    options: [
-                        {'label': 'American English (en-US)', 'value': 'en-US'},
-                        {'label': 'British English (en-GB)', 'value': 'en-GB'},
-                    ],
-                    errors: settings.getErrors("defaultEnglish"),
-                }) }}
-
                 {{ forms.lightswitchField({
-                    label: "Detect Source Language",
-                    instructions: "Don't send the source language to the API and let Deepl/Google detect the source language.",
+                    label: "Detect Source Language"|t('multi-translator'),
+                    instructions: "Don't send the source language to the API and let Deepl/Google detect the source language."|t('multi-translator'),
                     id: "detectSourceLanguage",
                     name: "detectSourceLanguage",
                     on: settings.detectSourceLanguage,
@@ -148,8 +135,8 @@
                 }) }}
 
                 {{ forms.lightswitchField({
-                    label: "Update internal links",
-                    instructions: "Update internal links in CKeditor and point them to target site element.",
+                    label: "Update internal links"|t('multi-translator'),
+                    instructions: "Update internal links in CKeditor and point them to target site element."|t('multi-translator'),
                     id: "updateInternalLinks",
                     name: "updateInternalLinks",
                     on: settings.updateInternalLinks,
@@ -157,8 +144,8 @@
                 }) }}
 
                 {{ forms.lightswitchField({
-                    label: "Translated CKeditor nested entries",
-                    instructions: "Find and process nested Entries inside CKeditor value",
+                    label: "Translated CKeditor nested entries"|t('multi-translator'),
+                    instructions: "Find and process nested Entries inside CKeditor value"|t('multi-translator'),
                     id: "processNestedEntries",
                     name: "processNestedEntries",
                     on: settings.processNestedEntries,
@@ -174,7 +161,7 @@
             {{ hiddenInput('elementId', element.id) }}
             {{ hiddenInput('elementType', elementType) }}
             {{ actionInput('multi-translator/translate/confirm') }}
-            <button class="btn submit">Confirm</button>
+            <button class="btn submit">{{ 'Confirm'|t('multi-translator') }}</button>
         </fieldset>
     </form>
 {% endblock %}

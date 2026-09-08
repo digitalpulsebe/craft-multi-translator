@@ -1,48 +1,48 @@
 {% extends "_layouts/cp" %}
 
-{% set title = glossary.id ? 'Edit glossary' : 'New glossary' %}
+{% set title = glossary.id ? 'Edit glossary'|t('multi-translator') : 'New glossary'|t('multi-translator') %}
 {% set selectedSubnavItem = 'glossaries' %}
 
 {% set crumbs = [
-    { label: 'Multi Translator', url: url('multi-translator') },
-    { label: 'Glossaries', url: url('multi-translator/glossaries') }
+    { label: 'Multi Translator'|t('multi-translator'), url: url('multi-translator') },
+    { label: 'Glossaries'|t('multi-translator'), url: url('multi-translator/glossaries') }
 ] %}
 
 {% set supportedLanguages = [
-    {value: '', label: '- select language -'},
-    {value: 'ar', label: 'Arabic (AR)'},
-    {value: 'bg', label: 'Bulgarian (BG)'},
-    {value: 'cs', label: 'Czech (CS)'},
-    {value: 'da', label: 'Danish (DA)'},
-    {value: 'de', label: 'German (DE)'},
-    {value: 'el', label: 'Greek (EL)'},
-    {value: 'en', label: 'English (EN)'},
-    {value: 'es', label: 'Spanish (ES)'},
-    {value: 'et', label: 'Estonian (ET)'},
-    {value: 'fi', label: 'Finnish (FI)'},
-    {value: 'fr', label: 'French (FR)'},
-    {value: 'he', label: 'Hebrew (HE)'},
-    {value: 'hu', label: 'Hungarian (HU)'},
-    {value: 'id', label: 'Indonesian (ID)'},
-    {value: 'it', label: 'Italian (IT)'},
-    {value: 'ja', label: 'Japanese (JA)'},
-    {value: 'ko', label: 'Korean (KO)'},
-    {value: 'lt', label: 'Lithuanian (LT)'},
-    {value: 'lv', label: 'Latvian (LV)'},
-    {value: 'nb', label: 'Norwegian Bokmål (NB)'},
-    {value: 'nl', label: 'Dutch (NL)'},
-    {value: 'pl', label: 'Polish (PL)'},
-    {value: 'pt', label: 'Portuguese (PT)'},
-    {value: 'ro', label: 'Romanian (RO)'},
-    {value: 'ru', label: 'Russian (RU)'},
-    {value: 'sk', label: 'Slovak (SK)'},
-    {value: 'sl', label: 'Slovenian (SL)'},
-    {value: 'sv', label: 'Swedish (SV)'},
-    {value: 'th', label: 'Thai (TH)'},
-    {value: 'tr', label: 'Turkish (TR)'},
-    {value: 'uk', label: 'Ukrainian (UK)'},
-    {value: 'vi', label: 'Vietnamese (VI)'},
-    {value: 'zh', label: 'Chinese (ZH)'}
+    {value: '', label: '- select language -'|t('multi-translator')},
+    {value: 'ar', label: 'Arabic (AR)'|t('multi-translator')},
+    {value: 'bg', label: 'Bulgarian (BG)'|t('multi-translator')},
+    {value: 'cs', label: 'Czech (CS)'|t('multi-translator')},
+    {value: 'da', label: 'Danish (DA)'|t('multi-translator')},
+    {value: 'de', label: 'German (DE)'|t('multi-translator')},
+    {value: 'el', label: 'Greek (EL)'|t('multi-translator')},
+    {value: 'en', label: 'English (EN)'|t('multi-translator')},
+    {value: 'es', label: 'Spanish (ES)'|t('multi-translator')},
+    {value: 'et', label: 'Estonian (ET)'|t('multi-translator')},
+    {value: 'fi', label: 'Finnish (FI)'|t('multi-translator')},
+    {value: 'fr', label: 'French (FR)'|t('multi-translator')},
+    {value: 'he', label: 'Hebrew (HE)'|t('multi-translator')},
+    {value: 'hu', label: 'Hungarian (HU)'|t('multi-translator')},
+    {value: 'id', label: 'Indonesian (ID)'|t('multi-translator')},
+    {value: 'it', label: 'Italian (IT)'|t('multi-translator')},
+    {value: 'ja', label: 'Japanese (JA)'|t('multi-translator')},
+    {value: 'ko', label: 'Korean (KO)'|t('multi-translator')},
+    {value: 'lt', label: 'Lithuanian (LT)'|t('multi-translator')},
+    {value: 'lv', label: 'Latvian (LV)'|t('multi-translator')},
+    {value: 'nb', label: 'Norwegian Bokmål (NB)'|t('multi-translator')},
+    {value: 'nl', label: 'Dutch (NL)'|t('multi-translator')},
+    {value: 'pl', label: 'Polish (PL)'|t('multi-translator')},
+    {value: 'pt', label: 'Portuguese (PT)'|t('multi-translator')},
+    {value: 'ro', label: 'Romanian (RO)'|t('multi-translator')},
+    {value: 'ru', label: 'Russian (RU)'|t('multi-translator')},
+    {value: 'sk', label: 'Slovak (SK)'|t('multi-translator')},
+    {value: 'sl', label: 'Slovenian (SL)'|t('multi-translator')},
+    {value: 'sv', label: 'Swedish (SV)'|t('multi-translator')},
+    {value: 'th', label: 'Thai (TH)'|t('multi-translator')},
+    {value: 'tr', label: 'Turkish (TR)'|t('multi-translator')},
+    {value: 'uk', label: 'Ukrainian (UK)'|t('multi-translator')},
+    {value: 'vi', label: 'Vietnamese (VI)'|t('multi-translator')},
+    {value: 'zh', label: 'Chinese (ZH)'|t('multi-translator')}
 ] %}
 
 {% import '_includes/forms.twig' as forms %}
@@ -56,13 +56,13 @@
 
             <fieldset>
                 {{ forms.textfield({
-                    label: 'Name',
+                    label: 'Name'|t('multi-translator'),
                     name: 'name',
                     value: glossary.name,
                     errors: glossary.getErrors('name')
                 }) }}
                 {{ forms.selectfield({
-                    label: 'Source Language',
+                    label: 'Source Language'|t('multi-translator'),
                     name: 'sourceLanguage',
                     value: glossary.sourceLanguage,
                     options: supportedLanguages,
@@ -70,7 +70,7 @@
                     errors: glossary.getErrors('sourceLanguage')
                 }) }}
                 {{ forms.selectfield({
-                    label: 'Target Language',
+                    label: 'Target Language'|t('multi-translator'),
                     name: 'targetLanguage',
                     value: glossary.targetLanguage,
                     options: supportedLanguages,
@@ -85,18 +85,18 @@
 
             <fieldset>
                 {{ forms.editableTableField({
-                    label: "Content",
+                    label: "Content"|t('multi-translator'),
                     name: "rows",
                     id: "rows",
                     cols: {
                         'source': {
                             type: 'singleline',
-                            heading: "Source Text",
+                            heading: "Source Text"|t('multi-translator'),
                             rows: 1
                         },
                         'target': {
                             type: 'singleline',
-                            heading: "Target Text",
+                            heading: "Target Text"|t('multi-translator'),
                             rows: 1
                         },
                     },
@@ -104,12 +104,12 @@
                     allowAdd: true,
                     allowDelete: true,
                     allowReorder: true,
-                    addRowLabel: 'Add a row',
+                    addRowLabel: 'Add a row'|t('multi-translator'),
                     errors: glossary.getErrors('rows')
                 })|spaceless }}
             </fieldset>
 
-            <button type="submit" class="btn submit">Save</button>
+            <button type="submit" class="btn submit">{{ 'Save'|t('multi-translator') }}</button>
         </form>
     </div>
 {% endblock %}

@@ -1,5 +1,42 @@
 # Release Notes for Multi Translator
 
+## 2.28.7 - 2026-08-26
+
+## Fixed
+
+- handle empty serialized content in ContentBlock to prevent merging issues (fixes #134)
+
+## 2.28.6 - 2026-08-20
+
+## Added
+
+- use translation function to allow localization across plugin UI labels and messages
+- new GPT-5.6 models in the settings list
+
+## 2.28.5 - 2026-08-20
+
+### Fixed
+
+- fix Content Block inside translatable Matrix loses values for untranslatable fields (fixes #132)
+
+## 2.28.4 - 2026-07-23
+
+### Fixed
+
+- fix: ensure existingSettings are array before merging (fixes #130)
+
+## 2.28.3 - 2026-06-25
+
+### Fixed
+
+- fix deepl glossaries after provider refactoring (fixes #125)
+
+## 2.28.2 - 2026-06-19
+
+### Fixed
+
+- fix error on advanced review: remove defaultEnglish setting
+
 ## 2.28.1 - 2026-06-19
 
 ### Fixed

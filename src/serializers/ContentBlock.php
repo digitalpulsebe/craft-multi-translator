@@ -24,7 +24,15 @@ class ContentBlock extends FieldSerializer
     {
         $contentBlock = $source->getFieldValue($this->field->handle);
         $serialized = $this->field->serializeValue($contentBlock, $source);
-        $serialized['fields'] = MultiTranslator::getInstance()->translate->setElementFieldsTranslations($contentBlock, $target, $value['fields'] ?? []);
+
+        if (!$serialized) {
+            $serialized = ['fields' => []];
+        }
+
+        $serialized['fields'] = array_merge(
+            $serialized['fields'] ?? [],
+            MultiTranslator::getInstance()->translate->setElementFieldsTranslations($contentBlock, $target, $value['fields'] ?? [])
+        );
 
         return parent::setFieldData($source, $target, $serialized);
     }

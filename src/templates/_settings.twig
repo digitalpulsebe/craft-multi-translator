@@ -4,8 +4,8 @@
 {% import '_includes/forms.twig' as forms %}
 
 {{ forms.lightswitchField({
-    label: "Debug",
-    instructions: "Creates log files",
+    label: "Debug"|t('multi-translator'),
+    instructions: "Creates log files"|t('multi-translator'),
     id: "debug",
     name: "debug",
     on: settings.debug,
@@ -13,9 +13,9 @@
 }) }}
 
 {{ forms.textfield({
-    label: 'Queue Jobs TTR',
+    label: 'Queue Jobs TTR'|t('multi-translator'),
     name: 'queueJobTtr',
-    instructions: 'Time to reserve for the queue jobs when translating in bulk',
+    instructions: 'Time to reserve for the queue jobs when translating in bulk'|t('multi-translator'),
     type: 'number', min: 60, step: 1,
     value: settings.queueJobTtr,
 }) }}

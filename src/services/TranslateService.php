@@ -98,11 +98,16 @@ class TranslateService extends Component
         $targetElement = $this->findTargetElement($source, $targetSite->id);
         $this->setElementTranslation($source, $targetElement, $translatedValues);
 
-        $revisionNotes = 'Translated by Multi Translator from "'
-            .$sourceSite->name.'" ('.$sourceSite->getLocale()->getLanguageID().') to "'
-            .$targetSite->name.'" ('.$targetSite->getLocale()->getLanguageID().').'
-        ;
-        $draftName = 'Translated Draft ('.$sourceSite->getLocale()->getLanguageID().'->'.$targetSite->getLocale()->getLanguageID().')';
+        $revisionNotes = Craft::t('multi-translator', 'Translated by Multi Translator from "{source}" ({sourceLang}) to "{target}" ({targetLang}).', [
+            'source' => $sourceSite->name,
+            'sourceLang' => $sourceSite->getLocale()->getLanguageID(),
+            'target' => $targetSite->name,
+            'targetLang' => $targetSite->getLocale()->getLanguageID(),
+        ]);
+        $draftName = Craft::t('multi-translator', 'Translated Draft ({sourceLang}->{targetLang})', [
+            'sourceLang' => $sourceSite->getLocale()->getLanguageID(),
+            'targetLang' => $targetSite->getLocale()->getLanguageID(),
+        ]);
 
         if (!$this->onAfterElementTranslation($source, $targetElement, $sourceSite, $targetSite, $isRootElement)) {
             return null;
@@ -422,6 +427,15 @@ class TranslateService extends Component
     public function getApiProvider(): ?Provider
     {
         $handle = $this->getProviderSettings()->getTranslationProvider();
+        $providers = $this->getApiProviders();
+        return $providers[$handle] ?? null;
+    }
+
+    /**
+     * Get the configured translation provider instance.
+     */
+    public function getApiProviderByHandle($handle): ?Provider
+    {
         $providers = $this->getApiProviders();
         return $providers[$handle] ?? null;
     }

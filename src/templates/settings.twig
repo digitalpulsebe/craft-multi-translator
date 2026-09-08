@@ -2,11 +2,11 @@
 {% extends "_layouts/cp" %}
 {% import '_includes/forms.twig' as forms %}
 
-{% set title = 'Multi Translator' %}
+{% set title = 'Multi Translator'|t('multi-translator') %}
 {% set selectedSubnavItem = 'settings' %}
 
 {% set crumbs = [
-    { label: 'Multi Translator', url: url('multi-translator') },
+    { label: 'Multi Translator'|t('multi-translator'), url: url('multi-translator') },
 ] %}
 
 {% set providerSettings = craft.multiTranslator.providerSettings %}
@@ -17,11 +17,11 @@
         {% namespace "settings" %}
             <fieldset>
                 <legend>
-                    <h2>API Provider</h2>
+                    <h2>{{ 'API Provider'|t('multi-translator') }}</h2>
                 </legend>
 
                 {{ forms.selectField({
-                    label: 'Provider',
+                    label: 'Provider'|t('multi-translator'),
                     instructions: '',
                     name: 'translationProvider',
                     value: providerSettings.translationProvider ?? 'deepl',
@@ -51,26 +51,26 @@
         {% namespace 'settings' %}
             <fieldset>
                 <legend>
-                    <h2>General Options</h2>
+                    <h2>{{ 'General Options'|t('multi-translator') }}</h2>
                 </legend>
 
                 {{ forms.selectField({
-                    label: "Translate buttons direction",
-                    instructions: "Select direction 'to target' or 'from source', in the sidebar actions of entry detail view.",
+                    label: "Translate buttons direction"|t('multi-translator'),
+                    instructions: "Select direction 'to target' or 'from source', in the sidebar actions of entry detail view."|t('multi-translator'),
                     id: "translationDirectionButtons",
                     name: "translationDirectionButtons",
                     value: providerSettings.translationDirectionButtons,
                     options: [
-                        {'label': 'From current entry to <other sites>', 'value': 'fromThis'},
-                        {'label': 'From <other sites> to current entry', 'value': 'toThis'},
-                        {'label': 'Both (might be confusing)', 'value': 'both'},
+                        {'label': 'From current entry to <other sites>'|t('multi-translator'), 'value': 'fromThis'},
+                        {'label': 'From <other sites> to current entry'|t('multi-translator'), 'value': 'toThis'},
+                        {'label': 'Both (might be confusing)'|t('multi-translator'), 'value': 'both'},
                     ],
                     errors: providerSettings.getErrors("translationDirectionButtons"),
                 }) }}
 
                 {{ forms.lightswitchField({
-                    label: "Save as draft",
-                    instructions: "Always create a new draft when translating entries.",
+                    label: "Save as draft"|t('multi-translator'),
+                    instructions: "Always create a new draft when translating entries."|t('multi-translator'),
                     id: "saveAsDraft",
                     name: "saveAsDraft",
                     on: providerSettings.saveAsDraft,
@@ -78,8 +78,8 @@
                 }) }}
 
                 {{ forms.lightswitchField({
-                    label: "Reset slug",
-                    instructions: "Reset slug after translation, in order for a new slug to be generated from the translated title.",
+                    label: "Reset slug"|t('multi-translator'),
+                    instructions: "Reset slug after translation, in order for a new slug to be generated from the translated title."|t('multi-translator'),
                     id: "resetSlug",
                     name: "resetSlug",
                     on: providerSettings.resetSlug,
@@ -87,8 +87,8 @@
                 }) }}
 
                 {{ forms.lightswitchField({
-                    label: "Detect Source Language",
-                    instructions: "Don't send the source language to the API and let Deepl/Google detect the source language.",
+                    label: "Detect Source Language"|t('multi-translator'),
+                    instructions: "Don't send the source language to the API and let Deepl/Google detect the source language."|t('multi-translator'),
                     id: "detectSourceLanguage",
                     name: "detectSourceLanguage",
                     on: providerSettings.detectSourceLanguage,
@@ -96,8 +96,8 @@
                 }) }}
 
                 {{ forms.lightswitchField({
-                    label: "Update internal links",
-                    instructions: "Update internal links in CKeditor and point them to target site element.",
+                    label: "Update internal links"|t('multi-translator'),
+                    instructions: "Update internal links in CKeditor and point them to target site element."|t('multi-translator'),
                     id: "updateInternalLinks",
                     name: "updateInternalLinks",
                     on: providerSettings.updateInternalLinks,
@@ -105,8 +105,8 @@
                 }) }}
 
                 {{ forms.lightswitchField({
-                    label: "Translated CKeditor nested entries",
-                    instructions: "Find and process nested Entries inside CKeditor value.",
+                    label: "Translated CKeditor nested entries"|t('multi-translator'),
+                    instructions: "Find and process nested Entries inside CKeditor value."|t('multi-translator'),
                     id: "processNestedEntries",
                     name: "processNestedEntries",
                     on: providerSettings.processNestedEntries,
@@ -114,14 +114,14 @@
                 }) }}
 
                 {{ forms.editableTableField({
-                    label: "Disabled fields",
-                    instructions: 'Disable field handles and ignore them in the translation',
+                    label: "Disabled fields"|t('multi-translator'),
+                    instructions: 'Disable field handles and ignore them in the translation'|t('multi-translator'),
                     name: "disabledFields",
                     id: "disabledFields",
                     cols: {
                         'handle': {
                             type: 'singleline',
-                            heading: "Field handle",
+                            heading: "Field handle"|t('multi-translator'),
                             rows: 1
                         },
                     },
@@ -129,14 +129,14 @@
                     allowAdd: true,
                     allowDelete: true,
                     allowReorder: true,
-                    addRowLabel: 'Add a field',
+                    addRowLabel: 'Add a field'|t('multi-translator'),
                     errors: providerSettings.getErrors('disabledFields'),
                     required: false
                 })|spaceless }}
 
                 {{ forms.lightswitchField({
-                    label: "Translate disabled Commerce Variants",
-                    instructions: "Query and translate disabled variants of Commerce Products.",
+                    label: "Translate disabled Commerce Variants"|t('multi-translator'),
+                    instructions: "Query and translate disabled variants of Commerce Products."|t('multi-translator'),
                     id: "translateDisabledVariants",
                     name: "translateDisabledVariants",
                     on: providerSettings.translateDisabledVariants,
@@ -144,8 +144,8 @@
                 }) }}
 
                 {{ forms.lightswitchField({
-                    label: "Translate disabled Matrix Elements",
-                    instructions: "Query and translate disabled Matrix Elements inside fields",
+                    label: "Translate disabled Matrix Elements"|t('multi-translator'),
+                    instructions: "Query and translate disabled Matrix Elements inside fields"|t('multi-translator'),
                     id: "translateDisabledMatrixElements",
                     name: "translateDisabledMatrixElements",
                     on: providerSettings.translateDisabledMatrixElements,
@@ -159,7 +159,7 @@
         <fieldset>
             {{ csrfInput() }}
             {{ actionInput('multi-translator/provider-settings/update') }}
-            <button class="btn submit">Save</button>
+            <button class="btn submit">{{ 'Save'|t('multi-translator') }}</button>
         </fieldset>
     </form>
 {% endblock %}

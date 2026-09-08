@@ -15,13 +15,18 @@ class BulkTranslateJob extends BaseJob
     public string $sourceSiteHandle;
     public string $targetSiteHandle;
 
-    public ?string $description = 'Translating elements...';
+    public ?string $description = null;
+
+    protected function defaultDescription(): ?string
+    {
+        return \Craft::t('multi-translator', 'Translating elements...');
+    }
 
     public function execute($queue): void
     {
         $this->setProgress($queue, 1);
 
-        $this->description = "Translating elements...";
+        $this->description = \Craft::t('multi-translator', 'Translating elements...');
         $errors = [];
 
         $sourceSite = Craft::$app->getSites()->getSiteByHandle($this->sourceSiteHandle);
@@ -34,7 +39,7 @@ class BulkTranslateJob extends BaseJob
         foreach ($elements as $i => $element) {
             $iHuman = $i+1;
 
-            $this->setProgress($queue, $i/$elementCount, "Translating element $iHuman/$elementCount to $targetSite->name");
+            $this->setProgress($queue, $i/$elementCount, \Craft::t('multi-translator', 'Translating element {current}/{total} to {site}', ['current' => $iHuman, 'total' => $elementCount, 'site' => $targetSite->name]));
 
             $translatedElement = MultiTranslator::getInstance()->translate->translateElement($element, $sourceSite, $targetSite);
 
@@ -45,9 +50,9 @@ class BulkTranslateJob extends BaseJob
 
         if (count($errors)) {
             $count = count($errors);
-            throw new Exception("Validation errors for $count elements. Check the logs.");
+            throw new Exception(\Craft::t('multi-translator', 'Validation errors for {count} elements. Check the logs.', ['count' => $count]));
         }
 
-        $this->setProgress($queue, 100, 'done');
+        $this->setProgress($queue, 100, \Craft::t('multi-translator', 'done'));
     }
 }
