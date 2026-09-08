@@ -26,6 +26,7 @@ return [
     'Validation errors' => 'Valideringsfeil',
     'Element translated' => 'Element oversatt',
     'Element translated to {sites}' => 'Element oversatt til {sites}',
+    'Element not found.' => 'Element ikke funnet.',
     'Settings saved.' => 'Innstillinger lagret.',
     'Glossaries fetched from DeepL.' => 'Ordlister hentet fra DeepL.',
     'Glossary deleted.' => 'Ordliste slettet.',
@@ -131,6 +132,10 @@ return [
     // Blokkoversettelse (_translate/block.twig)
     'Translate block' => 'Oversett blokk',
     'Start translation' => 'Start oversettelse',
+
+    // Feltoversettelse (_translate/field.twig)
+    'Translate field' => 'Oversett felt',
+    'Translate field…' => 'Oversett felt…',
 
     // Ordlisteoversikt (glossaries/index.twig)
     'Create new' => 'Opprett ny',

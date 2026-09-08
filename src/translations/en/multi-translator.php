@@ -26,6 +26,7 @@ return [
     'Validation errors' => 'Validation errors',
     'Element translated' => 'Element translated',
     'Element translated to {sites}' => 'Element translated to {sites}',
+    'Element not found.' => 'Element not found.',
     'Settings saved.' => 'Settings saved.',
     'Glossaries fetched from DeepL.' => 'Glossaries fetched from DeepL.',
     'Glossary deleted.' => 'Glossary deleted.',
@@ -131,6 +132,10 @@ return [
     // Block translation (_translate/block.twig)
     'Translate block' => 'Translate block',
     'Start translation' => 'Start translation',
+
+    // Per-field translation (_translate/field.twig)
+    'Translate field' => 'Translate field',
+    'Translate field…' => 'Translate field…',
 
     // Glossaries index (glossaries/index.twig)
     'Create new' => 'Create new',

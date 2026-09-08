@@ -75,23 +75,38 @@ class TranslateService extends Component
      * @param Element $source
      * @param Site $sourceSite
      * @param Site $targetSite
-     * @param bool $isRootElement
+     * @param bool $isRootElement - whether this is the root element of the source entry
+     * @param array|null $fieldHandles - only translate these fields
      * @return Element|null
      * @throws ElementNotFoundException
      * @throws Exception
      * @throws Throwable
      * @throws InvalidConfigException
      */
-    public function translateElement(Element $source, Site $sourceSite, Site $targetSite, bool $isRootElement = true): ?Element
+    public function translateElement(Element $source, Site $sourceSite, Site $targetSite, bool $isRootElement = true, array $fieldHandles = null): ?Element
     {
         if (!$this->onBeforeElementTranslation($source, $sourceSite, $targetSite, $isRootElement)) {
             return null;
         }
 
-        $originalHtmls = SerializerHelper::serialize($this->serializeElement($source, $sourceSite, $targetSite));
+        $serializedElementFields = $this->serializeElement($source, $sourceSite, $targetSite);
+
+        if ($fieldHandles) {
+            // only serialize the fields we need to translate
+            $serializedElementFields = [
+                'fields' => array_filter($serializedElementFields['fields'], function ($fieldData, $fieldHandle) use ($fieldHandles) {
+                    return in_array($fieldHandle, $fieldHandles);
+                }, ARRAY_FILTER_USE_BOTH)
+            ];
+        }
+
+        // make one document of original content, in batches
+        $originalHtmls = SerializerHelper::serialize($serializedElementFields);
+        // translate each batch
         $translatedHtmls = array_map(function ($originalHtml) use ($sourceSite, $targetSite) {
             return $this->translateText($sourceSite->language, $targetSite->language, $originalHtml);
         }, $originalHtmls);
+        // unserialize the translated content
         $translatedValues = SerializerHelper::unserialize($translatedHtmls);
 
         // find or create target (destination)
@@ -236,7 +251,7 @@ class TranslateService extends Component
      * @param FieldInterface $field
      * @return FieldSerializer|null
      */
-    protected function getSerializer(FieldInterface $field): ?FieldSerializer
+    public function getSerializer(FieldInterface $field): ?FieldSerializer
     {
         $fieldClass = get_class($field);
         $serializerClass = $this->serializers[$fieldClass] ?? null;

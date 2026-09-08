@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.29.0 - 2026-09-08
+
+### Added
+
+- Per-field translation: a "Translate field…" action menu item appears on each translatable field in the CP element editor (requires Craft 5.9+). Clicking it opens a modal to pick a target site and translates only that field, leaving all other field values untouched.
+
 ## 2.28.7 - 2026-08-26
 
 ## Fixed

@@ -11,7 +11,7 @@ use craft\web\Controller;
 abstract class BaseController extends Controller
 {
 
-    protected function translateElement(int $elementId, string $elementType, int $sourceSiteId, int $targetSiteId): Response
+    protected function translateElement(int $elementId, string $elementType, int $sourceSiteId, int $targetSiteId, array $fieldHandles = null): Response
     {
         $this->requirePermission('multiTranslateContent');
 
@@ -23,7 +23,7 @@ abstract class BaseController extends Controller
         $this->requirePermission('editSite:'.$targetSite->uid);
 
         try {
-            $translatedElement = MultiTranslator::getInstance()->translate->translateElement($element, $sourceSite, $targetSite);
+            $translatedElement = MultiTranslator::getInstance()->translate->translateElement($element, $sourceSite, $targetSite, true, $fieldHandles);
 
             if (empty($translatedElement)) {
                 $this->setFailFlash(Craft::t('multi-translator', 'Translation cancelled'));
