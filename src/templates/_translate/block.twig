@@ -6,43 +6,37 @@
 
 {% set sites = sites|filter(site => currentUser.can('editSite:'~site.uid)) %}
 
-<form action="" method="POST">
+<form method="POST">
     {{ actionInput('multi-translator/block/translate') }}
     {{ hiddenInput('blockId', element.id) }}
     {{ hiddenInput('sourceSiteId', sourceSiteId) }}
     {{ csrfInput() }}
 
-    <div class="body">
-        <div class="flex-fields">
-            <h2>{{ 'Translate block'|t('multi-translator') }}</h2>
+    <header class="header">
+        <h1>{{ 'Translate block'|t('multi-translator') }}</h1>
+    </header>
 
-            {{ forms.selectField({
-                label: 'Target site'|t('multi-translator'),
-                id: "translationTarget-${elementId}",
-                name: 'targetSiteId',
-                options: [
-                    {
-                        label: 'select target'|t('multi-translator'),
-                        value: ''
-                    },
-                    {
-                        label: 'All sites'|t('multi-translator'),
-                        value: 'all'
-                    }
-                ]|merge(
-                    sites|map(site => {
-                        label: "#{site.name} (#{site.locale})",
-                        value: site.id
-                    })
-                ),
-                inputAttributes: {required: 1},
-            }) }}
-        </div>
+    <div class="body">
+        {{ forms.selectField({
+            label: 'Target site'|t('multi-translator'),
+            id: "translationTarget-${elementId}",
+            name: 'targetSiteId',
+            options: [
+                { label: '- select target -'|t('multi-translator'), value: '' },
+                { label: 'All sites'|t('multi-translator'), value: 'all' }
+            ]|merge(
+                sites|map(site => {
+                    label: "#{site.name} (#{site.locale})",
+                    value: site.id
+                })
+            ),
+            inputAttributes: {required: 1},
+        }) }}
     </div>
 
-    <div class="footer">
+    <footer class="footer">
         <div class="buttons right">
             <button type="submit" class="btn submit submitTranslation">{{ 'Start translation'|t('multi-translator') }}</button>
         </div>
-    </div>
+    </footer>
 </form>

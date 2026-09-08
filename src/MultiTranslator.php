@@ -8,10 +8,13 @@ use craft\base\Model;
 use craft\base\Plugin;
 use craft\elements\Asset;
 use craft\elements\Entry;
+use craft\events\DefineFieldActionsEvent;
 use craft\events\DefineHtmlEvent;
 use craft\events\RegisterElementActionsEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\events\RegisterUserPermissionsEvent;
+use craft\fieldlayoutelements\BaseField;
+use craft\fieldlayoutelements\CustomField;
 use craft\log\MonologTarget;
 use craft\services\UserPermissions;
 use craft\web\twig\variables\CraftVariable;
@@ -65,6 +68,7 @@ class MultiTranslator extends Plugin
             $this->registerRoutes();
             $this->registerVariables();
             $this->registerSidebarHtml();
+            $this->registerFieldActionMenuItems();
             $this->registerPermissions();
             $this->registerActions();
         });
@@ -139,6 +143,96 @@ class MultiTranslator extends Plugin
                 $event->rules['multi-translator/glossaries/new'] = 'multi-translator/glossaries/new';
                 $event->rules['multi-translator/glossaries/fetch'] = 'multi-translator/glossaries/fetch';
                 $event->rules['multi-translator/translate/review'] = 'multi-translator/translate/review';
+                $event->rules['multi-translator/field/review'] = 'multi-translator/field/review';
+                $event->rules['multi-translator/field/translate'] = 'multi-translator/field/translate';
+            }
+        );
+    }
+
+    /**
+     * Register per-field "Translate field…" action menu items in the CP element editor.
+     * Uses BaseField::EVENT_DEFINE_ACTION_MENU_ITEMS, available since Craft 5.9.0.
+     * A runtime class_exists guard keeps the plugin installable on Craft < 5.9.
+     */
+    private function registerFieldActionMenuItems(): void
+    {
+        // Guard: the event was added in Craft 5.9.0
+        if (!class_exists(BaseField::class) || !defined(BaseField::class . '::EVENT_DEFINE_ACTION_MENU_ITEMS')) {
+            return;
+        }
+
+        Event::on(
+            BaseField::class,
+            BaseField::EVENT_DEFINE_ACTION_MENU_ITEMS,
+            function (DefineFieldActionsEvent $event) {
+                // Skip read-only forms (drafts sidebar, preview, etc.)
+                if ($event->static) {
+                    return;
+                }
+
+                // Only act when the current user has translation permission
+                if (!Craft::$app->user->checkPermission('multiTranslateContent')) {
+                    return;
+                }
+
+                // Resolve the element being edited
+                $element = $event->element;
+                if ($element === null) {
+                    return;
+                }
+
+                // Only supported element types
+                if (!in_array(get_class($element), static::getSupportedElementClasses(), true)) {
+                    return;
+                }
+
+                // Only fields with a registered serializer (i.e. translatable field types)
+                /** @var BaseField $layoutElement */
+                $layoutElement = $event->sender;
+                if (!($layoutElement instanceof CustomField)) {
+                    return;
+                }
+
+                try {
+                    $field = $layoutElement->getField();
+                } catch (\Throwable) {
+                    return;
+                }
+
+                $translateService = static::getInstance()->translate;
+                if (empty($translateService->getSerializer($field))) {
+                    return;
+                }
+
+                // Build the action menu item; JS will open the modal
+                // Target-site resolution and permission checks are deferred to actionReview/actionTranslate.
+                $actionId = sprintf('multi-translator-field-%s', mt_rand());
+                $view = Craft::$app->getView();
+
+                $view->registerJsWithVars(
+                    static function ($actionId, $params) {
+                        return <<<JS
+$('#' + $actionId).on('activate', () => {
+    new Craft.MultiTranslatorFieldModal($params);
+});
+JS;
+                    },
+                    [
+                        $view->namespaceInputId($actionId),
+                        [
+                            'elementId'    => $element->canonicalId,
+                            'elementType'  => get_class($element),
+                            'sourceSiteId' => $element->siteId,
+                            'fieldHandle'  => $field->handle,
+                        ],
+                    ]
+                );
+
+                $event->items[] = [
+                    'id'    => $actionId,
+                    'icon'  => 'language',
+                    'label' => Craft::t('multi-translator', 'Translate field…'),
+                ];
             }
         );
     }

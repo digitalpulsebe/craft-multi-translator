@@ -26,6 +26,7 @@ return [
     'Validation errors' => 'Erreurs de validation',
     'Element translated' => 'Élément traduit',
     'Element translated to {sites}' => 'Élément traduit vers {sites}',
+    'Element not found.' => 'Élément introuvable.',
     'Settings saved.' => 'Paramètres enregistrés.',
     'Glossaries fetched from DeepL.' => 'Glossaires récupérés depuis DeepL.',
     'Glossary deleted.' => 'Glossaire supprimé.',
@@ -131,6 +132,10 @@ return [
     // Traduction de bloc
     'Translate block' => 'Traduire le bloc',
     'Start translation' => 'Démarrer la traduction',
+
+    // Traduction par champ (_translate/field.twig)
+    'Translate field' => 'Traduire le champ',
+    'Translate field…' => 'Traduire le champ…',
 
     // Liste des glossaires
     'Create new' => 'Créer un nouveau',

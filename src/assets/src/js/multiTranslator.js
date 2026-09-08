@@ -2,6 +2,67 @@
 (function (window) {
     const {Craft, Garnish, $} = window;
 
+    /**
+     * Craft.MultiTranslatorFieldModal
+     *
+     * Opens a modal whose body is fetched from multi-translator/field/review,
+     * identical to the block translation modal pattern.
+     *
+     * Expected settings keys:
+     *   elementId    {number}
+     *   elementType  {string}
+     *   sourceSiteId {number}
+     *   fieldHandle  {string}
+     */
+    Craft.MultiTranslatorFieldModal = Garnish.Modal.extend({
+        $container: null,
+
+        init: function (settings) {
+            this.$container = $('<div/>', {
+                class: 'modal fitted loading',
+            }).appendTo(Garnish.$bod);
+
+            this.base(this.$container, {resizable: false});
+
+            var data = {
+                elementId:    settings.elementId,
+                elementType:  settings.elementType,
+                sourceSiteId: settings.sourceSiteId,
+                fieldHandle:  settings.fieldHandle,
+            };
+
+            var $this = this;
+
+            Craft.sendActionRequest('POST', 'multi-translator/field/review', {data})
+                .then(function (response) {
+                    $this.$container.removeClass('loading');
+                    $this.$container.append(response.data.html);
+
+                    var $buttons = $('.buttons', $this.$container),
+                        $cancelBtn = $(
+                            '<div class="btn">' + Craft.t('app', 'Cancel') + '</div>'
+                        ).prependTo($buttons);
+
+                    $this.addListener($cancelBtn, 'click', 'hide');
+
+                    setTimeout(function () {
+                        Craft.initUiElements($this.$container);
+                        $this.updateSizeAndPosition();
+                    }, 200);
+                })
+                .catch(function (error) {
+                    $this.$container.removeClass('loading');
+                    var msg = Craft.t('app', 'An unknown error occurred.');
+
+                    if (error.response && error.response.data && error.response.data.message) {
+                        msg = error.response.data.message;
+                    }
+
+                    $this.$container.append('<div class="body">' + msg + '</div>');
+                });
+        },
+    }, {});
+
     Craft.translateBlockModal = Garnish.Modal.extend({
         $container: null,
         $body: null,
@@ -35,7 +96,7 @@
 
                     var $buttons = $('.buttons', this.$container),
                         $cancelBtn = $(
-                            '<div class="btn">' + Craft.t('commerce', 'Cancel') + '</div>'
+                            '<div class="btn">' + Craft.t('app', 'Cancel') + '</div>'
                         ).prependTo($buttons);
 
                     this.addListener($cancelBtn, 'click', 'cancelTranslation');
@@ -48,7 +109,7 @@
                 .catch(({response}) => {
                     console.log(response);
                     this.$container.removeClass('loading');
-                    var error = Craft.t('commerce', 'An unknown error occurred.');
+                    var error = Craft.t('app', 'An unknown error occurred.');
 
                     if (response.data.message) {
                         error = response.data.message;

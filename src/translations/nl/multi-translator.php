@@ -26,6 +26,7 @@ return [
     'Validation errors' => 'Validatiefouten',
     'Element translated' => 'Element vertaald',
     'Element translated to {sites}' => 'Element vertaald naar {sites}',
+    'Element not found.' => 'Element niet gevonden.',
     'Settings saved.' => 'Instellingen opgeslagen.',
     'Glossaries fetched from DeepL.' => 'Woordenlijsten opgehaald van DeepL.',
     'Glossary deleted.' => 'Woordenlijst verwijderd.',
@@ -131,6 +132,10 @@ return [
     // Blokvertaling
     'Translate block' => 'Blok vertalen',
     'Start translation' => 'Vertaling starten',
+
+    // Veldvertaling (_translate/field.twig)
+    'Translate field' => 'Veld vertalen',
+    'Translate field…' => 'Veld vertalen…',
 
     // Woordenlijstenoverzicht
     'Create new' => 'Nieuw aanmaken',
