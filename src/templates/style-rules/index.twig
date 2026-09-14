@@ -1,0 +1,86 @@
+{% extends "_layouts/cp" %}
+
+{% set title = 'Style Rules'|t('multi-translator') %}
+{% set selectedSubnavItem = 'style-rules' %}
+
+{% set crumbs = [
+    { label: 'Multi Translator'|t('multi-translator'), url: url('multi-translator') },
+] %}
+
+{% set settings = craft.multiTranslator.providerSettings %}
+{% set provider = craft.multiTranslator.provider %}
+
+{% block actionButton %}
+    {% if settings.translationProvider == 'deepl' and provider.isConnected %}
+        <a class="btn submit sync icon" href="{{ url('multi-translator/style-rules/fetch') }}">{{ 'Fetch from DeepL'|t('multi-translator') }}</a>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="main">
+        <h2>{{ 'Style rules (DeepL)'|t('multi-translator') }}</h2>
+
+        <p>
+            {{ 'Read more about this feature in'|t('multi-translator') }}
+            <a href="https://developers.deepl.com/docs/api-reference/style-rules" target="_blank">
+                {{ 'the DeepL documentation'|t('multi-translator') }}
+            </a>
+        </p>
+        <p>
+            {{ 'Style rules are created and edited in your DeepL account. Enable one style rule per target language to apply it when translating into that language. Enabling or disabling a style rule here does not affect your DeepL account.'|t('multi-translator') }}
+        </p>
+
+        {% if settings.translationProvider == 'deepl' and provider.isConnected %}
+
+            {% if craft.multiTranslator.styleRules|length %}
+                <table class="table data fullwidth">
+                    <thead>
+                    <tr>
+                        <th>{{ 'Name'|t('multi-translator') }}</th>
+                        <th>{{ 'Language'|t('multi-translator') }}</th>
+                        <th>{{ 'Configured rules'|t('multi-translator') }}</th>
+                        <th>{{ '# custom instructions'|t('multi-translator') }}</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for styleRule in craft.multiTranslator.styleRules %}
+                            <tr>
+                                <td>
+                                    <span
+                                        class="status {{ styleRule.enabled ? 'live' : 'disabled' }}"
+                                        role="img"
+                                        aria-label="{{ 'Status: '|t('multi-translator') }}{{ styleRule.enabled ? 'live'|t('multi-translator') : 'disabled'|t('multi-translator') }}">
+                                    </span>
+                                    {{ styleRule.name }}
+                                </td>
+                                <td>{{ styleRule.language|upper }}</td>
+                                <td>{{ styleRule.configuredRuleCategories|join(', ') }}</td>
+                                <td>{{ styleRule.customInstructionLabels|length }}</td>
+                                <td style="text-align: right">
+                                    {% if styleRule.enabled %}
+                                        <a
+                                            href="{{ actionUrl('multi-translator/style-rules/disable/', {id: styleRule.id}) }}"
+                                            class="btn"
+                                            title="{{ 'Disable this style rule'|t('multi-translator') }}"
+                                        >{{ 'disable'|t('multi-translator') }}</a>
+                                    {% else %}<a
+                                            href="{{ actionUrl('multi-translator/style-rules/enable/', {id: styleRule.id}) }}"
+                                            class="btn"
+                                            title="{{ 'Enable this style rule'|t('multi-translator') }}"
+                                        >{{ 'enable'|t('multi-translator') }}</a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>{{ 'No style rules found, create them in your DeepL account and fetch them here.'|t('multi-translator') }}</p>
+            {% endif %}
+
+        {% else %}
+            <p>{{ 'Only available with active DeepL account'|t('multi-translator') }}</p>
+        {% endif %}
+    </div>
+{% endblock %}
