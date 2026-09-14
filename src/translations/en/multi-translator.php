@@ -204,6 +204,20 @@ return [
     'Target Text' => 'Target Text',
     'Add a row' => 'Add a row',
 
+    // Style rules index (style-rules/index.twig)
+    'Style Rules' => 'Style Rules',
+    'Style rules (DeepL)' => 'Style rules (DeepL)',
+    'Style rules are created and edited in your DeepL account. Enable one style rule per target language to apply it when translating into that language. Enabling or disabling a style rule here does not affect your DeepL account.' => 'Style rules are created and edited in your DeepL account. Enable one style rule per target language to apply it when translating into that language. Enabling or disabling a style rule here does not affect your DeepL account.',
+    'Language' => 'Language',
+    'Configured rules' => 'Configured rules',
+    '# custom instructions' => '# custom instructions',
+    'Enable this style rule' => 'Enable this style rule',
+    'Disable this style rule' => 'Disable this style rule',
+    'No style rules found, create them in your DeepL account and fetch them here.' => 'No style rules found, create them in your DeepL account and fetch them here.',
+    'Style rules fetched from DeepL.' => 'Style rules fetched from DeepL.',
+    'Style rule enabled.' => 'Style rule enabled.',
+    'Style rule disabled.' => 'Style rule disabled.',
+
     // DeepL provider settings
     'DeepL API Key' => 'DeepL API Key',
     'Copy the API Key from your DeepL [account settings page](https://www.deepl.com/account/summary)' => 'Copy the API Key from your DeepL [account settings page](https://www.deepl.com/account/summary)',
@@ -223,6 +237,13 @@ return [
     'Default English for translating to English.' => 'Default English for translating to English.',
     'American English (en-US)' => 'American English (en-US)',
     'British English (en-GB)' => 'British English (en-GB)',
+    'Style rules' => 'Style rules',
+    'Style rules from your DeepL account can be enabled per target language on the Style Rules screen.' => 'Style rules from your DeepL account can be enabled per target language on the Style Rules screen.',
+    'Manage Style Rules' => 'Manage Style Rules',
+    'Custom instructions' => 'Custom instructions',
+    'Free-text instructions to steer the translation, for example about tone or wording. DeepL supports at most 10 instructions of 300 characters each, and only applies them when translating into German, English, Spanish, French, Italian, Japanese, Korean or Chinese. Custom instructions require the next-generation language model, so translations using them are upgraded to it automatically. [See docs](https://developers.deepl.com/api-reference/translate/request-translation)' => 'Free-text instructions to steer the translation, for example about tone or wording. DeepL supports at most 10 instructions of 300 characters each, and only applies them when translating into German, English, Spanish, French, Italian, Japanese, Korean or Chinese. Custom instructions require the next-generation language model, so translations using them are upgraded to it automatically. [See docs](https://developers.deepl.com/api-reference/translate/request-translation)',
+    'Instruction' => 'Instruction',
+    'Add an instruction' => 'Add an instruction',
 
     // Google provider settings
     'Google API Key' => 'Google API Key',
