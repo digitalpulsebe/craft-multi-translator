@@ -24,13 +24,15 @@ class SerializerHelper
                 $value = null;
             }
 
+            if (empty($value)) {
+                continue;
+            }
+
             $node = $doc->createElement('node');
             $node->setAttribute('id', $key);
 
-            if (!empty($value)) {
-                $cdata = $doc->createCDATASection($value);
-                $node->appendChild($cdata);
-            }
+            $cdata = $doc->createCDATASection($value);
+            $node->appendChild($cdata);
 
             $html->appendChild($node);
 
