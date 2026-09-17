@@ -1,5 +1,12 @@
 # Release Notes for Multi Translator
 
+## 2.30.0 - 2026-09-17
+
+### Added
+
+- DeepL style rules: a new Style Rules screen to fetch the style rule lists from your DeepL account and enable one per target language (fixes #135) (thanks @PhilReinking)
+- DeepL custom instructions: up to 10 free-text instructions applied when translating into supported target languages (fixes #135) (thanks @PhilReinking)
+
 ## 2.29.0 - 2026-09-08
 
 ### Added

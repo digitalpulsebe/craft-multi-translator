@@ -10,9 +10,13 @@ use DeepL\MultilingualGlossaryDictionaryEntries;
 use DeepL\Translator;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\records\Glossary;
+use digitalpulsebe\craftmultitranslator\records\StyleRule;
 
 class DeeplProvider extends Provider
 {
+    // target languages supported by the custom_instructions option (including their regional variants)
+    private const CUSTOM_INSTRUCTION_LANGUAGES = ['de', 'en', 'es', 'fr', 'it', 'ja', 'ko', 'zh'];
+
     protected ?Translator $_client = null;
 
     public static function getHandle(): string
@@ -52,13 +56,33 @@ class DeeplProvider extends Provider
 
     public function translate(string $sourceLocale = null, string $targetLocale = null, string $text = null): ?string
     {
+        if (!$text) {
+            return null;
+        }
+
+        $deeplTarget = $this->targetLocale($targetLocale);
+        $targetLanguage = strtolower(explode('-', $deeplTarget)[0]);
+
         $glossary = Glossary::find()->where([
             'sourceLanguage' => substr($sourceLocale, 0, 2),
             'targetLanguage' => substr($targetLocale, 0, 2),
             'enabled' => 1,
         ])->one();
 
+        $styleRule = StyleRule::find()->where([
+            'language' => $targetLanguage,
+            'enabled' => 1,
+        ])->one();
+
+        $customInstructions = $this->customInstructionsForTarget($targetLanguage);
+
         $modelType = $this->getSetting('deeplModelType', 'latency_optimized');
+
+        // custom instructions require a next-generation model,
+        // the API documents requests combining them with model_type=latency_optimized as rejected
+        if ($customInstructions && $modelType === 'latency_optimized') {
+            $modelType = 'quality_optimized';
+        }
 
         $defaultOptions = [
             'tag_handling' => 'html',
@@ -78,11 +102,43 @@ class DeeplProvider extends Provider
             $defaultOptions['glossary'] = $glossary->deeplId;
         }
 
-        if ($text) {
-            return $this->getClient()->translateText($text, $this->sourceLocale($sourceLocale), $this->targetLocale($targetLocale), $defaultOptions);
+        if ($styleRule) {
+            $defaultOptions['style_id'] = $styleRule->deeplId;
         }
 
-        return null;
+        if ($customInstructions) {
+            $defaultOptions['custom_instructions'] = $customInstructions;
+        }
+
+        return $this->getClient()->translateText($text, $this->sourceLocale($sourceLocale), $deeplTarget, $defaultOptions);
+    }
+
+    private function customInstructionsForTarget(string $targetLanguage): array
+    {
+        if (!in_array($targetLanguage, self::CUSTOM_INSTRUCTION_LANGUAGES, true)) {
+            return [];
+        }
+
+        $rows = $this->getSetting('deeplCustomInstructions', []);
+
+        // an empty editable table is stored as an empty string
+        if (!is_array($rows)) {
+            return [];
+        }
+
+        $instructions = [];
+
+        foreach ($rows as $row) {
+            $instruction = trim($row['instruction'] ?? '');
+
+            if ($instruction !== '') {
+                // the API allows at most 300 characters per instruction
+                $instructions[] = mb_substr($instruction, 0, 300);
+            }
+        }
+
+        // the API allows at most 10 instructions
+        return array_slice($instructions, 0, 10);
     }
 
     public function fetchGlossaries(): void
@@ -122,6 +178,39 @@ class DeeplProvider extends Provider
         }
 
         Glossary::deleteAll(['not in', 'id', $recordIds]);
+    }
+
+    public function fetchStyleRules(): void
+    {
+        $styleRules = $this->getClient()->getAllStyleRules(null, null, true);
+        $recordIds = [];
+
+        foreach ($styleRules as $styleRuleInfo) {
+            $styleRuleRecord = StyleRule::findOne(['deeplId' => $styleRuleInfo->styleId]);
+
+            if (!$styleRuleRecord) {
+                // new style rules arrive disabled, an admin has to enable them per language
+                $styleRuleRecord = new StyleRule();
+                $styleRuleRecord->setAttribute('deeplId', $styleRuleInfo->styleId);
+                $styleRuleRecord->setAttribute('enabled', 0);
+            }
+
+            $styleRuleRecord->setAttribute('name', $styleRuleInfo->name);
+            $styleRuleRecord->setAttribute('language', strtolower(explode('-', $styleRuleInfo->language)[0]));
+            $styleRuleRecord->setAttribute('data', [
+                'version' => $styleRuleInfo->version,
+                'configuredRules' => $styleRuleInfo->configuredRules ? array_keys(array_filter((array) $styleRuleInfo->configuredRules)) : [],
+                'customInstructions' => array_map(fn ($instruction) => $instruction->label, $styleRuleInfo->customInstructions ?? []),
+            ]);
+
+            if (!$styleRuleRecord->save()) {
+                throw new \Exception(json_encode($styleRuleRecord->getErrors()));
+            }
+
+            $recordIds[] = $styleRuleRecord->id;
+        }
+
+        StyleRule::deleteAll(['not in', 'id', $recordIds]);
     }
 
     public function createGlossary(string $name, string $sourceLanguage, string $targetLanguage, array $data): GlossaryInfo
