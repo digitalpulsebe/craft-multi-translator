@@ -197,7 +197,7 @@ class TranslateService extends Component
     {
         $disabledFields = $this->getProviderSettings()->getDisabledFieldHandles();
 
-        $serialized['id'] = $source->id;
+        $serialized = [];
 
         if ($source->title && $source->getIsTitleTranslatable() && !in_array('title', $disabledFields)) {
             $serialized['title'] = $source->title;
