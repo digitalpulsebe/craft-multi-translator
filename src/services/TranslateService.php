@@ -100,14 +100,20 @@ class TranslateService extends Component
             ];
         }
 
-        // make one document of original content, in batches
-        $originalHtmls = SerializerHelper::serialize($serializedElementFields);
-        // translate each batch
-        $translatedHtmls = array_map(function ($originalHtml) use ($sourceSite, $targetSite) {
-            return $this->translateText($sourceSite->language, $targetSite->language, $originalHtml);
-        }, $originalHtmls);
-        // unserialize the translated content
-        $translatedValues = SerializerHelper::unserialize($translatedHtmls);
+        $provider = $this->getApiProvider();
+
+        if ($provider?->supportsNativeArrayTranslation()) {
+            $translatedValues = $this->translateSerializedFieldsAsArray($serializedElementFields, $sourceSite, $targetSite, $provider);
+        } else {
+            // make one document of original content, in batches
+            $originalHtmls = SerializerHelper::serialize($serializedElementFields);
+            // translate each batch
+            $translatedHtmls = array_map(function ($originalHtml) use ($sourceSite, $targetSite) {
+                return $this->translateText($sourceSite->language, $targetSite->language, $originalHtml);
+            }, $originalHtmls);
+            // unserialize the translated content
+            $translatedValues = SerializerHelper::unserialize($translatedHtmls);
+        }
 
         // find or create target (destination)
         $targetElement = $this->findTargetElement($source, $targetSite->id);
@@ -186,6 +192,67 @@ class TranslateService extends Component
     }
 
     /**
+     * Translate an element's serialized fields via a provider's native array translation
+     * support: flattens the field data into independent values (no markup), chunks them
+     * to stay within the provider's per-request limits, and reassembles the translated
+     * values into the original nested field structure.
+     * @return array
+     */
+    private function translateSerializedFieldsAsArray(array $serializedElementFields, Site $sourceSite, Site $targetSite, Provider $provider): array
+    {
+        $flattened = SerializerHelper::flatten($serializedElementFields);
+
+        if (empty($flattened)) {
+            return [];
+        }
+
+        $translatedFlattened = [];
+
+        foreach ($this->chunkFlattenedValues($flattened, $provider) as $chunk) {
+            $translatedTexts = $provider->translateArray($sourceSite->language, $targetSite->language, array_values($chunk));
+            $translatedFlattened += array_combine(array_keys($chunk), $translatedTexts);
+        }
+
+        return SerializerHelper::unflatten($translatedFlattened);
+    }
+
+    /**
+     * Split a flattened [dotPath => value] map into chunks that respect a provider's
+     * max item count and max total character length per translateArray() call.
+     * @param array<string, string> $flattened
+     * @return array<array<string, string>>
+     */
+    private function chunkFlattenedValues(array $flattened, Provider $provider): array
+    {
+        $maxItems = $provider->getMaxArrayChunkItems();
+        $maxChars = $provider->getMaxArrayChunkChars();
+
+        $chunks = [];
+        $currentChunk = [];
+        $currentChars = 0;
+
+        foreach ($flattened as $key => $value) {
+            $exceedsItems = $maxItems !== null && count($currentChunk) >= $maxItems;
+            $exceedsChars = ($currentChars + strlen($value)) > $maxChars;
+
+            if ($currentChunk && ($exceedsItems || $exceedsChars)) {
+                $chunks[] = $currentChunk;
+                $currentChunk = [];
+                $currentChars = 0;
+            }
+
+            $currentChunk[$key] = $value;
+            $currentChars += strlen($value);
+        }
+
+        if ($currentChunk) {
+            $chunks[] = $currentChunk;
+        }
+
+        return $chunks;
+    }
+
+    /**
      * Serialize an element for translation
      * @param Element $source
      * @param Site $sourceSite
@@ -197,7 +264,7 @@ class TranslateService extends Component
     {
         $disabledFields = $this->getProviderSettings()->getDisabledFieldHandles();
 
-        $serialized['id'] = $source->id;
+        $serialized = [];
 
         if ($source->title && $source->getIsTitleTranslatable() && !in_array('title', $disabledFields)) {
             $serialized['title'] = $source->title;

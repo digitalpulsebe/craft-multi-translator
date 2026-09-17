@@ -40,6 +40,50 @@ abstract class Provider extends Component implements TranslateApiService
 
 
     // =========================================================================
+    // Native array translation
+    // =========================================================================
+
+    /**
+     * Whether this provider can translate several independent strings in a single
+     * request via the underlying API's own array/list parameter, rather than requiring
+     * them to be concatenated into one delimited document.
+     * Providers that override this to return true must also override translateArray().
+     */
+    public function supportsNativeArrayTranslation(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Translate several independent strings in a single request. Only called when
+     * supportsNativeArrayTranslation() returns true.
+     * @param string[] $texts
+     * @return string[] translated strings, in the same order as $texts
+     */
+    public function translateArray(string $sourceLocale = null, string $targetLocale = null, array $texts = []): array
+    {
+        throw new \LogicException(static::class . ' must override translateArray() to support native array translation.');
+    }
+
+    /**
+     * The maximum number of strings this provider accepts in a single translateArray()
+     * call, or null if the underlying API documents no such limit.
+     */
+    public function getMaxArrayChunkItems(): ?int
+    {
+        return null;
+    }
+
+    /**
+     * The maximum total character length (measured as strlen(), i.e. bytes) of all
+     * strings combined in a single translateArray() call.
+     */
+    public function getMaxArrayChunkChars(): int
+    {
+        return 20000;
+    }
+
+    // =========================================================================
     // Settings access
     // =========================================================================
 

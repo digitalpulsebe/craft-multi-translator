@@ -24,13 +24,15 @@ class SerializerHelper
                 $value = null;
             }
 
+            if (empty($value)) {
+                continue;
+            }
+
             $node = $doc->createElement('node');
             $node->setAttribute('id', $key);
 
-            if (!empty($value)) {
-                $cdata = $doc->createCDATASection($value);
-                $node->appendChild($cdata);
-            }
+            $cdata = $doc->createCDATASection($value);
+            $node->appendChild($cdata);
 
             $html->appendChild($node);
 
@@ -45,6 +47,47 @@ class SerializerHelper
 
         $htmls[] = $doc->saveHTML();
         return $htmls;
+    }
+
+    /**
+     * Flatten nested field data into an ordered [dotPath => value] map of translatable
+     * leaf values, dropping empty ones. Unlike serialize(), no markup is applied — the
+     * values are sent to the translation provider as-is via its native array support,
+     * with the dot-paths kept only in PHP to reassemble the result afterward.
+     * @return array<string, string>
+     */
+    public static function flatten(array $data): array
+    {
+        $flattened = [];
+
+        foreach (Arr::dot($data) as $key => $value) {
+            if (is_array($value)) {
+                $value = null;
+            }
+
+            if (empty($value)) {
+                continue;
+            }
+
+            $flattened[$key] = $value;
+        }
+
+        return $flattened;
+    }
+
+    /**
+     * Reassemble a flat [dotPath => translatedValue] map, as produced by flatten() and
+     * translated positionally, back into the original nested field structure.
+     */
+    public static function unflatten(array $flattened): array
+    {
+        $outputArray = [];
+
+        foreach ($flattened as $dotPath => $value) {
+            Arr::set($outputArray, $dotPath, $value);
+        }
+
+        return $outputArray;
     }
 
     public static function unserialize(array $htmls): array

@@ -52,6 +52,20 @@ class DeeplProvider extends Provider
 
     public function translate(string $sourceLocale = null, string $targetLocale = null, string $text = null): ?string
     {
+        if ($text) {
+            $options = $this->buildTranslateOptions($sourceLocale, $targetLocale);
+            return $this->getClient()->translateText($text, $this->sourceLocale($sourceLocale), $this->targetLocale($targetLocale), $options);
+        }
+
+        return null;
+    }
+
+    /**
+     * Build the DeepL request options (glossary, formality, tag handling, etc.)
+     * shared by both single-text and array translation requests.
+     */
+    private function buildTranslateOptions(?string $sourceLocale, ?string $targetLocale): array
+    {
         $glossary = Glossary::find()->where([
             'sourceLanguage' => substr($sourceLocale, 0, 2),
             'targetLanguage' => substr($targetLocale, 0, 2),
@@ -60,7 +74,7 @@ class DeeplProvider extends Provider
 
         $modelType = $this->getSetting('deeplModelType', 'latency_optimized');
 
-        $defaultOptions = [
+        $options = [
             'tag_handling' => 'html',
             'model_type' => $modelType,
             'formality' => $this->getSetting('deeplFormality', 'default'),
@@ -68,21 +82,50 @@ class DeeplProvider extends Provider
         ];
 
         // model_type=latency_optimized does not support tag_handling_version=v2
-        if ($modelType === 'quality_optimized') {
-            $defaultOptions['tag_handling_version'] = 'v2';
-        } else {
-            $defaultOptions['tag_handling_version'] = 'v1';
-        }
+        $options['tag_handling_version'] = $modelType === 'quality_optimized' ? 'v2' : 'v1';
 
         if ($glossary) {
-            $defaultOptions['glossary'] = $glossary->deeplId;
+            $options['glossary'] = $glossary->deeplId;
         }
 
-        if ($text) {
-            return $this->getClient()->translateText($text, $this->sourceLocale($sourceLocale), $this->targetLocale($targetLocale), $defaultOptions);
-        }
+        return $options;
+    }
 
+    public function supportsNativeArrayTranslation(): bool
+    {
+        return true;
+    }
+
+    public function getMaxArrayChunkItems(): ?int
+    {
+        // No documented item-count limit; only the request size limit applies.
         return null;
+    }
+
+    public function getMaxArrayChunkChars(): int
+    {
+        // DeepL documents a 128 KiB (131072 byte) total request size limit, which also
+        // covers the rest of the request payload (options, glossary id, etc.), not just
+        // the text content. Kept well under that to leave headroom.
+        return 100000;
+    }
+
+    /**
+     * @param string[] $texts
+     * @return string[]
+     */
+    public function translateArray(string $sourceLocale = null, string $targetLocale = null, array $texts = []): array
+    {
+        if (empty($texts)) {
+            return [];
+        }
+
+        $options = $this->buildTranslateOptions($sourceLocale, $targetLocale);
+        $results = $this->getClient()->translateText(array_values($texts), $this->sourceLocale($sourceLocale), $this->targetLocale($targetLocale), $options);
+
+        return array_map(function ($result) {
+            return $result->text;
+        }, $results);
     }
 
     public function fetchGlossaries(): void
