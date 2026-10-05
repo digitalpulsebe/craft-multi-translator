@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- catch case where provider settings are not read as an array (fixes #139)
+
 ## 2.30.0 - 2026-09-17
 
 ### Added

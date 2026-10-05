@@ -195,6 +195,10 @@ class ProviderSettings extends ActiveRecord
 
     public function overrideWithConfig(array $config): void
     {
+        if (!is_array($this->settings)) {
+            $this->settings = [];
+        }
+
         $this->settings = array_merge($this->settings ?? [], $config);
     }
 }
