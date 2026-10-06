@@ -2,13 +2,12 @@
 
 namespace digitalpulsebe\craftmultitranslator\helpers;
 
-
-use craft\helpers\ArrayHelper;
+use digitalpulsebe\craftmultitranslator\providers\Provider;
 use Illuminate\Support\Arr;
 
 class SerializerHelper
 {
-    public static function serialize(array $data): array
+    public static function serializeToHtmlChuncks(array $data): array
     {
         $htmls = array();
 
@@ -35,7 +34,7 @@ class SerializerHelper
             $html->appendChild($node);
 
             if (strlen($doc->saveHTML()) > 50000) {
-                // split in new document too avoid large payloads to the api
+                // split in new document to avoid large payloads to the api
                 $htmls[] = $doc->saveHTML();
 
                 $doc = new \DOMDocument;
@@ -47,7 +46,43 @@ class SerializerHelper
         return $htmls;
     }
 
-    public static function unserialize(array $htmls): array
+    /**
+     * Split a flattened [dotPath => value] map into chunks that respect a provider's
+     * max item count and max total character length per translateArray() call.
+     * @param array<string, string> $flattened
+     * @return array<array<string, string>>
+     */
+    public static function chunkArray(array $flattened, Provider $provider): array
+    {
+        $maxItems = $provider->getMaxArrayChunkItems();
+        $maxChars = $provider->getMaxArrayChunkChars();
+
+        $chunks = [];
+        $currentChunk = [];
+        $currentChars = 0;
+
+        foreach ($flattened as $key => $value) {
+            $exceedsItems = $maxItems !== null && count($currentChunk) >= $maxItems;
+            $exceedsChars = ($currentChars + strlen($value)) > $maxChars;
+
+            if ($currentChunk && ($exceedsItems || $exceedsChars)) {
+                $chunks[] = $currentChunk;
+                $currentChunk = [];
+                $currentChars = 0;
+            }
+
+            $currentChunk[$key] = $value;
+            $currentChars += strlen($value);
+        }
+
+        if ($currentChunk) {
+            $chunks[] = $currentChunk;
+        }
+
+        return $chunks;
+    }
+
+    public static function unserializeHtmlChuncks(array $htmls): array
     {
         $outputArray = [];
 

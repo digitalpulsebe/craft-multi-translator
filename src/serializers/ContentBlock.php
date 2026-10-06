@@ -3,7 +3,6 @@
 namespace digitalpulsebe\craftmultitranslator\serializers;
 
 use craft\base\Element;
-use craft\enums\PropagationMethod;
 use craft\models\Site;
 use digitalpulsebe\craftmultitranslator\base\FieldSerializer;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
@@ -14,7 +13,6 @@ class ContentBlock extends FieldSerializer
     {
         $contentBlock = $element->getFieldValue($this->field->handle);
         return [
-            'id' => $contentBlock->id,
             'fields' => MultiTranslator::getInstance()->translate->serializeElementFields($contentBlock, $sourceSite, $targetSite)
         ];
     }

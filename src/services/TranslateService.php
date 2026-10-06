@@ -40,8 +40,8 @@ use digitalpulsebe\craftmultitranslator\serializers\Vizy as VizySerializer;
 use digitalpulsebe\craftmultitranslator\serializers\ContentBlock as ContentBlockSerializer;
 use digitalpulsebe\craftmultitranslator\serializers\Link as LinkSerializer;
 use digitalpulsebe\craftmultitranslator\serializers\Linkit as LinkitSerializer;
+use Illuminate\Support\Arr;
 use Throwable;
-use yii\base\Event;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;
 use yii\web\ForbiddenHttpException;
@@ -91,6 +91,11 @@ class TranslateService extends Component
 
         $serializedElementFields = $this->serializeElement($source, $sourceSite, $targetSite);
 
+        if ($isRootElement) {
+            // only matrix blocks need the id
+            unset($serializedElementFields['id']);
+        }
+
         if ($fieldHandles) {
             // only serialize the fields we need to translate
             $serializedElementFields = [
@@ -100,14 +105,11 @@ class TranslateService extends Component
             ];
         }
 
-        // make one document of original content, in batches
-        $originalHtmls = SerializerHelper::serialize($serializedElementFields);
-        // translate each batch
-        $translatedHtmls = array_map(function ($originalHtml) use ($sourceSite, $targetSite) {
-            return $this->translateText($sourceSite->language, $targetSite->language, $originalHtml);
-        }, $originalHtmls);
-        // unserialize the translated content
-        $translatedValues = SerializerHelper::unserialize($translatedHtmls);
+        if ($this->getApiProvider()?->supportsNativeArrayTranslation()) {
+            $translatedValues = $this->translateSerializedFieldsAsArray($serializedElementFields, $sourceSite, $targetSite);
+        } else {
+            $translatedValues = $this->translateSerializedFieldsAsHtml($serializedElementFields, $sourceSite, $targetSite);
+        }
 
         // find or create target (destination)
         $targetElement = $this->findTargetElement($source, $targetSite->id);
@@ -165,9 +167,9 @@ class TranslateService extends Component
                 'sourceSiteLanguage' => $sourceSite->language,
                 'targetSiteLanguage' => $targetSite->language,
                 'propagationMethod' => $source?->section->propagationMethod ?? null,
-                'sourceEntry' => ['id' => $source->id, 'siteId' => $source->siteId, 'draft' => $source->getIsDraft(), 'customFields' => $source->getSerializedFieldValues()],
+                'sourceEntry' => ['id' => $source->id, 'siteId' => $source->siteId, 'draft' => $source->getIsDraft()],
                 'targetElement' => ['id' => $targetElement->id, 'siteId' => $targetElement->siteId, 'draft' => $targetElement->getIsDraft()],
-                'serialized' => $originalHtmls,
+                'serializedElementFields' => $serializedElementFields,
                 'translatedValues' => $translatedValues,
             ]);
         }
@@ -186,6 +188,57 @@ class TranslateService extends Component
     }
 
     /**
+     * Create an batches of serialized html and translate them with the provider
+     * @return array
+     */
+    private function translateSerializedFieldsAsHtml(array $serializedElementFields, Site $sourceSite, Site $targetSite)
+    {
+        // make one document of original content, in batches
+        $originalHtmls = SerializerHelper::serializeToHtmlChuncks($serializedElementFields);
+
+        // translate each batch
+        $translatedHtmls = array_map(function ($originalHtml) use ($sourceSite, $targetSite) {
+            return $this->translateText($sourceSite->language, $targetSite->language, $originalHtml);
+        }, $originalHtmls);
+
+        // unserialize the translated content
+        return SerializerHelper::unserializeHtmlChuncks($translatedHtmls);
+    }
+
+    /**
+     * Translate an element's serialized fields via a provider's native array translation
+     * support: flattens the field data into independent values (no markup), chunks them
+     * to stay within the provider's per-request limits, and reassembles the translated
+     * values into the original nested field structure.
+     * @return array
+     */
+    private function translateSerializedFieldsAsArray(array $serializedElementFields, Site $sourceSite, Site $targetSite): array
+    {
+        $dottedSerializedElementFields = Arr::dot($serializedElementFields);
+
+        // only keep non-empty rows to pass to the provider
+        $translatableRows = Arr::where($dottedSerializedElementFields, function ($value) {
+            return is_string($value) && !empty($value);
+        });
+
+        if (empty($translatableRows)) {
+            return $serializedElementFields;
+        }
+
+        $translatedRows = [];
+
+        foreach (SerializerHelper::chunkArray($translatableRows, $this->getApiProvider()) as $chunk) {
+            // only translate values
+            $translatedTexts = $this->getApiProvider()->translateArray($sourceSite->language, $targetSite->language, array_values($chunk));
+            // combine with the keys again
+            $translatedRows += array_combine(array_keys($chunk), $translatedTexts);
+        }
+
+        // combine with original to restore empty values
+        return Arr::undot(array_merge($dottedSerializedElementFields, $translatedRows));
+    }
+
+    /**
      * Serialize an element for translation
      * @param Element $source
      * @param Site $sourceSite
@@ -197,6 +250,7 @@ class TranslateService extends Component
     {
         $disabledFields = $this->getProviderSettings()->getDisabledFieldHandles();
 
+        // we need this id to map matrix blocks
         $serialized['id'] = $source->id;
 
         if ($source->title && $source->getIsTitleTranslatable() && !in_array('title', $disabledFields)) {

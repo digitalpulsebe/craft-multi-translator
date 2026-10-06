@@ -22,8 +22,15 @@ class Matrix extends FieldSerializer
 
         return [
             'children' => $query->collect()->map(function ($matrixElement) use ($sourceSite, $targetSite) {
-                return MultiTranslator::getInstance()->translate->serializeElement($matrixElement, $sourceSite, $targetSite);
-            })->keyBy('id')->all()
+                    return MultiTranslator::getInstance()->translate->serializeElement($matrixElement, $sourceSite, $targetSite);
+                })
+                ->keyBy('id')
+                ->map(function ($serializedMatrixElement) {
+                    // we don't longer need the 'id' after keying
+                    unset($serializedMatrixElement['id']);
+                    return $serializedMatrixElement;
+                })
+                ->all()
         ];
     }
 

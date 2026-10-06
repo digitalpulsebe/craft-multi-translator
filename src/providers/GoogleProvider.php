@@ -63,4 +63,46 @@ class GoogleProvider extends Provider
 
         return null;
     }
+
+    public function supportsNativeArrayTranslation(): bool
+    {
+        return true;
+    }
+
+    public function getMaxArrayChunkItems(): ?int
+    {
+        // Not documented by Google. Community-reported "Too many text segment" errors
+        // are commonly worked around by staying under ~100 segments per request; treat
+        // this as a practical ceiling rather than an official spec.
+        return 100;
+    }
+
+    public function getMaxArrayChunkChars(): int
+    {
+        // Cloud Translation - Basic (v2) documents a 100K byte max request size; kept
+        // conservative to leave headroom for the rest of the request payload.
+        return 90000;
+    }
+
+    public function translateArray(string $sourceLocale = null, string $targetLocale = null, array $texts = []): array
+    {
+        if (empty($texts)) {
+            return [];
+        }
+
+        $options = [
+            'target' => $this->targetLocale($targetLocale),
+            'format' => 'html',
+        ];
+
+        if ($sourceLocale) {
+            $options['source'] = $sourceLocale;
+        }
+
+        $results = $this->getClient()->translateBatch(array_values($texts), $options);
+
+        return array_map(function ($result) {
+            return html_entity_decode($result['text']);
+        }, $results);
+    }
 }
