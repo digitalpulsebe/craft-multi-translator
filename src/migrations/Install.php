@@ -26,6 +26,20 @@ class Install extends Migration
             ]);
         }
 
+        if (!$this->db->tableExists('{{%multitranslator_deepl_style_rules}}')) {
+            $this->createTable('{{%multitranslator_deepl_style_rules}}', [
+                'id' => $this->primaryKey(),
+                'name' => $this->string(),
+                'enabled' => $this->boolean()->notNull()->defaultValue(false),
+                'deeplId' => $this->string(),
+                'language' => $this->string(10),
+                'data' => $this->json(),
+                'dateCreated' => $this->dateTime()->notNull(),
+                'dateUpdated' => $this->dateTime()->notNull(),
+                'uid' => $this->uid(),
+            ]);
+        }
+
         if (!$this->db->tableExists('{{%multitranslator_provider_settings}}')) {
             $this->createTable('{{%multitranslator_provider_settings}}', [
                 'id' => $this->primaryKey(),
@@ -45,6 +59,7 @@ class Install extends Migration
     public function safeDown(): bool
     {
         $this->dropTableIfExists('{{%multitranslator_deepl_glossaries}}');
+        $this->dropTableIfExists('{{%multitranslator_deepl_style_rules}}');
         $this->dropTableIfExists('{{%multitranslator_provider_settings}}');
         return true;
     }

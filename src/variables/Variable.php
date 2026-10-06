@@ -7,6 +7,7 @@ use digitalpulsebe\craftmultitranslator\models\Settings;
 use digitalpulsebe\craftmultitranslator\providers\Provider;
 use digitalpulsebe\craftmultitranslator\records\Glossary;
 use digitalpulsebe\craftmultitranslator\records\ProviderSettings;
+use digitalpulsebe\craftmultitranslator\records\StyleRule;
 
 class Variable
 {
@@ -39,6 +40,11 @@ class Variable
     public function getGlossaries(): array
     {
         return Glossary::find()->all();
+    }
+
+    public function getStyleRules(): array
+    {
+        return StyleRule::find()->orderBy(['language' => SORT_ASC, 'name' => SORT_ASC])->all();
     }
 
     public function getElementHelper()

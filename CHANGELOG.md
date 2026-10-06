@@ -6,6 +6,17 @@
 
 - Use array translation for the providers that support it. Reduces character count and cost.
 
+### Fixed
+
+- catch case where provider settings are not read as an array (fixes #139)
+
+## 2.30.0 - 2026-09-17
+
+### Added
+
+- DeepL style rules: a new Style Rules screen to fetch the style rule lists from your DeepL account and enable one per target language (fixes #135) (thanks @PhilReinking)
+- DeepL custom instructions: up to 10 free-text instructions applied when translating into supported target languages (fixes #135) (thanks @PhilReinking)
+
 ## 2.29.0 - 2026-09-08
 
 ### Added
@@ -14,13 +25,13 @@
 
 ## 2.28.7 - 2026-08-26
 
-## Fixed
+### Fixed
 
 - handle empty serialized content in ContentBlock to prevent merging issues (fixes #134)
 
 ## 2.28.6 - 2026-08-20
 
-## Added
+### Added
 
 - use translation function to allow localization across plugin UI labels and messages
 - new GPT-5.6 models in the settings list

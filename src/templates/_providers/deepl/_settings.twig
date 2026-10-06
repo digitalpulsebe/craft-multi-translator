@@ -53,3 +53,38 @@
         {'label': 'British English (en-GB)'|t('multi-translator'), 'value': 'en-GB'},
     ],
 }) }}
+
+{{ forms.field({
+    label: "Style rules"|t('multi-translator'),
+}, tag('p', {
+    class: 'light',
+    text: 'Style rules from your DeepL account can be enabled per target language on the Style Rules screen.'|t('multi-translator'),
+}) ~ tag('p', {
+    html: tag('a', {
+        href: url('multi-translator/style-rules'),
+        text: 'Manage Style Rules'|t('multi-translator'),
+    }),
+})) }}
+
+{# an empty editable table is stored as an empty string, so guard against non-iterable values #}
+{% set customInstructionRows = settings.deeplCustomInstructions ?? [] %}
+{% set customInstructionRows = customInstructionRows is iterable ? customInstructionRows : [] %}
+
+{{ forms.editableTableField({
+    label: "Custom instructions"|t('multi-translator'),
+    instructions: "Free-text instructions to steer the translation, for example about tone or wording. DeepL supports at most 10 instructions of 300 characters each, and only applies them when translating into German, English, Spanish, French, Italian, Japanese, Korean or Chinese. Custom instructions require the next-generation language model, so translations using them are upgraded to it automatically. [See docs](https://developers.deepl.com/api-reference/translate/request-translation)"|t('multi-translator'),
+    id: 'deeplCustomInstructions',
+    name: 'deeplCustomInstructions',
+    cols: {
+        instruction: {
+            heading: 'Instruction'|t('multi-translator'),
+            type: 'singleline',
+        },
+    },
+    rows: customInstructionRows,
+    maxRows: 10,
+    allowAdd: true,
+    allowDelete: true,
+    allowReorder: true,
+    addRowLabel: 'Add an instruction'|t('multi-translator'),
+}) }}

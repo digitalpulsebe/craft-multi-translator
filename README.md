@@ -128,6 +128,18 @@ There can only be **one glossary for each language pair**.
 
 ![Screenshot](resources/img/screenshot_glossaries.png)
 
+### DeepL style rules and custom instructions
+
+When using the DeepL API, you can apply the [style rules](https://developers.deepl.com/docs/api-reference/style-rules) configured in your DeepL account.
+Style rules are created and edited in your DeepL account. On the Style Rules screen you can fetch them and enable **one style rule per target language**;
+when translating into that language, the plugin passes the style rule along.
+
+You can also configure up to 10 free-text **custom instructions** (max 300 characters each) in the DeepL provider settings.
+They are applied when translating into the target languages supported by DeepL (German, English, Spanish, French, Italian, Japanese, Korean and Chinese).
+
+Custom instructions require DeepL's next-generation language model. If the plugin is configured to use the classic model,
+translations using custom instructions are upgraded to the next-generation model automatically.
+
 ## Extending with events
 
 You can add your own logic by listening to these events:
