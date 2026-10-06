@@ -2,13 +2,12 @@
 
 namespace digitalpulsebe\craftmultitranslator\helpers;
 
-
-use craft\helpers\ArrayHelper;
+use digitalpulsebe\craftmultitranslator\providers\Provider;
 use Illuminate\Support\Arr;
 
 class SerializerHelper
 {
-    public static function serialize(array $data): array
+    public static function serializeToHtmlChuncks(array $data): array
     {
         $htmls = array();
 
@@ -24,20 +23,18 @@ class SerializerHelper
                 $value = null;
             }
 
-            if (empty($value)) {
-                continue;
-            }
-
             $node = $doc->createElement('node');
             $node->setAttribute('id', $key);
 
-            $cdata = $doc->createCDATASection($value);
-            $node->appendChild($cdata);
+            if (!empty($value)) {
+                $cdata = $doc->createCDATASection($value);
+                $node->appendChild($cdata);
+            }
 
             $html->appendChild($node);
 
             if (strlen($doc->saveHTML()) > 50000) {
-                // split in new document too avoid large payloads to the api
+                // split in new document to avoid large payloads to the api
                 $htmls[] = $doc->saveHTML();
 
                 $doc = new \DOMDocument;
@@ -50,47 +47,42 @@ class SerializerHelper
     }
 
     /**
-     * Flatten nested field data into an ordered [dotPath => value] map of translatable
-     * leaf values, dropping empty ones. Unlike serialize(), no markup is applied — the
-     * values are sent to the translation provider as-is via its native array support,
-     * with the dot-paths kept only in PHP to reassemble the result afterward.
-     * @return array<string, string>
+     * Split a flattened [dotPath => value] map into chunks that respect a provider's
+     * max item count and max total character length per translateArray() call.
+     * @param array<string, string> $flattened
+     * @return array<array<string, string>>
      */
-    public static function flatten(array $data): array
+    public static function chunkArray(array $flattened, Provider $provider): array
     {
-        $flattened = [];
+        $maxItems = $provider->getMaxArrayChunkItems();
+        $maxChars = $provider->getMaxArrayChunkChars();
 
-        foreach (Arr::dot($data) as $key => $value) {
-            if (is_array($value)) {
-                $value = null;
+        $chunks = [];
+        $currentChunk = [];
+        $currentChars = 0;
+
+        foreach ($flattened as $key => $value) {
+            $exceedsItems = $maxItems !== null && count($currentChunk) >= $maxItems;
+            $exceedsChars = ($currentChars + strlen($value)) > $maxChars;
+
+            if ($currentChunk && ($exceedsItems || $exceedsChars)) {
+                $chunks[] = $currentChunk;
+                $currentChunk = [];
+                $currentChars = 0;
             }
 
-            if (empty($value)) {
-                continue;
-            }
-
-            $flattened[$key] = $value;
+            $currentChunk[$key] = $value;
+            $currentChars += strlen($value);
         }
 
-        return $flattened;
-    }
-
-    /**
-     * Reassemble a flat [dotPath => translatedValue] map, as produced by flatten() and
-     * translated positionally, back into the original nested field structure.
-     */
-    public static function unflatten(array $flattened): array
-    {
-        $outputArray = [];
-
-        foreach ($flattened as $dotPath => $value) {
-            Arr::set($outputArray, $dotPath, $value);
+        if ($currentChunk) {
+            $chunks[] = $currentChunk;
         }
 
-        return $outputArray;
+        return $chunks;
     }
 
-    public static function unserialize(array $htmls): array
+    public static function unserializeHtmlChuncks(array $htmls): array
     {
         $outputArray = [];
 

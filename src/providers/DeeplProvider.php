@@ -124,6 +124,10 @@ class DeeplProvider extends Provider
         $results = $this->getClient()->translateText(array_values($texts), $this->sourceLocale($sourceLocale), $this->targetLocale($targetLocale), $options);
 
         return array_map(function ($result) {
+            if (!preg_match('/<[^>]+>/', $result->text)) {
+                // if not html, decode html entities for plain text
+                return html_entity_decode($result->text);
+            }
             return $result->text;
         }, $results);
     }

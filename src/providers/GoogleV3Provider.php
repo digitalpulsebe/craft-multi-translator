@@ -78,7 +78,7 @@ class GoogleV3Provider extends Provider
         $requestParams = [
             'parent' => $this->_parent,
             'contents' => [$text],
-            'mime_type' => 'text/html',
+            'mime_type' => 'text/plain',
             'source_language_code' => $sourceLocale ?: null,
             'target_language_code' => $this->targetLocale($targetLocale),
         ];

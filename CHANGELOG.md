@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Changed
+
+- Use array translation for the providers that support it. Reduces character count and cost.
+
 ## 2.29.0 - 2026-09-08
 
 ### Added
