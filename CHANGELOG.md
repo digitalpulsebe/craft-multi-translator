@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.31.1 - 2026-10-27
+
+### Fixed
+
+- Fix nested Neo blocks being flattened to the root level when translating an entry to a site it doesn't exist in yet (sections with custom propagation). The source entry was re-saved before its blocks were serialized, which lost the block levels.
+
 ## 2.31.0 - 2026-10-06
 
 ### Changed
