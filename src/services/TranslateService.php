@@ -422,6 +422,8 @@ class TranslateService extends Component
                     Craft::$app->elements->saveElement($source);
                 }
 
+                $this->resetNeoFieldQueries($source);
+
                 $targetEntry = ElementHelper::one(Entry::class, $source->id, $targetSiteId);
             } elseif ($source?->section?->propagationMethod == PropagationMethod::All) {
                 // it should have been there, so propagate
@@ -433,6 +435,21 @@ class TranslateService extends Component
         }
 
         return $targetEntry;
+    }
+
+    /**
+     * Saving an element rebuilds its Neo block structure and deletes the old one. Neo block queries remember the
+     * structure id they found on their first run, so a query that already ran on this instance would return blocks
+     * without a level afterwards, and all nested blocks would end up at the root level when translated.
+     * Replace the field values by fresh queries, so the next read looks up the current structure.
+     */
+    private function resetNeoFieldQueries(Element $element): void
+    {
+        foreach ($element->getFieldLayout()?->getCustomFields() ?? [] as $field) {
+            if (get_class($field) === 'benf\neo\Field') {
+                $element->setFieldValue($field->handle, null);
+            }
+        }
     }
 
     /**
