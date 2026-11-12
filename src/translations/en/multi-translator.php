@@ -209,7 +209,7 @@ return [
     // Style rules index (style-rules/index.twig)
     'Style Rules' => 'Style Rules',
     'Style rules (DeepL)' => 'Style rules (DeepL)',
-    'Style rules are created and edited in your DeepL account. Enable one style rule per target language to apply it when translating into that language. Enabling or disabling a style rule here does not affect your DeepL account.' => 'Style rules are created and edited in your DeepL account. Enable one style rule per target language to apply it when translating into that language. Enabling or disabling a style rule here does not affect your DeepL account.',
+    'Style rules are created and edited in your DeepL account. Enable one style rule per target language to apply it when translating into that language. A style rule for a regional variant (e.g. DE-CH) is used instead of the one for its base language when translating into that variant. Enabling or disabling a style rule here does not affect your DeepL account.' => 'Style rules are created and edited in your DeepL account. Enable one style rule per target language to apply it when translating into that language. A style rule for a regional variant (e.g. DE-CH) is used instead of the one for its base language when translating into that variant. Enabling or disabling a style rule here does not affect your DeepL account.',
     'Language' => 'Language',
     'Configured rules' => 'Configured rules',
     '# custom instructions' => '# custom instructions',
