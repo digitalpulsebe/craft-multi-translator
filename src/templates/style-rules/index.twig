@@ -27,7 +27,7 @@
             </a>
         </p>
         <p>
-            {{ 'Style rules are created and edited in your DeepL account. Enable one style rule per target language to apply it when translating into that language. Enabling or disabling a style rule here does not affect your DeepL account.'|t('multi-translator') }}
+            {{ 'Style rules are created and edited in your DeepL account. Enable one style rule per target language to apply it when translating into that language. A style rule for a regional variant (e.g. DE-CH) is used instead of the one for its base language when translating into that variant. Enabling or disabling a style rule here does not affect your DeepL account.'|t('multi-translator') }}
         </p>
 
         {% if settings.translationProvider == 'deepl' and provider.isConnected %}
