@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- Preserve untranslated Matrix block values on the target site when translating. (fixes #140)
+
 ## 2.31.1 - 2026-10-27
 
 ### Fixed

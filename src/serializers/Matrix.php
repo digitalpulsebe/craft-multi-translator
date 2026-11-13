@@ -46,16 +46,40 @@ class Matrix extends FieldSerializer
         // serialize current value
         $serialized = $this->field->serializeValue($query, $source);
 
+        $targetQuery = $target->getFieldValue($this->field->handle);
+        if ($includeDisabled) {
+            $targetQuery->status(null);
+        }
+
+        $targetMatrixElements = collect($targetQuery->all())->keyBy('id');
+        $targetSerialized = $this->field->serializeValue($targetQuery, $target);
+
         // loop over original matrix elements
         foreach ($query->all() as $matrixElement) {
             $translatedMatrixValues = $value['children'][$matrixElement->id] ?? [];
+            $targetMatrixElement = $targetMatrixElements->get($matrixElement->id);
+
+            // Keep the target site's existing values as the base for blocks that already exist there.
+            // Matrix serialization otherwise includes every source field, even fields that weren't
+            // translated (e.g. disabled fields or fields without a registered serializer).
+            if (isset($targetSerialized[$matrixElement->id])) {
+                if (isset($targetSerialized[$matrixElement->id]['title'])) {
+                    $serialized[$matrixElement->id]['title'] = $targetSerialized[$matrixElement->id]['title'];
+                }
+
+                $serialized[$matrixElement->id]['fields'] = $targetSerialized[$matrixElement->id]['fields'] ?? [];
+            }
 
             if (isset($translatedMatrixValues['title'])) {
                 $serialized[$matrixElement->id]['title'] = $translatedMatrixValues['title'];
             }
 
             if (isset($translatedMatrixValues['fields'])) {
-                $translatedFields = MultiTranslator::getInstance()->translate->setElementFieldsTranslations($matrixElement, $target, $translatedMatrixValues['fields']);
+                $translatedFields = MultiTranslator::getInstance()->translate->setElementFieldsTranslations(
+                    $matrixElement,
+                    $targetMatrixElement ?? $matrixElement,
+                    $translatedMatrixValues['fields'],
+                );
                 // merge to keep untranslated fields
                 $serialized[$matrixElement->id]['fields'] = array_merge($serialized[$matrixElement->id]['fields'], $translatedFields);
             }
