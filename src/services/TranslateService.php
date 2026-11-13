@@ -438,6 +438,26 @@ class TranslateService extends Component
     }
 
     /**
+     * Whether the entry has any saved, unapplied drafts.
+     */
+    public function hasUnappliedDrafts(Entry $entry): bool
+    {
+        $query = Entry::find()
+            ->drafts()
+            ->provisionalDrafts(false)
+            ->draftOf($entry)
+            ->status(null);
+
+        if ($entry->getSection()->propagationMethod === PropagationMethod::None) {
+            $query->siteId($entry->siteId);
+        } else {
+            $query->site('*');
+        }
+
+        return $query->exists();
+    }
+
+    /**
      * Saving an element rebuilds its Neo block structure and deletes the old one. Neo block queries remember the
      * structure id they found on their first run, so a query that already ran on this instance would return blocks
      * without a level afterwards, and all nested blocks would end up at the root level when translated.

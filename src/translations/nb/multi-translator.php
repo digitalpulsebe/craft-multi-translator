@@ -97,6 +97,8 @@ return [
 
     // Sidefelt (buttons.twig)
     'Warning: revision changes will apply on top of the translated Entry' => 'Advarsel: revisjonsendringer vil bli lagt på toppen av den oversatte oppføringen',
+    'There are unapplied drafts for this entry. Craft drafts contain content for all sites, so applying one may overwrite changes on other sites. Apply or discard these drafts before creating another translated draft.' => 'Det finnes ubehandlede utkast for denne oppføringen. Craft-utkast inneholder innhold for alle nettsteder, så å bruke et utkast kan overskrive endringer på andre nettsteder. Bruk eller forkast disse utkastene før du oppretter et nytt oversettelsesutkast.',
+    'Translate to all sites with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' => 'Oversette til alle nettsteder med Lagre som utkast aktivert? Dette oppretter flere utkast fra samme øyeblikksbilde av alle nettsteder. Fortsett bare hvis du vil gjennomgå og bruke dem ett om gangen.',
     'Translate from' => 'Oversett fra',
     'to:' => 'til:',
     'select target' => 'velg mål',
