@@ -79,10 +79,7 @@ class DeeplProvider extends Provider
             'enabled' => 1,
         ])->one();
 
-        $styleRule = StyleRule::find()->where([
-            'language' => $targetLanguage,
-            'enabled' => 1,
-        ])->one();
+        $styleRule = $this->styleRuleForTarget($deeplTarget);
 
         $customInstructions = $this->customInstructionsForTarget($targetLanguage);
 
@@ -243,7 +240,8 @@ class DeeplProvider extends Provider
             }
 
             $styleRuleRecord->setAttribute('name', $styleRuleInfo->name);
-            $styleRuleRecord->setAttribute('language', strtolower(explode('-', $styleRuleInfo->language)[0]));
+            // keep the regional variant (e.g. de-ch), a variant list only applies when translating into that variant
+            $styleRuleRecord->setAttribute('language', strtolower($styleRuleInfo->language));
             $styleRuleRecord->setAttribute('data', [
                 'version' => $styleRuleInfo->version,
                 'configuredRules' => $styleRuleInfo->configuredRules ? array_keys(array_filter((array) $styleRuleInfo->configuredRules)) : [],
@@ -287,6 +285,31 @@ class DeeplProvider extends Provider
         return $this->getClient()->getUsage();
     }
 
+    /**
+     * A style rule for the exact regional variant (e.g. de-CH) takes precedence over one for its base language (de),
+     * the same way DeepL applies a base language list to all of its variants, but a variant list only to that variant.
+     */
+    private function styleRuleForTarget(string $deeplTarget): ?StyleRule
+    {
+        $languages = array_unique([
+            strtolower($deeplTarget),
+            strtolower(explode('-', $deeplTarget)[0]),
+        ]);
+
+        foreach ($languages as $language) {
+            $styleRule = StyleRule::find()->where([
+                'language' => $language,
+                'enabled' => 1,
+            ])->one();
+
+            if ($styleRule) {
+                return $styleRule;
+            }
+        }
+
+        return null;
+    }
+
     // =========================================================================
     // DeepL-specific locale overrides
     // =========================================================================
@@ -313,7 +336,7 @@ class DeeplProvider extends Provider
         }
 
         // site has regional locale that is supported by Deepl
-        if (in_array($ucRaw, ['EN-GB', 'EN-US', 'PT-PT', 'PT-BR'])) {
+        if (in_array($ucRaw, ['EN-GB', 'EN-US', 'PT-PT', 'PT-BR', 'DE-CH'])) {
             return $ucRaw;
         }
 
