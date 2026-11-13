@@ -97,6 +97,8 @@ return [
 
     // Sidebar (buttons.twig)
     'Warning: revision changes will apply on top of the translated Entry' => 'Warning: revision changes will apply on top of the translated Entry',
+    'There are unapplied drafts for this entry. Craft drafts contain content for all sites, so applying one may overwrite changes on other sites. Apply or discard these drafts before creating another translated draft.' => 'There are unapplied drafts for this entry. Craft drafts contain content for all sites, so applying one may overwrite changes on other sites. Apply or discard these drafts before creating another translated draft.',
+    'Translate to all sites with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' => 'Translate to all sites with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.',
     'Translate from' => 'Translate from',
     'to:' => 'to:',
     'select target' => 'select target',

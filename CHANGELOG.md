@@ -1,5 +1,15 @@
 # Release Notes for Multi Translator
 
+## 2.31.2 - 2026-11-13
+
+### Added
+
+- Warn before creating translated drafts when another entry draft is still unapplied.
+
+### Fixed
+
+- Preserve untranslated Matrix block values on the target site when translating. (fixes #140)
+
 ## 2.31.1 - 2026-10-27
 
 ### Fixed
