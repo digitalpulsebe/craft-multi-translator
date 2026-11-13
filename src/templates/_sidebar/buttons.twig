@@ -4,12 +4,23 @@
 
     {% do view.registerAssetBundle("digitalpulsebe\\craftmultitranslator\\assets\\MultiTranslatorBundle") %}
     {% set settings = craft.multiTranslator.providerSettings %}
+    {% set hasUnappliedDrafts = settings.saveAsDraft and craft.multiTranslator.hasUnappliedDrafts(element) %}
 
     <fieldset>
         <legend class="h6">{{ 'Multi Translator'|t('multi-translator') }}</legend>
         <div class="meta">
             {% if element.id != element.canonicalId %}
-                <div class="warning">{{ 'Warning: revision changes will apply on top of the translated Entry'|t('multi-translator') }}</div>
+                <div class="readable">
+                    <blockquote class="note warning">{{ 'Warning: revision changes will apply on top of the translated Entry'|t('multi-translator') }}</blockquote>
+                </div>
+            {% endif %}
+
+            {% if hasUnappliedDrafts %}
+                <div class="readable">
+                    <blockquote class="note warning">
+                        <p>{{ 'There are unapplied drafts for this entry. Craft drafts contain content for all sites, so applying one may overwrite changes on other sites. Apply or discard these drafts before creating another translated draft.'|t('multi-translator') }}</p>
+                    </blockquote>
+                </div>
             {% endif %}
 
             {% set elementHelper = craft.multiTranslator.getElementHelper() %}
@@ -44,7 +55,7 @@
                                         'elementType': className(element),
                                         'sourceSiteId': element.siteId
                                     }) }}"
-                                       onclick="return confirm('{{ 'Translate to all sites? Confirm your action.'|t('multi-translator')|e('js') }}')"
+                                       onclick="return confirm('{{ (settings.saveAsDraft and element is instance of('craft\\elements\\Entry') ? 'Translate to all sites with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' : 'Translate to all sites? Confirm your action.')|t('multi-translator')|e('js') }}')"
                                     >
                                         <strong>{{ 'All sites'|t('multi-translator') }}</strong>
                                     </a>

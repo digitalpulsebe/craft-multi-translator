@@ -97,6 +97,8 @@ return [
 
     // Zijbalk
     'Warning: revision changes will apply on top of the translated Entry' => 'Waarschuwing: revisiewijzigingen worden bovenop het vertaalde item toegepast',
+    'There are unapplied drafts for this entry. Craft drafts contain content for all sites, so applying one may overwrite changes on other sites. Apply or discard these drafts before creating another translated draft.' => 'Er staan nog niet-toegepaste concepten voor dit item klaar. Craft-concepten bevatten inhoud voor alle sites; door een concept toe te passen kunnen wijzigingen op andere sites worden overschreven. Pas deze concepten toe of verwijder ze voordat u een nieuw vertaalconcept aanmaakt.',
+    'Translate to all sites with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' => 'Naar alle sites vertalen met Opslaan als concept ingeschakeld? Er worden meerdere concepten gemaakt op basis van dezelfde momentopname van alle sites. Ga alleen verder als u ze één voor één controleert en toepast.',
     'Translate from' => 'Vertalen van',
     'to:' => 'naar:',
     'select target' => 'kies doel',

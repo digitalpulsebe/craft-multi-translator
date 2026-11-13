@@ -1,6 +1,8 @@
 <?php
 namespace digitalpulsebe\craftmultitranslator\variables;
 
+use craft\base\Element;
+use craft\elements\Entry;
 use craft\helpers\ElementHelper;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\models\Settings;
@@ -50,5 +52,14 @@ class Variable
     public function getElementHelper()
     {
         return new ElementHelper();
+    }
+
+    public function hasUnappliedDrafts(Element $element): bool
+    {
+        if (!$element instanceof Entry) {
+            return false;
+        }
+
+        return MultiTranslator::getInstance()->translate->hasUnappliedDrafts($element);
     }
 }

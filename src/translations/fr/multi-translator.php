@@ -97,6 +97,8 @@ return [
 
     // Barre latérale
     'Warning: revision changes will apply on top of the translated Entry' => 'Avertissement : les modifications de révision s\'appliqueront par-dessus l\'entrée traduite',
+    'There are unapplied drafts for this entry. Craft drafts contain content for all sites, so applying one may overwrite changes on other sites. Apply or discard these drafts before creating another translated draft.' => 'Des brouillons de cette entrée ne sont pas encore appliqués. Les brouillons Craft contiennent le contenu de tous les sites ; en appliquer un peut écraser les modifications des autres sites. Appliquez ou supprimez ces brouillons avant d’en créer un autre.',
+    'Translate to all sites with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' => 'Traduire vers tous les sites avec l’enregistrement en brouillon activé ? Plusieurs brouillons seront créés à partir du même instantané de tous les sites. Continuez uniquement si vous les examinez et les appliquez un par un.',
     'Translate from' => 'Traduire depuis',
     'to:' => 'vers :',
     'select target' => 'choisir la cible',
