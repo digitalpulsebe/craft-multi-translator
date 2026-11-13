@@ -1,5 +1,11 @@
 # Release Notes for Multi Translator
 
+## 2.31.3 - 2026-11-13
+
+### Changed
+
+- Apply DeepL style rules per regional variant (DE-CH) ( #142)
+
 ## 2.31.2 - 2026-11-13
 
 ### Added
