@@ -25,9 +25,10 @@
 
             {% set elementHelper = craft.multiTranslator.getElementHelper() %}
 
+            {% set targetSitesService = craft.multiTranslator.targetSites %}
             {% set existingSiteIds = elementHelper.siteStatusesForElement(element)|keys %}
-            {% set supportedSiteIds = elementHelper.supportedSitesForElement(element, true)|map(site => site.siteId) %}
             {% set sites = craft.app.sites.allSites %}
+            {% set isDraftTranslation = settings.saveAsDraft and element is instance of('craft\\elements\\Entry') %}
 
             {% set currentDescription = "#{element.site.name} (#{element.site.language})" %}
 
@@ -48,35 +49,46 @@
                     <div class="input">
                         <button type="button" class="btn menubtn" aria-label="{{ 'Translate'|t('multi-translator') }}">{{ 'select target'|t('multi-translator') }}</button>
                         <div class="menu">
-                            <ul>
-                                <li>
-                                    <a href="{{ actionUrl('multi-translator/sidebar/translate-to-all', {
-                                        'elementId': element.canonicalId,
-                                        'elementType': className(element),
-                                        'sourceSiteId': element.siteId
-                                    }) }}"
-                                       onclick="return confirm('{{ (settings.saveAsDraft and element is instance of('craft\\elements\\Entry') ? 'Translate to all sites with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' : 'Translate to all sites? Confirm your action.')|t('multi-translator')|e('js') }}')"
-                                    >
-                                        <strong>{{ 'All sites'|t('multi-translator') }}</strong>
-                                    </a>
-                                </li>
-                                {% for site in sites %}
-                                    {% if currentUser.can('editSite:'~site.uid) %}
-                                        {% if site.id in supportedSiteIds %}
-                                            <li>
-                                                <a class=""
-                                                   href="{{ actionUrl('multi-translator/sidebar/translate', {
-                                                       'elementId': element.canonicalId,
-                                                       'elementType': className(element),
-                                                       'sourceSiteId': element.siteId,
-                                                       'targetSiteId': site.id
-                                                   }) }}">
-                                                    {{ site.name }} ({{ site.locale }})
-                                                    {%- if element.siteId == site.id %} {{ '(self)'|t('multi-translator') }}{% endif %}
-                                                </a>
-                                            </li>
+                            {% set multiTargetOptions = targetSitesService.getMultiTargetOptions(element, element.siteId) %}
+                            {% if multiTargetOptions|length %}
+                                <ul>
+                                    {% for option in multiTargetOptions %}
+                                        {% if option.value == 'all' %}
+                                            {% set confirmMessage = (isDraftTranslation ? 'Translate to all sites with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' : 'Translate to all sites? Confirm your action.')|t('multi-translator') %}
+                                        {% else %}
+                                            {% set confirmMessage = (isDraftTranslation ? 'Translate to {target} with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' : 'Translate to {target}? Confirm your action.')|t('multi-translator', {target: option.label}) %}
                                         {% endif %}
-                                    {% endif %}
+                                        <li>
+                                            <a href="{{ actionUrl('multi-translator/sidebar/translate', {
+                                                'elementId': element.canonicalId,
+                                                'elementType': className(element),
+                                                'sourceSiteId': element.siteId,
+                                                'targetSiteId': option.value
+                                            }) }}"
+                                               title="{{ option.sites|map(site => site.name)|join(', ') }}"
+                                               onclick="return confirm('{{ confirmMessage|e('js') }}')"
+                                            >
+                                                <strong>{{ option.label }}</strong>
+                                            </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                <hr>
+                            {% endif %}
+                            <ul>
+                                {% for site in targetSitesService.getAvailableTargetSites(element) %}
+                                    <li>
+                                        <a class=""
+                                           href="{{ actionUrl('multi-translator/sidebar/translate', {
+                                               'elementId': element.canonicalId,
+                                               'elementType': className(element),
+                                               'sourceSiteId': element.siteId,
+                                               'targetSiteId': site.id
+                                           }) }}">
+                                            {{ site.name }} ({{ site.locale }})
+                                            {%- if element.siteId == site.id %} {{ '(self)'|t('multi-translator') }}{% endif %}
+                                        </a>
+                                    </li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -85,7 +97,13 @@
             {% endif %}
 
             {% if settings.translationDirectionButtons in ['toThis', 'both'] %}
-                {% if existingSiteIds|length > 1 %}
+                {% if not targetSitesService.isTargetEnabled(element.site) %}
+                    <div class="field" style="border-block-start-width: 2px;">
+                        <div class="heading">
+                            {{ 'Translating to this site is disabled in the settings.'|t('multi-translator') }}
+                        </div>
+                    </div>
+                {% elseif existingSiteIds|length > 1 %}
                     <div class="field">
                         <div class="heading">
                             {{ 'Translate from:'|t('multi-translator') }}

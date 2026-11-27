@@ -8,6 +8,7 @@ use craft\helpers\UrlHelper;
 use craft\models\Site;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\jobs\BulkTranslateJob;
+use yii\web\ForbiddenHttpException;
 use yii\web\UnauthorizedHttpException;
 
 /**
@@ -38,7 +39,9 @@ class Translate extends ElementAction
 })();
 JS, [static::class]);
 
-        return Craft::$app->getView()->renderTemplate('multi-translator/_actions/trigger.twig');
+        return Craft::$app->getView()->renderTemplate('multi-translator/_actions/trigger.twig', [
+            'sourceSiteHandle' => $this->sourceSiteHandle,
+        ]);
     }
 
     public function performAction(Craft\elements\db\ElementQueryInterface $query): bool
@@ -53,16 +56,12 @@ JS, [static::class]);
             throw new UnauthorizedHttpException(Craft::t('multi-translator', 'You are not allowed to translate Elements in bulk'));
         }
 
-        if ($this->targetSiteHandle == '_ALL_') {
-            $sourceSiteHandle = $this->sourceSiteHandle;
-            $currentUser = Craft::$app->getUser()->getIdentity();
+        $targetSitesService = MultiTranslator::getInstance()->targetSites;
+        $sourceSite = Craft::$app->sites->getSiteByHandle($this->sourceSiteHandle);
 
-            $siteHandles = collect(Craft::$app->sites->getAllSites())
-                ->filter(function (Site $site) use ($currentUser) {
-                    return $currentUser->can('editSite:' . $site->uid);
-                })
-                ->filter(function (Site $site) use ($sourceSiteHandle) { return $site->handle != $sourceSiteHandle; })
-                ->map(function (Site $site) { return $site->handle; })
+        if ($targetSitesService->isMultiTarget($this->targetSiteHandle)) {
+            $siteHandles = collect($targetSitesService->resolveTargetSites($this->targetSiteHandle, null, $sourceSite->id))
+                ->map(fn(Site $site) => $site->handle)
                 ->all();
         } else {
             $siteHandles = [$this->targetSiteHandle];
@@ -71,8 +70,12 @@ JS, [static::class]);
         foreach ($siteHandles as $siteHandle) {
             $targetSite = Craft::$app->sites->getSiteByHandle($siteHandle);
 
-            if (!\Craft::$app->user->checkPermission('editSite:'.$targetSite->uid)) {
+            if (!$targetSite || !\Craft::$app->user->checkPermission('editSite:'.$targetSite->uid)) {
                 throw new UnauthorizedHttpException(Craft::t('multi-translator', 'You are not allowed to translate Elements for this site: {site}', ['site' => $siteHandle]));
+            }
+
+            if (!$targetSitesService->isTargetEnabled($targetSite)) {
+                throw new ForbiddenHttpException(Craft::t('multi-translator', 'Translating to {site} is disabled in the settings.', ['site' => $targetSite->name]));
             }
 
             Craft::$app
@@ -88,6 +91,11 @@ JS, [static::class]);
             ;
         }
 
+
+        if (empty($siteHandles)) {
+            $this->setMessage(Craft::t('multi-translator', 'No target sites to translate to.'));
+            return false;
+        }
 
         $this->setMessage(Craft::t('multi-translator', 'Added to queue'));
 

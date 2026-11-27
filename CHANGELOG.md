@@ -1,5 +1,18 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Added
+
+- Target groups: translate to a configured set of sites in one go. The groups are listed below 'All sites' in every target menu. (#120)
+- Disable sites as translation target, e.g. sites that only hold source content. Disabled sites are hidden in the target menus and skipped by 'All sites' and target groups. (#133)
+- 'All sites' and target groups are now also available on the 'More options...' page.
+- Translate a Matrix block to sites where it doesn't exist (e.g. propagation method "Only save entries to the site they were created in"): the translation is added as a new block to the owner in the target site.
+
+### Changed
+
+- All target menus and controllers use the same target values: `all`, `group:<handle>` or a site id. The legacy `_ALL_` value of the bulk action still works.
+
 ## 2.31.4 - 2026-11-27
 
 ### Fixed

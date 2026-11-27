@@ -10,6 +10,7 @@ use digitalpulsebe\craftmultitranslator\providers\Provider;
 use digitalpulsebe\craftmultitranslator\records\Glossary;
 use digitalpulsebe\craftmultitranslator\records\ProviderSettings;
 use digitalpulsebe\craftmultitranslator\records\StyleRule;
+use digitalpulsebe\craftmultitranslator\services\TargetSitesService;
 
 class Variable
 {
@@ -21,6 +22,11 @@ class Variable
     public function getProviderSettings(): ProviderSettings
     {
         return MultiTranslator::getInstance()->settingsService->getProviderSettings();
+    }
+
+    public function getTargetSites(): TargetSitesService
+    {
+        return MultiTranslator::getInstance()->targetSites;
     }
 
     public function getProvider(): ?Provider

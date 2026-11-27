@@ -33,7 +33,7 @@ class TranslateController extends BaseController
         $config = $this->request->post('config');
         MultiTranslator::getInstance()->settingsService->getProviderSettings()->overrideWithConfig($config);
 
-        return $this->translateElement($elementId, $elementType, $sourceSiteId, $targetSiteId);
+        return $this->translateElementToTarget($elementId, $elementType, $sourceSiteId, $targetSiteId);
     }
 
 }

@@ -22,6 +22,7 @@ use craft\web\UrlManager;
 use digitalpulsebe\craftmultitranslator\elements\actions\Translate;
 use digitalpulsebe\craftmultitranslator\models\Settings;
 use digitalpulsebe\craftmultitranslator\services\SettingsService;
+use digitalpulsebe\craftmultitranslator\services\TargetSitesService;
 use digitalpulsebe\craftmultitranslator\services\TranslateService;
 use digitalpulsebe\craftmultitranslator\variables\Variable;
 use Monolog\Formatter\LineFormatter;
@@ -36,6 +37,7 @@ use yii\log\Logger;
  * @method Settings getSettings()
  * @property TranslateService $translate
  * @property SettingsService $settingsService
+ * @property TargetSitesService $targetSites
  * @author Digital Pulse nv <support@digitalpulse.be>
  * @copyright Digital Pulse nv
  * @license https://craftcms.github.io/license/ Craft License
@@ -53,6 +55,7 @@ class MultiTranslator extends Plugin
             'components' => [
                 'translate' => TranslateService::class,
                 'settingsService' => SettingsService::class,
+                'targetSites' => TargetSitesService::class,
             ],
         ];
     }

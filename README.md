@@ -72,6 +72,17 @@ Configure options in the Craft control panel settings
 
 ![Screenshot](resources/img/screenshot_settings.png)
 
+### Translation targets
+
+- **Target sites**: switch off the sites that should never be overwritten by a translation, e.g. a site that only
+  holds the source content. Disabled sites are hidden in every target menu (sidebar, bulk action, block/field modals,
+  'More options...') and are skipped by 'All sites' and target groups. They can still be used as source.
+- **Target groups**: named sets of sites to translate to in one go. They are listed right below 'All sites' in the
+  target menus. Sites that are disabled as target, that the user cannot edit or that the element doesn't support are
+  skipped.
+
+  ![Screenshot](resources/img/screenshot_targetGroups.png)
+
 ## Permissions
 
 For non-admin users, enable permissions under the 'Multi Translator' section:
@@ -105,7 +116,7 @@ There are two ways to trigger a translation.
 ### Translate one-by-one
 
 1. Navigate to the entry on the desired source site/language.
-2. Use the buttons in the sidebar and select the target language.
+2. Use the buttons in the sidebar and select the target language, 'All sites' or a [target group](#translation-targets).
 
 (you can reverse this flow by setting the default direction in the configuration)
 
@@ -115,7 +126,7 @@ There are two ways to trigger a translation.
 
 1. Navigate to overview of entries you want to get translated.
 2. Select the entries in the source language.
-3. Use the 'Translate to' dropdown in the actions bar and choose the target language
+3. Use the 'Translate to' dropdown in the actions bar and choose the target language, 'All sites' or a [target group](#translation-targets)
 4. A queue job will be started
 
 ![Screenshot](resources/img/screenshot_actions.png)

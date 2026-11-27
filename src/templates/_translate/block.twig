@@ -2,9 +2,6 @@
 {% import '_includes/forms.twig' as forms %}
 
 {% set settings = craft.multiTranslator.providerSettings %}
-{% set sites = craft.app.sites.allSites %}
-
-{% set sites = sites|filter(site => currentUser.can('editSite:'~site.uid)) %}
 
 <form method="POST">
     {{ actionInput('multi-translator/block/translate') }}
@@ -21,15 +18,7 @@
             label: 'Target site'|t('multi-translator'),
             id: "translationTarget-${elementId}",
             name: 'targetSiteId',
-            options: [
-                { label: '- select target -'|t('multi-translator'), value: '' },
-                { label: 'All sites'|t('multi-translator'), value: 'all' }
-            ]|merge(
-                sites|map(site => {
-                    label: "#{site.name} (#{site.locale})",
-                    value: site.id
-                })
-            ),
+            options: craft.multiTranslator.targetSites.getTargetSelectOptions(element, sourceSiteId, false, false),
             inputAttributes: {required: 1},
         }) }}
     </div>

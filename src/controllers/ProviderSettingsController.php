@@ -24,12 +24,29 @@ class ProviderSettingsController extends Controller
 
         $posted = $this->request->post('settings', []);
 
+        $targetSitesService = MultiTranslator::getInstance()->targetSites;
+
+        // only the disabled sites are stored, all others are a target by default
+        if (array_key_exists('targetSites', $posted)) {
+            $posted['disabledTargetSites'] = $targetSitesService->normalizeTargetSiteRows(
+                is_array($posted['targetSites']) ? $posted['targetSites'] : []
+            );
+            unset($posted['targetSites']);
+        }
+
+        if (array_key_exists('targetGroups', $posted)) {
+            $posted['targetGroups'] = $targetSitesService->normalizeTargetGroupRows(
+                is_array($posted['targetGroups']) ? $posted['targetGroups'] : []
+            );
+        }
+
         // Preserve any existing settings not present in this POST
         $existing = ProviderSettings::find()->one();
         $existingSettings = $existing ? ($existing->settings ?? []) : [];
 
         // Merge root-level general options
         $settings = is_array($existingSettings) ? array_merge($existingSettings, $posted) : $posted;
+        unset($settings['targetSites']);
 
         // Merge provider sub-arrays under the 'providers' key, per registered handle,
         // so a save of one provider does not wipe settings of other providers.

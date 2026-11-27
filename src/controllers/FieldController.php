@@ -43,13 +43,13 @@ class FieldController extends BaseController
     }
 
     /**
-     * Translate a single field on an element to one or all target sites.
+     * Translate a single field on an element to one or multiple target sites.
      *
      * Accepts POST params:
      *   - elementId    (int)
      *   - elementType  (string, FQCN)
      *   - sourceSiteId (int)
-     *   - targetSiteId (int|'all')  use 'all' to translate to every supported site
+     *   - targetSiteId (int|string) a site id, 'all' or 'group:<handle>'
      *   - fieldHandle  (string)     the single field to translate
      */
     public function actionTranslate(): Response
@@ -68,25 +68,6 @@ class FieldController extends BaseController
             return $this->asFailure(Craft::t('multi-translator', 'Element not found.'));
         }
 
-        if ($targetSiteId === 'all') {
-            $currentUser = Craft::$app->getUser()->getIdentity();
-
-            $result = $this->redirect($element->cpEditUrl);
-
-            $targetSiteIds = collect(\craft\helpers\ElementHelper::supportedSitesForElement($element))
-                ->filter(fn(array $site) => $currentUser->can('editSite:' . $site['siteUid']))
-                ->filter(fn(array $site) => $site['siteId'] != $sourceSiteId)
-                ->pluck('siteId')
-                ->values()
-                ->all();
-
-            foreach ($targetSiteIds as $siteId) {
-                $result = $this->translateElement($elementId, $elementType, $sourceSiteId, $siteId, [$fieldHandle]);
-            }
-
-            return $result;
-        }
-
-        return $this->translateElement($elementId, $elementType, $sourceSiteId, (int) $targetSiteId, [$fieldHandle]);
+        return $this->translateElementToTarget($elementId, $elementType, $sourceSiteId, $targetSiteId, [$fieldHandle], false);
     }
 }
