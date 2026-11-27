@@ -8,9 +8,8 @@ use yii\db\Exception;
 use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\web\Response;
-use craft\web\Controller;
 
-class ProviderSettingsController extends Controller
+class ProviderSettingsController extends BaseController
 {
 
     /**
@@ -20,6 +19,7 @@ class ProviderSettingsController extends Controller
      */
     public function actionUpdate(): Response
     {
+        $this->requirePostRequest();
         $this->requirePermission('multiTranslateSettings');
 
         $posted = $this->request->post('settings', []);

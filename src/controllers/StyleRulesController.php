@@ -6,12 +6,12 @@ use \Craft;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\records\StyleRule;
 use yii\web\Response;
-use craft\web\Controller;
 
-class StyleRulesController extends Controller
+class StyleRulesController extends BaseController
 {
-    public function actionFetch()
+    public function actionFetch(): Response
     {
+        $this->requirePostRequest();
         $this->requirePermission('multiTranslateContent');
 
         try {
@@ -24,9 +24,12 @@ class StyleRulesController extends Controller
         return $this->redirect('multi-translator/style-rules');
     }
 
-    public function actionEnable(int $id = null): Response
+    public function actionEnable(): Response
     {
+        $this->requirePostRequest();
         $this->requirePermission('multiTranslateContent');
+
+        $id = (int) $this->request->getRequiredBodyParam('id');
 
         $record = $id ? StyleRule::findOne(['id' => $id]) : null;
 
@@ -40,9 +43,12 @@ class StyleRulesController extends Controller
         return $this->redirect('multi-translator/style-rules');
     }
 
-    public function actionDisable(int $id = null): Response
+    public function actionDisable(): Response
     {
+        $this->requirePostRequest();
         $this->requirePermission('multiTranslateContent');
+
+        $id = (int) $this->request->getRequiredBodyParam('id');
 
         $record = $id ? StyleRule::findOne(['id' => $id]) : null;
 

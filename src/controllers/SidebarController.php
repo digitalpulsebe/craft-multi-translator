@@ -7,17 +7,17 @@ use yii\web\Response;
 
 class SidebarController extends BaseController
 {
-    public $enableCsrfValidation = false;
-
     /**
      * Accepts targetSiteId as a site id, 'all' or 'group:<handle>'.
      */
     public function actionTranslate(): Response
     {
-        $elementId = $this->request->get('elementId');
-        $elementType = $this->request->get('elementType');
-        $sourceSiteId = $this->request->get('sourceSiteId');
-        $targetSiteId = $this->request->get('targetSiteId');
+        $this->requirePostRequest();
+
+        $elementId = (int) $this->request->getRequiredBodyParam('elementId');
+        $elementType = (string) $this->request->getRequiredBodyParam('elementType');
+        $sourceSiteId = (int) $this->request->getRequiredBodyParam('sourceSiteId');
+        $targetSiteId = $this->request->getRequiredBodyParam('targetSiteId');
 
         return $this->translateElementToTarget($elementId, $elementType, $sourceSiteId, $targetSiteId);
     }
@@ -27,9 +27,11 @@ class SidebarController extends BaseController
      */
     public function actionTranslateToAll(): Response
     {
-        $elementId = $this->request->get('elementId');
-        $elementType = $this->request->get('elementType');
-        $sourceSiteId = $this->request->get('sourceSiteId');
+        $this->requirePostRequest();
+
+        $elementId = (int) $this->request->getRequiredBodyParam('elementId');
+        $elementType = (string) $this->request->getRequiredBodyParam('elementType');
+        $sourceSiteId = (int) $this->request->getRequiredBodyParam('sourceSiteId');
 
         return $this->translateElementToTarget($elementId, $elementType, $sourceSiteId, TargetSitesService::ALL);
     }

@@ -1,3 +1,4 @@
+{% requirePermission 'multiTranslateContent' %}
 {% extends "_layouts/cp" %}
 
 {% set title = 'Style Rules'|t('multi-translator') %}
@@ -12,7 +13,11 @@
 
 {% block actionButton %}
     {% if settings.translationProvider == 'deepl' and provider.isConnected %}
-        <a class="btn submit sync icon" href="{{ url('multi-translator/style-rules/fetch') }}">{{ 'Fetch from DeepL'|t('multi-translator') }}</a>
+        <form method="post" style="display: inline-block">
+            {{ csrfInput() }}
+            {{ actionInput('multi-translator/style-rules/fetch') }}
+            <button type="submit" class="btn submit sync icon">{{ 'Fetch from DeepL'|t('multi-translator') }}</button>
+        </form>
     {% endif %}
 {% endblock %}
 
@@ -59,16 +64,8 @@
                                 <td>{{ styleRule.customInstructionLabels|length }}</td>
                                 <td style="text-align: right">
                                     {% if styleRule.enabled %}
-                                        <a
-                                            href="{{ actionUrl('multi-translator/style-rules/disable/', {id: styleRule.id}) }}"
-                                            class="btn"
-                                            title="{{ 'Disable this style rule'|t('multi-translator') }}"
-                                        >{{ 'disable'|t('multi-translator') }}</a>
-                                    {% else %}<a
-                                            href="{{ actionUrl('multi-translator/style-rules/enable/', {id: styleRule.id}) }}"
-                                            class="btn"
-                                            title="{{ 'Enable this style rule'|t('multi-translator') }}"
-                                        >{{ 'enable'|t('multi-translator') }}</a>
+                                        <form method="post" style="display: inline-block">{{ csrfInput() }}{{ actionInput('multi-translator/style-rules/disable') }}{{ hiddenInput('id', styleRule.id) }}<button type="submit" class="btn" title="{{ 'Disable this style rule'|t('multi-translator') }}">{{ 'disable'|t('multi-translator') }}</button></form>
+                                    {% else %}<form method="post" style="display: inline-block">{{ csrfInput() }}{{ actionInput('multi-translator/style-rules/enable') }}{{ hiddenInput('id', styleRule.id) }}<button type="submit" class="btn" title="{{ 'Enable this style rule'|t('multi-translator') }}">{{ 'enable'|t('multi-translator') }}</button></form>
                                     {% endif %}
                                 </td>
                             </tr>

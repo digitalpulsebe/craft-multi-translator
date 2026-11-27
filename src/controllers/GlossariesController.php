@@ -6,9 +6,8 @@ use \Craft;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use digitalpulsebe\craftmultitranslator\records\Glossary;
 use yii\web\Response;
-use craft\web\Controller;
 
-class GlossariesController extends Controller
+class GlossariesController extends BaseController
 {
     public function actionEdit(int $id = null): Response
     {
@@ -24,8 +23,9 @@ class GlossariesController extends Controller
         return $this->actionEdit();
     }
 
-    public function actionFetch()
+    public function actionFetch(): Response
     {
+        $this->requirePostRequest();
         $this->requirePermission('multiTranslateContent');
 
         try {
@@ -38,9 +38,12 @@ class GlossariesController extends Controller
         return $this->redirect('multi-translator/glossaries');
     }
 
-    public function actionDelete(int $id = null): Response
+    public function actionDelete(): Response
     {
+        $this->requirePostRequest();
         $this->requirePermission('multiTranslateContent');
+
+        $id = (int) $this->request->getRequiredBodyParam('id');
 
         $record = $id ? Glossary::findOne(['id' => $id]) : null;
 
@@ -51,9 +54,12 @@ class GlossariesController extends Controller
         return $this->redirect('multi-translator/glossaries');
     }
 
-    public function actionEnable(int $id = null): Response
+    public function actionEnable(): Response
     {
+        $this->requirePostRequest();
         $this->requirePermission('multiTranslateContent');
+
+        $id = (int) $this->request->getRequiredBodyParam('id');
 
         $record = $id ? Glossary::findOne(['id' => $id]) : null;
 
@@ -67,9 +73,12 @@ class GlossariesController extends Controller
         return $this->redirect('multi-translator/glossaries');
     }
 
-    public function actionDisable(int $id = null): Response
+    public function actionDisable(): Response
     {
+        $this->requirePostRequest();
         $this->requirePermission('multiTranslateContent');
+
+        $id = (int) $this->request->getRequiredBodyParam('id');
 
         $record = $id ? Glossary::findOne(['id' => $id]) : null;
 
@@ -85,10 +94,11 @@ class GlossariesController extends Controller
 
     public function actionSave(): Response
     {
+        $this->requirePostRequest();
         $this->requirePermission('multiTranslateContent');
 
         try {
-            $record = Glossary::createOrUpdate($this->request->post());
+            $record = Glossary::createOrUpdate($this->request->getBodyParams());
 
             if ($record->hasErrors()) {
                 $this->setFailFlash(Craft::t('multi-translator', 'Validation errors'));

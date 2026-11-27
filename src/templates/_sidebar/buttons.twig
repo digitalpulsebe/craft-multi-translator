@@ -59,14 +59,15 @@
                                             {% set confirmMessage = (isDraftTranslation ? 'Translate to {target} with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' : 'Translate to {target}? Confirm your action.')|t('multi-translator', {target: option.label}) %}
                                         {% endif %}
                                         <li>
-                                            <a href="{{ actionUrl('multi-translator/sidebar/translate', {
+                                            <a href="#"
+                                           data-multi-translator-translate="{{ {
                                                 'elementId': element.canonicalId,
                                                 'elementType': className(element),
                                                 'sourceSiteId': element.siteId,
                                                 'targetSiteId': option.value
-                                            }) }}"
+                                            }|json_encode }}"
                                                title="{{ option.sites|map(site => site.name)|join(', ') }}"
-                                               onclick="return confirm('{{ confirmMessage|e('js') }}')"
+                                               data-multi-translator-confirm="{{ confirmMessage }}"
                                             >
                                                 <strong>{{ option.label }}</strong>
                                             </a>
@@ -79,12 +80,13 @@
                                 {% for site in targetSitesService.getAvailableTargetSites(element) %}
                                     <li>
                                         <a class=""
-                                           href="{{ actionUrl('multi-translator/sidebar/translate', {
+                                           href="#"
+                                           data-multi-translator-translate="{{ {
                                                'elementId': element.canonicalId,
                                                'elementType': className(element),
                                                'sourceSiteId': element.siteId,
                                                'targetSiteId': site.id
-                                           }) }}">
+                                           }|json_encode }}">
                                             {{ site.name }} ({{ site.locale }})
                                             {%- if element.siteId == site.id %} {{ '(self)'|t('multi-translator') }}{% endif %}
                                         </a>
@@ -116,12 +118,13 @@
                                         {% if site.id in existingSiteIds and currentUser.can('editSite:'~site.uid) %}
                                             <li>
                                                 <a class=""
-                                                   href="{{ actionUrl('multi-translator/sidebar/translate', {
+                                                   href="#"
+                                                   data-multi-translator-translate="{{ {
                                                        'elementId': element.canonicalId,
                                                        'elementType': className(element),
                                                        'sourceSiteId': site.id,
                                                        'targetSiteId': element.siteId
-                                                   }) }}">
+                                                   }|json_encode }}">
                                                     {{ site.name }} ({{ site.locale }})
                                                     {%- if element.siteId == site.id %} {{ '(self)'|t('multi-translator') }}{% endif %}
                                                 </a>

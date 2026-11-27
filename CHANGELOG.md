@@ -12,6 +12,20 @@
 ### Changed
 
 - All target menus and controllers use the same target values: `all`, `group:<handle>` or a site id. The legacy `_ALL_` value of the bulk action still works.
+- The sidebar translate links and the glossary/style rule buttons (fetch, enable, disable, delete) now send POST requests with a CSRF token instead of GET links.
+- The Glossaries and Style Rules pages and subnav items require the "Translate Content" permission.
+
+### Security
+
+- All plugin controller actions are control panel only and require the "Access the control panel" permission. Users without control panel access can no longer reach them through site action requests.
+- Translating now checks the element permissions of the current user (view, and save or create drafts) and the "Edit site" permission for the source site, in the sidebar, field and block translations, the 'More options...' page and the bulk element action.
+- The 'More options...' page can only override the translation options shown on that page. Before, any provider setting (API base url, credentials file path, disabled target sites, ...) could be overridden by users without the "Manage settings" permission.
+- Fix CSRF: translating, and fetching, enabling, disabling or deleting glossaries and style rules, could be triggered through a GET link.
+- The review actions (field, block and 'More options...') check permissions before loading the element.
+
+### Fixed
+
+- Deleting a glossary now also deletes it in the DeepL account.
 
 ## 2.31.4 - 2026-11-27
 

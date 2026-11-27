@@ -144,11 +144,7 @@ class MultiTranslator extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['multi-translator/glossaries/edit/<id:\d+>'] = 'multi-translator/glossaries/edit';
                 $event->rules['multi-translator/glossaries/new'] = 'multi-translator/glossaries/new';
-                $event->rules['multi-translator/glossaries/fetch'] = 'multi-translator/glossaries/fetch';
-                $event->rules['multi-translator/style-rules/fetch'] = 'multi-translator/style-rules/fetch';
                 $event->rules['multi-translator/translate/review'] = 'multi-translator/translate/review';
-                $event->rules['multi-translator/field/review'] = 'multi-translator/field/review';
-                $event->rules['multi-translator/field/translate'] = 'multi-translator/field/translate';
             }
         );
     }
@@ -302,8 +298,11 @@ JS;
     {
         $nav = parent::getCpNavItem();
         $nav['subnav']['dashboard'] = ['label' => Craft::t('multi-translator', 'Dashboard'), 'url' => 'multi-translator'];
-        $nav['subnav']['glossaries'] = ['label' => Craft::t('multi-translator', 'Glossaries'), 'url' => 'multi-translator/glossaries'];
-        $nav['subnav']['style-rules'] = ['label' => Craft::t('multi-translator', 'Style Rules'), 'url' => 'multi-translator/style-rules'];
+
+        if (Craft::$app->user->checkPermission('multiTranslateContent')) {
+            $nav['subnav']['glossaries'] = ['label' => Craft::t('multi-translator', 'Glossaries'), 'url' => 'multi-translator/glossaries'];
+            $nav['subnav']['style-rules'] = ['label' => Craft::t('multi-translator', 'Style Rules'), 'url' => 'multi-translator/style-rules'];
+        }
 
         if (Craft::$app->user->checkPermission('multiTranslateSettings')) {
             $nav['subnav']['settings'] = ['label' => Craft::t('multi-translator', 'Settings'), 'url' => 'multi-translator/settings'];

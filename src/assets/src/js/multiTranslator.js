@@ -229,4 +229,36 @@
 
     new Craft.MultiTranslator();
 
+    /**
+     * Sidebar translate links: submit as a POST request with a CSRF token instead of a GET link.
+     * Uses a temporary form outside the element editor form (forms can't be nested).
+     */
+    if (!window.multiTranslatorSidebarListener) {
+        window.multiTranslatorSidebarListener = true;
+
+        $(document).on('click', 'a[data-multi-translator-translate]', function (ev) {
+            ev.preventDefault();
+
+            const $link = $(this);
+            const confirmMessage = $link.data('multi-translator-confirm');
+
+            if (confirmMessage && !confirm(confirmMessage)) {
+                return;
+            }
+
+            const params = $link.data('multi-translator-translate') || {};
+            const $form = $('<form/>', {method: 'post', action: Craft.getActionUrl('multi-translator/sidebar/translate')});
+
+            if (Craft.csrfTokenName) {
+                $('<input/>', {type: 'hidden', name: Craft.csrfTokenName, value: Craft.csrfTokenValue}).appendTo($form);
+            }
+
+            Object.keys(params).forEach(function (name) {
+                $('<input/>', {type: 'hidden', name: name, value: params[name]}).appendTo($form);
+            });
+
+            $form.appendTo(Garnish.$bod).trigger('submit');
+        });
+    }
+
 })(window);

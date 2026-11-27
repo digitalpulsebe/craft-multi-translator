@@ -4,6 +4,7 @@ namespace digitalpulsebe\craftmultitranslator\elements\actions;
 
 use Craft;
 use craft\base\ElementAction;
+use craft\elements\Entry;
 use craft\helpers\UrlHelper;
 use craft\models\Site;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
@@ -58,6 +59,22 @@ JS, [static::class]);
 
         $targetSitesService = MultiTranslator::getInstance()->targetSites;
         $sourceSite = Craft::$app->sites->getSiteByHandle($this->sourceSiteHandle);
+
+        if (!$sourceSite || !\Craft::$app->user->checkPermission('editSite:'.$sourceSite->uid)) {
+            throw new UnauthorizedHttpException(Craft::t('multi-translator', 'You are not allowed to translate Elements for this site: {site}', ['site' => $this->sourceSiteHandle]));
+        }
+
+        // the queue job runs without a user: check element permissions up front
+        $elementsService = Craft::$app->getElements();
+        $saveAsDraft = MultiTranslator::getInstance()->settingsService->getProviderSettings()->getSaveAsDraft();
+        foreach ((clone $query)->siteId($sourceSite->id)->all() as $element) {
+            $allowed = $elementsService->canSave($element)
+                || ($saveAsDraft && $element instanceof Entry && $elementsService->canCreateDrafts($element));
+
+            if (!$elementsService->canView($element) || !$allowed) {
+                throw new ForbiddenHttpException(Craft::t('multi-translator', 'You are not allowed to translate Elements'));
+            }
+        }
 
         if ($targetSitesService->isMultiTarget($this->targetSiteHandle)) {
             $siteHandles = collect($targetSitesService->resolveTargetSites($this->targetSiteHandle, null, $sourceSite->id))

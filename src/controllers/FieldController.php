@@ -3,7 +3,6 @@
 namespace digitalpulsebe\craftmultitranslator\controllers;
 
 use Craft;
-use digitalpulsebe\craftmultitranslator\helpers\ElementHelper;
 use yii\web\Response;
 
 /**
@@ -23,12 +22,15 @@ class FieldController extends BaseController
      */
     public function actionReview(): Response
     {
-        $elementId    = $this->request->post('elementId');
-        $elementType  = $this->request->post('elementType');
-        $sourceSiteId = $this->request->post('sourceSiteId');
-        $fieldHandle  = $this->request->post('fieldHandle');
+        $this->requirePostRequest();
+        $this->requireAcceptsJson();
 
-        $element = ElementHelper::one($elementType, $elementId, $sourceSiteId);
+        $elementId    = (int) $this->request->getRequiredBodyParam('elementId');
+        $elementType  = (string) $this->request->getRequiredBodyParam('elementType');
+        $sourceSiteId = (int) $this->request->getRequiredBodyParam('sourceSiteId');
+        $fieldHandle  = (string) $this->request->getRequiredBodyParam('fieldHandle');
+
+        $element = $this->requireTranslatableElement($elementType, $elementId, $sourceSiteId, false);
 
         return $this->asJson([
             'html' => Craft::$app->getView()->renderTemplate('multi-translator/_translate/field.twig', [
@@ -57,16 +59,10 @@ class FieldController extends BaseController
         $this->requirePostRequest();
 
         $elementId    = (int) $this->request->getRequiredBodyParam('elementId');
-        $elementType  = $this->request->getRequiredBodyParam('elementType');
+        $elementType  = (string) $this->request->getRequiredBodyParam('elementType');
         $sourceSiteId = (int) $this->request->getRequiredBodyParam('sourceSiteId');
         $targetSiteId = $this->request->getRequiredBodyParam('targetSiteId');
-        $fieldHandle  = $this->request->getRequiredBodyParam('fieldHandle');
-
-        $element = ElementHelper::one($elementType, $elementId, $sourceSiteId);
-
-        if (!$element) {
-            return $this->asFailure(Craft::t('multi-translator', 'Element not found.'));
-        }
+        $fieldHandle  = (string) $this->request->getRequiredBodyParam('fieldHandle');
 
         return $this->translateElementToTarget($elementId, $elementType, $sourceSiteId, $targetSiteId, [$fieldHandle], false);
     }
