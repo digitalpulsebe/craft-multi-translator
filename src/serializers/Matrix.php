@@ -46,13 +46,18 @@ class Matrix extends FieldSerializer
         // serialize current value
         $serialized = $this->field->serializeValue($query, $source);
 
-        $targetQuery = $target->getFieldValue($this->field->handle);
-        if ($includeDisabled) {
-            $targetQuery->status(null);
-        }
+        // existing blocks on the target site (none when the target element doesn't have this field)
+        $targetMatrixElements = collect();
+        $targetSerialized = [];
+        $targetQuery = $this->getTargetFieldValue($target);
+        if ($targetQuery) {
+            if ($includeDisabled) {
+                $targetQuery->status(null);
+            }
 
-        $targetMatrixElements = collect($targetQuery->all())->keyBy('id');
-        $targetSerialized = $this->field->serializeValue($targetQuery, $target);
+            $targetMatrixElements = collect($targetQuery->all())->keyBy('id');
+            $targetSerialized = $this->field->serializeValue($targetQuery, $target);
+        }
 
         // loop over original matrix elements
         foreach ($query->all() as $matrixElement) {
@@ -75,9 +80,11 @@ class Matrix extends FieldSerializer
             }
 
             if (isset($translatedMatrixValues['fields'])) {
+                // Without a counterpart block (e.g. propagation method "none" or a new block), fall back to the
+                // target element: nested serializers need an element from the target site (links, nested entries).
                 $translatedFields = MultiTranslator::getInstance()->translate->setElementFieldsTranslations(
                     $matrixElement,
-                    $targetMatrixElement ?? $matrixElement,
+                    $targetMatrixElement ?? $target,
                     $translatedMatrixValues['fields'],
                 );
                 // merge to keep untranslated fields

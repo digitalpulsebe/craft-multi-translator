@@ -1,5 +1,12 @@
 # Release Notes for Multi Translator
 
+## Unreleased
+
+### Fixed
+
+- Fix "Invalid field handle" error when translating a Matrix field nested in a Content Block (regression in 2.31.2) (fixes #144)
+- Fix internal links in Matrix entries not being updated to the target site when the block doesn't exist there yet, e.g. with propagation method "Only save entries to the site they were created in" (regression in 2.31.2) (fixes #143)
+
 ## 2.31.3 - 2026-11-13
 
 ### Changed
