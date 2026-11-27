@@ -256,4 +256,22 @@ return [
     'Write your own prompt. Make sure to include {source}, {target} and {text} tokens' => 'Skriv din egen ledetekst. Sørg for å inkludere tokenene {source}, {target} og {text}',
     'API temperature' => 'API-temperatur',
     'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'Hvilken samplingstemperatur som skal brukes, mellom 0 og 2. Høyere verdier som 0,8 gjør utdataene mer tilfeldige, mens lavere verdier som 0,2 gjør dem mer presise og deterministiske. Avviklet: støttes ikke av GPT-5-modeller og vil bli ignorert når en GPT-5-modell er valgt.',
+
+    // Translation targets
+    'Translating to {site} is disabled in the settings.' => 'Oversettelse til {site} er deaktivert i innstillingene.',
+    'No target sites to translate to.' => 'Ingen målnettsteder å oversette til.',
+    'Translate to {target}? Confirm your action.' => 'Oversett til {target}? Bekreft handlingen din.',
+    'Translate to {target} with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' => 'Oversette til {target} med Lagre som utkast aktivert? Dette oppretter flere utkast fra samme øyeblikksbilde av alle nettsteder. Fortsett bare hvis du vil gjennomgå og bruke dem ett om gangen.',
+    'Translating to this site is disabled in the settings.' => 'Oversettelse til dette nettstedet er deaktivert i innstillingene.',
+    'Sites' => 'Nettsteder',
+    'Translation targets' => 'Oversettelsesmål',
+    'Target sites' => 'Målnettsteder',
+    'All sites can be translated to by default. Switch off the sites that should never be overwritten by a translation, e.g. a site that only serves as source. Switched off sites are hidden in all target menus and skipped by \'All sites\' and target groups. They can still be used as source.' => 'Som standard kan alle nettsteder oversettes til. Slå av nettstedene som aldri skal overskrives av en oversettelse, f.eks. et nettsted som bare brukes som kilde. Avslåtte nettsteder skjules i alle målmenyer og hoppes over av «Alle nettsteder» og målgrupper. De kan fortsatt brukes som kilde.',
+    'Site' => 'Nettsted',
+    'Can be translated to' => 'Kan oversettes til',
+    'Handle' => 'Handle',
+    'Target groups' => 'Målgrupper',
+    'Groups of sites that are translated to in one go. They are listed below \'All sites\' in the target menus. Sites that are disabled as target or that the user cannot edit are skipped. The handle is generated from the name and used as target value `group:<handle>`.' => 'Grupper av nettsteder som oversettes til på én gang. De vises under «Alle nettsteder» i målmenyene. Nettsteder som er deaktivert som mål eller som brukeren ikke kan redigere, hoppes over. Handle genereres fra navnet og brukes som målverdi `group:<handle>`.',
+    'Add a target group' => 'Legg til en målgruppe',
+    'The owner of this block doesn\'t exist in the target site.' => 'Eieren av denne blokken finnes ikke på målnettstedet.',
 ];

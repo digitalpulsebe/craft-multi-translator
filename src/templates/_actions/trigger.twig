@@ -1,21 +1,28 @@
+{% set targetSitesService = craft.multiTranslator.targetSites %}
+{% set sourceSite = craft.app.sites.getSiteByHandle(sourceSiteHandle ?? craft.app.request.getParam('site')) ?? craft.app.sites.currentSite %}
+{% set multiTargetOptions = targetSitesService.getMultiTargetOptions(null, sourceSite.id) %}
+
 <button type="button" class="btn menubtn" aria-label="{{ 'Translate'|t('multi-translator') }}">{{ 'Translate to'|t('multi-translator') }}</button>
 <div class="menu">
+    {% if multiTargetOptions|length %}
+        <ul>
+            {% for option in multiTargetOptions %}
+                <li>
+                    <a class="formsubmit" data-param="targetSiteHandle" data-value="{{ option.value }}" title="{{ option.sites|map(site => site.name)|join(', ') }}">
+                        <strong>{{ option.label }}</strong>
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+        <hr>
+    {% endif %}
     <ul>
-        <li>
-            <a class="formsubmit" data-param="targetSiteHandle" data-value="_ALL_">
-                <strong>{{ 'All sites'|t('multi-translator') }}</strong>
-            </a>
-        </li>
-        {% for site in craft.app.sites.allSites %}
-            {% if currentUser.can('editSite:'~site.uid) %}
-                {% if site.handle != craft.app.request.getParam('site') %}
-                    <li>
-                        <a class="formsubmit" data-param="targetSiteHandle" data-value="{{ site.handle }}">
-                            {{ site.name }} ({{ site.locale }})
-                        </a>
-                    </li>
-                {% endif %}
-            {% endif %}
+        {% for site in targetSitesService.getAvailableTargetSites(null, sourceSite.id) %}
+            <li>
+                <a class="formsubmit" data-param="targetSiteHandle" data-value="{{ site.handle }}">
+                    {{ site.name }} ({{ site.locale }})
+                </a>
+            </li>
         {% endfor %}
     </ul>
 </div>

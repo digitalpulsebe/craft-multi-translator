@@ -124,6 +124,73 @@
         },
     }, {});
 
+    /**
+     * Craft.MultiTranslatorTargetGroups
+     *
+     * Target groups table in the plugin settings (templates/_settings/targetGroups.twig):
+     * add/delete/reorder rows, a multiselect of sites per group and a handle generated from the name.
+     */
+    Craft.MultiTranslatorTargetGroups = Garnish.Base.extend({
+        $container: null,
+        $table: null,
+        $tbody: null,
+        template: null,
+        sorter: null,
+        newRowCount: 0,
+
+        init: function (container) {
+            this.$container = $(container);
+            this.$table = this.$container.find('[data-target-groups-table]');
+            this.$tbody = this.$table.children('tbody');
+            this.template = this.$container.find('[data-target-groups-template]').html();
+
+            this.sorter = new Garnish.DragSort({
+                handle: '.move',
+                axis: Garnish.Y_AXIS,
+                collapseDraggees: true,
+                magnetStrength: 4,
+                helperLagBase: 1.5,
+                helperOpacity: 0.9,
+            });
+
+            this.$tbody.children('tr').each((i, row) => this.initRow($(row), false));
+
+            this.addListener(this.$container.find('[data-target-groups-add]'), 'click', 'addRow');
+        },
+
+        initRow: function ($row, isNew) {
+            $row.find('[data-sites]').selectize({
+                plugins: ['remove_button'],
+                dropdownParent: 'body',
+                closeAfterSelect: false,
+                hideSelected: true,
+            });
+
+            // only generate the handle for new groups, an existing handle shouldn't change when renaming
+            if (isNew) {
+                new Craft.HandleGenerator($row.find('[data-name]'), $row.find('[data-handle]'));
+            }
+
+            this.addListener($row.find('[data-delete]'), 'click', () => this.deleteRow($row));
+            this.sorter.addItems($row);
+        },
+
+        addRow: function () {
+            const $row = $(this.template.replace(/__ROW__/g, 'new' + (++this.newRowCount)).trim());
+            this.$tbody.append($row);
+            this.$table.removeClass('hidden');
+            this.initRow($row, true);
+            $row.find('[data-name]').trigger('focus');
+        },
+
+        deleteRow: function ($row) {
+            this.sorter.removeItems($row);
+            $row.find('[data-sites]').each((i, select) => select.selectize && select.selectize.destroy());
+            $row.remove();
+            this.$table.toggleClass('hidden', this.$tbody.children('tr').length === 0);
+        },
+    });
+
     Craft.MultiTranslator = Garnish.Base.extend(
     {
         init: function () {
@@ -161,5 +228,37 @@
     }
 
     new Craft.MultiTranslator();
+
+    /**
+     * Sidebar translate links: submit as a POST request with a CSRF token instead of a GET link.
+     * Uses a temporary form outside the element editor form (forms can't be nested).
+     */
+    if (!window.multiTranslatorSidebarListener) {
+        window.multiTranslatorSidebarListener = true;
+
+        $(document).on('click', 'a[data-multi-translator-translate]', function (ev) {
+            ev.preventDefault();
+
+            const $link = $(this);
+            const confirmMessage = $link.data('multi-translator-confirm');
+
+            if (confirmMessage && !confirm(confirmMessage)) {
+                return;
+            }
+
+            const params = $link.data('multi-translator-translate') || {};
+            const $form = $('<form/>', {method: 'post', action: Craft.getActionUrl('multi-translator/sidebar/translate')});
+
+            if (Craft.csrfTokenName) {
+                $('<input/>', {type: 'hidden', name: Craft.csrfTokenName, value: Craft.csrfTokenValue}).appendTo($form);
+            }
+
+            Object.keys(params).forEach(function (name) {
+                $('<input/>', {type: 'hidden', name: name, value: params[name]}).appendTo($form);
+            });
+
+            $form.appendTo(Garnish.$bod).trigger('submit');
+        });
+    }
 
 })(window);

@@ -2,19 +2,31 @@
 
 namespace digitalpulsebe\craftmultitranslator\controllers;
 
-use digitalpulsebe\craftmultitranslator\helpers\ElementHelper;
 use digitalpulsebe\craftmultitranslator\MultiTranslator;
 use yii\web\Response;
 
 class TranslateController extends BaseController
 {
+    /**
+     * The only settings a translator may override for a single translation (see _translate/review.twig).
+     * Everything else (provider, API keys, base urls, target sites, ...) requires the settings permission.
+     */
+    private const OVERRIDABLE_SETTINGS = [
+        'disabledFields',
+        'saveAsDraft',
+        'resetSlug',
+        'detectSourceLanguage',
+        'updateInternalLinks',
+        'processNestedEntries',
+    ];
+
     public function actionReview(): Response
     {
-        $elementId = $this->request->get('elementId');
-        $elementType = $this->request->get('elementType');
-        $sourceSiteId = $this->request->get('sourceSiteId');
+        $elementId = (int) $this->request->getRequiredQueryParam('elementId');
+        $elementType = (string) $this->request->getRequiredQueryParam('elementType');
+        $sourceSiteId = (int) $this->request->getRequiredQueryParam('sourceSiteId');
 
-        $element = ElementHelper::one($elementType, $elementId, $sourceSiteId);
+        $element = $this->requireTranslatableElement($elementType, $elementId, $sourceSiteId, false);
 
         return $this->renderTemplate('multi-translator/_translate/review.twig', [
             'element' => $element,
@@ -25,15 +37,24 @@ class TranslateController extends BaseController
 
     public function actionConfirm(): Response
     {
-        $elementId = $this->request->post('elementId');
-        $elementType = $this->request->post('elementType');
-        $sourceSiteId = $this->request->post('sourceSiteId');
-        $targetSiteId = $this->request->post('targetSiteId');
+        $this->requirePostRequest();
 
-        $config = $this->request->post('config');
+        $elementId = (int) $this->request->getRequiredBodyParam('elementId');
+        $elementType = (string) $this->request->getRequiredBodyParam('elementType');
+        $sourceSiteId = (int) $this->request->getRequiredBodyParam('sourceSiteId');
+        $targetSiteId = $this->request->getRequiredBodyParam('targetSiteId');
+
+        $config = $this->request->getBodyParam('config');
+        $config = is_array($config) ? array_intersect_key($config, array_flip(self::OVERRIDABLE_SETTINGS)) : [];
+
+        if (isset($config['disabledFields']) && !is_array($config['disabledFields'])) {
+            // an unchecked checkbox group posts an empty string
+            $config['disabledFields'] = [];
+        }
+
         MultiTranslator::getInstance()->settingsService->getProviderSettings()->overrideWithConfig($config);
 
-        return $this->translateElement($elementId, $elementType, $sourceSiteId, $targetSiteId);
+        return $this->translateElementToTarget($elementId, $elementType, $sourceSiteId, $targetSiteId);
     }
 
 }

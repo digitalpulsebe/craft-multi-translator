@@ -256,4 +256,22 @@ return [
     'Write your own prompt. Make sure to include {source}, {target} and {text} tokens' => 'Schrijf uw eigen prompt. Zorg ervoor dat u de tokens {source}, {target} en {text} opneemt',
     'API temperature' => 'API-temperatuur',
     'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'Welke samplingtemperatuur te gebruiken, tussen 0 en 2. Hogere waarden zoals 0,8 maken de uitvoer willekeuriger, terwijl lagere waarden zoals 0,2 de uitvoer gerichter en deterministischer maken. Verouderd: niet ondersteund door GPT-5-modellen en wordt genegeerd wanneer een GPT-5-model is geselecteerd.',
+
+    // Vertaaldoelen / translation targets
+    'Translating to {site} is disabled in the settings.' => 'Vertalen naar {site} is uitgeschakeld in de instellingen.',
+    'No target sites to translate to.' => 'Geen doelsites om naar te vertalen.',
+    'Translate to {target}? Confirm your action.' => 'Naar {target} vertalen? Bevestig uw actie.',
+    'Translate to {target} with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' => 'Naar {target} vertalen met Opslaan als concept ingeschakeld? Er worden meerdere concepten gemaakt op basis van dezelfde momentopname van alle sites. Ga alleen verder als u ze één voor één controleert en toepast.',
+    'Translating to this site is disabled in the settings.' => 'Vertalen naar deze site is uitgeschakeld in de instellingen.',
+    'Sites' => 'Sites',
+    'Translation targets' => 'Vertaaldoelen',
+    'Target sites' => 'Doelsites',
+    'All sites can be translated to by default. Switch off the sites that should never be overwritten by a translation, e.g. a site that only serves as source. Switched off sites are hidden in all target menus and skipped by \'All sites\' and target groups. They can still be used as source.' => 'Standaard kan naar alle sites vertaald worden. Schakel de sites uit die nooit door een vertaling overschreven mogen worden, bv. een site die enkel als bron dient. Uitgeschakelde sites worden verborgen in alle doelmenu\'s en overgeslagen bij \'Alle sites\' en doelgroepen. Ze kunnen nog steeds als bron gebruikt worden.',
+    'Site' => 'Site',
+    'Can be translated to' => 'Kan naar vertaald worden',
+    'Handle' => 'Handle',
+    'Target groups' => 'Doelgroepen',
+    'Groups of sites that are translated to in one go. They are listed below \'All sites\' in the target menus. Sites that are disabled as target or that the user cannot edit are skipped. The handle is generated from the name and used as target value `group:<handle>`.' => 'Groepen van sites waarnaar in één keer vertaald wordt. Ze verschijnen onder \'Alle sites\' in de doelmenu\'s. Sites die als doel uitgeschakeld zijn of die de gebruiker niet kan bewerken, worden overgeslagen. De handle wordt gegenereerd uit de naam en gebruikt als doelwaarde `group:<handle>`.',
+    'Add a target group' => 'Doelgroep toevoegen',
+    'The owner of this block doesn\'t exist in the target site.' => 'De eigenaar van dit blok bestaat niet in de doelsite.',
 ];

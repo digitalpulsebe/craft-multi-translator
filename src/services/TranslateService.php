@@ -133,7 +133,8 @@ class TranslateService extends Component
         if ($targetElement instanceof Entry && $targetElement->getIsDraft()) {
             // only Entries can have drafts
             \Craft::$app->drafts->saveElementAsDraft($targetElement, null, $draftName, $revisionNotes);
-        } elseif ($isRootElement && $targetElement instanceof Entry && $this->getProviderSettings()->getSaveAsDraft()) {
+        } elseif ($isRootElement && $targetElement instanceof Entry && $targetElement->id && $this->getProviderSettings()->getSaveAsDraft()) {
+            // (a new nested entry is saved right away, it can't be drafted before it exists)
             // only Entries can have drafts
             $targetElement = \Craft::$app->drafts->createDraft($targetElement, null, $draftName, $revisionNotes);
             $this->setElementTranslation($source, $targetElement, $translatedValues);
@@ -402,7 +403,10 @@ class TranslateService extends Component
 
         if (empty($targetEntry)) {
             // we need to create one for this target site
-            if ($source?->section?->propagationMethod == PropagationMethod::Custom) {
+            if ($source->fieldId && !$source->getSection()) {
+                // nested entry (e.g. Matrix block) that doesn't exist in the target site: add it as a new block
+                $targetEntry = $this->createNestedEntryForSite($source, $targetSiteId);
+            } elseif ($source?->section?->propagationMethod == PropagationMethod::Custom) {
                 // create for site first, but keep enabled status
                 $sitesEnabled = $source->getEnabledForSite();
                 if (is_array($sitesEnabled) && !isset($sitesEnabled[$targetSiteId])) {
@@ -433,6 +437,37 @@ class TranslateService extends Component
                 $targetEntry = Craft::$app->elements->duplicateElement($source, ['siteId' => $targetSiteId]);
             }
         }
+
+        return $targetEntry;
+    }
+
+    /**
+     * Create a copy of a nested entry (Matrix block) in the owner of the target site, e.g. when the Matrix field's
+     * propagation method is "Only save entries to the site they were created in". The new entry is added after the
+     * existing entries of that owner; its values are copied from the source and overwritten by the translation.
+     *
+     * @throws ElementNotFoundException when the owner doesn't exist in the target site
+     */
+    public function createNestedEntryForSite(Entry $source, int $targetSiteId): Entry
+    {
+        $owner = $source->getOwner();
+        $targetOwner = $owner ? Craft::$app->getElements()->getElementById($owner->id, get_class($owner), $targetSiteId) : null;
+
+        if (!$targetOwner) {
+            throw new ElementNotFoundException(Craft::t('multi-translator', 'The owner of this block doesn\'t exist in the target site.'));
+        }
+
+        $targetEntry = new Entry();
+        $targetEntry->fieldId = $source->fieldId;
+        $targetEntry->typeId = $source->typeId;
+        $targetEntry->setPrimaryOwner($targetOwner);
+        $targetEntry->setOwner($targetOwner);
+        $targetEntry->siteId = $targetSiteId;
+        $targetEntry->enabled = $source->enabled;
+        $targetEntry->setEnabledForSite($source->getEnabledForSite());
+        $targetEntry->title = $source->title;
+        // copy all values, the translatable ones are overwritten afterwards (nested blocks are created as new ones)
+        $targetEntry->setFieldValues($source->getSerializedFieldValues());
 
         return $targetEntry;
     }

@@ -1,3 +1,4 @@
+{% requirePermission 'multiTranslateContent' %}
 {% extends "_layouts/cp" %}
 
 {% set title = 'Glossaries'|t('multi-translator') %}
@@ -13,7 +14,11 @@
 {% block actionButton %}
     {% if settings.translationProvider == 'deepl' and provider.isConnected %}
         <a class="btn submit add icon" href="{{ url('multi-translator/glossaries/new') }}">{{ 'Create new'|t('multi-translator') }}</a>
-        <a class="btn submit sync icon" href="{{ url('multi-translator/glossaries/fetch') }}">{{ 'Fetch from DeepL'|t('multi-translator') }}</a>
+        <form method="post" style="display: inline-block">
+            {{ csrfInput() }}
+            {{ actionInput('multi-translator/glossaries/fetch') }}
+            <button type="submit" class="btn submit sync icon">{{ 'Fetch from DeepL'|t('multi-translator') }}</button>
+        </form>
     {% endif %}
 {% endblock %}
 
@@ -61,23 +66,10 @@
                                 <td>{{ glossary.rows|length }}</td>
                                 <td style="text-align: right">
                                     {% if glossary.enabled %}
-                                        <a
-                                            href="{{ actionUrl('multi-translator/glossaries/disable/', {id: glossary.id}) }}"
-                                            class="btn"
-                                            title="{{ 'Disable this glossary'|t('multi-translator') }}"
-                                        >{{ 'disable'|t('multi-translator') }}</a>
-                                    {% else %}<a
-                                            href="{{ actionUrl('multi-translator/glossaries/enable/', {id: glossary.id}) }}"
-                                            class="btn"
-                                            title="{{ 'Enable this glossary'|t('multi-translator') }}"
-                                        >{{ 'enable'|t('multi-translator') }}</a>
+                                        <form method="post" style="display: inline-block">{{ csrfInput() }}{{ actionInput('multi-translator/glossaries/disable') }}{{ hiddenInput('id', glossary.id) }}<button type="submit" class="btn" title="{{ 'Disable this glossary'|t('multi-translator') }}">{{ 'disable'|t('multi-translator') }}</button></form>
+                                    {% else %}<form method="post" style="display: inline-block">{{ csrfInput() }}{{ actionInput('multi-translator/glossaries/enable') }}{{ hiddenInput('id', glossary.id) }}<button type="submit" class="btn" title="{{ 'Enable this glossary'|t('multi-translator') }}">{{ 'enable'|t('multi-translator') }}</button></form>
                                     {% endif %}
-                                    <a
-                                        href="{{ actionUrl('multi-translator/glossaries/delete/', {id: glossary.id}) }}"
-                                        class="btn"
-                                        title="{{ 'Delete this glossary in your DeepL account'|t('multi-translator') }}"
-                                        onclick="return confirm('{{ 'Are you sure you want to delete this? The glossary will be deleted from your DeepL account as well.'|t('multi-translator')|e('js') }}')"
-                                    >{{ 'delete'|t('multi-translator') }}</a>
+                                    <form method="post" style="display: inline-block" onsubmit="return confirm('{{ 'Are you sure you want to delete this? The glossary will be deleted from your DeepL account as well.'|t('multi-translator')|e('js') }}')">{{ csrfInput() }}{{ actionInput('multi-translator/glossaries/delete') }}{{ hiddenInput('id', glossary.id) }}<button type="submit" class="btn" title="{{ 'Delete this glossary in your DeepL account'|t('multi-translator') }}">{{ 'delete'|t('multi-translator') }}</button></form>
                                 </td>
                             </tr>
                         {% endfor %}

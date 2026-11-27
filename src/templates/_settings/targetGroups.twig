@@ -1,0 +1,74 @@
+{#
+    Target groups table: name, handle and a multiselect of sites per group.
+    Rendered inside {% namespace 'settings' %}, rows are posted as targetGroups[<index>][name|handle|sites][].
+    Behaviour (add, delete, reorder, handle generation, selectize) lives in Craft.MultiTranslatorTargetGroups.
+
+    @param groups   array of {name, handle, sites: string[]}
+    @param allSites Site[]
+#}
+
+{% macro row(index, group, allSites) %}
+    <tr data-target-group>
+        <td>
+            <input type="text" class="text fullwidth" name="targetGroups[{{ index }}][name]" value="{{ group.name ?? '' }}" aria-label="{{ 'Name'|t('multi-translator') }}" data-name>
+        </td>
+        <td>
+            <input type="text" class="text fullwidth code" name="targetGroups[{{ index }}][handle]" value="{{ group.handle ?? '' }}" aria-label="{{ 'Handle'|t('multi-translator') }}" data-handle>
+        </td>
+        <td>
+            {# makes sure an empty selection is posted #}
+            <input type="hidden" name="targetGroups[{{ index }}][sites]" value="">
+            <select multiple name="targetGroups[{{ index }}][sites][]" aria-label="{{ 'Sites'|t('multi-translator') }}" data-sites>
+                {% for site in allSites %}
+                    <option value="{{ site.uid }}"{% if site.uid in (group.sites ?? []) %} selected{% endif %}>{{ site.name }} ({{ site.locale }})</option>
+                {% endfor %}
+            </select>
+        </td>
+        <td class="thin action">
+            <a class="move icon" title="{{ 'Reorder'|t('app') }}" role="button" aria-label="{{ 'Reorder'|t('app') }}"></a>
+        </td>
+        <td class="thin action">
+            <button type="button" class="delete icon" title="{{ 'Delete'|t('app') }}" aria-label="{{ 'Delete'|t('app') }}" data-delete></button>
+        </td>
+    </tr>
+{% endmacro %}
+
+<div class="field" id="target-groups-field">
+    <div class="heading">
+        <label>{{ 'Target groups'|t('multi-translator') }}</label>
+    </div>
+    <div class="instructions">
+        <p>{{ "Groups of sites that are translated to in one go. They are listed below 'All sites' in the target menus. Sites that are disabled as target or that the user cannot edit are skipped. The handle is generated from the name and used as target value `group:<handle>`."|t('multi-translator')|md(inlineOnly=true) }}</p>
+    </div>
+    <div class="input">
+        {# makes sure the groups are cleared when all rows are deleted #}
+        {{ hiddenInput('targetGroups', '') }}
+
+        <table class="editable fullwidth{% if groups is empty %} hidden{% endif %}" data-target-groups-table>
+            <thead>
+                <tr>
+                    <th scope="col" style="width: 25%">{{ 'Name'|t('multi-translator') }}</th>
+                    <th scope="col" style="width: 20%">{{ 'Handle'|t('multi-translator') }}</th>
+                    <th scope="col">{{ 'Sites'|t('multi-translator') }}</th>
+                    <th colspan="2"><span class="visually-hidden">{{ 'Row actions'|t('app') }}</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for group in groups %}
+                    {{ _self.row(loop.index0, group, allSites) }}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <template data-target-groups-template>
+            {{ _self.row('__ROW__', {}, allSites) }}
+        </template>
+
+        <button type="button" class="btn dashed add icon" data-target-groups-add>{{ 'Add a target group'|t('multi-translator') }}</button>
+    </div>
+</div>
+
+{% do view.registerAssetBundle("digitalpulsebe\\craftmultitranslator\\assets\\MultiTranslatorBundle") %}
+{% js %}
+    new Craft.MultiTranslatorTargetGroups('#{{ 'target-groups-field'|namespaceInputId }}');
+{% endjs %}

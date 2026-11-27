@@ -256,4 +256,22 @@ return [
     'Write your own prompt. Make sure to include {source}, {target} and {text} tokens' => 'Rédigez votre propre invite. Veillez à inclure les jetons {source}, {target} et {text}',
     'API temperature' => 'Température API',
     'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'Température d\'échantillonnage à utiliser, entre 0 et 2. Des valeurs élevées comme 0,8 rendent la sortie plus aléatoire, tandis que des valeurs basses comme 0,2 la rendent plus précise et déterministe. Obsolète : non pris en charge par les modèles GPT-5 et sera ignoré lorsqu\'un modèle GPT-5 est sélectionné.',
+
+    // Translation targets
+    'Translating to {site} is disabled in the settings.' => 'La traduction vers {site} est désactivée dans les paramètres.',
+    'No target sites to translate to.' => 'Aucun site cible vers lequel traduire.',
+    'Translate to {target}? Confirm your action.' => 'Traduire vers {target} ? Confirmez votre action.',
+    'Translate to {target} with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' => 'Traduire vers {target} avec l’enregistrement en brouillon activé ? Plusieurs brouillons seront créés à partir du même instantané de tous les sites. Continuez uniquement si vous les examinez et les appliquez un par un.',
+    'Translating to this site is disabled in the settings.' => 'La traduction vers ce site est désactivée dans les paramètres.',
+    'Sites' => 'Sites',
+    'Translation targets' => 'Cibles de traduction',
+    'Target sites' => 'Sites cibles',
+    'All sites can be translated to by default. Switch off the sites that should never be overwritten by a translation, e.g. a site that only serves as source. Switched off sites are hidden in all target menus and skipped by \'All sites\' and target groups. They can still be used as source.' => 'Par défaut, tous les sites peuvent être cibles d’une traduction. Désactivez les sites qui ne doivent jamais être écrasés par une traduction, p. ex. un site qui sert uniquement de source. Les sites désactivés sont masqués dans tous les menus de cibles et ignorés par « Tous les sites » et les groupes cibles. Ils peuvent toujours servir de source.',
+    'Site' => 'Site',
+    'Can be translated to' => 'Peut être cible de traduction',
+    'Handle' => 'Handle',
+    'Target groups' => 'Groupes cibles',
+    'Groups of sites that are translated to in one go. They are listed below \'All sites\' in the target menus. Sites that are disabled as target or that the user cannot edit are skipped. The handle is generated from the name and used as target value `group:<handle>`.' => 'Groupes de sites vers lesquels traduire en une fois. Ils apparaissent sous « Tous les sites » dans les menus de cibles. Les sites désactivés comme cible ou que l’utilisateur ne peut pas modifier sont ignorés. Le handle est généré à partir du nom et utilisé comme valeur cible `group:<handle>`.',
+    'Add a target group' => 'Ajouter un groupe cible',
+    'The owner of this block doesn\'t exist in the target site.' => 'Le propriétaire de ce bloc n\'existe pas dans le site cible.',
 ];

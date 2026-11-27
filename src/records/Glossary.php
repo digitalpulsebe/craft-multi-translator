@@ -138,7 +138,7 @@ class Glossary extends ActiveRecord
         if (!empty($this->deeplId)) {
             try {
                 $deeplClient = MultiTranslator::getInstance()->translate->getApiProviderByHandle('deepl')->getClient();
-                $deeplClient->deleteGlossary($this->id);
+                $deeplClient->deleteGlossary($this->deeplId);
             } catch (\Throwable $e) {
                 // might fail, but we still want to continue
                 MultiTranslator::error([

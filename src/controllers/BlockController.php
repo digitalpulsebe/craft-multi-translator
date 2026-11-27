@@ -2,19 +2,20 @@
 
 namespace digitalpulsebe\craftmultitranslator\controllers;
 
-use Craft;
 use craft\elements\Entry;
-use digitalpulsebe\craftmultitranslator\helpers\ElementHelper;
 use yii\web\Response;
 
 class BlockController extends BaseController
 {
     public function actionReview(): Response
     {
-        $elementId = $this->request->post('blockId');
-        $sourceSiteId = $this->request->post('sourceSiteId');
+        $this->requirePostRequest();
+        $this->requireAcceptsJson();
 
-        $element = ElementHelper::one(Entry::class, $elementId, $sourceSiteId);
+        $elementId = (int) $this->request->getRequiredBodyParam('blockId');
+        $sourceSiteId = (int) $this->request->getRequiredBodyParam('sourceSiteId');
+
+        $element = $this->requireTranslatableElement(Entry::class, $elementId, $sourceSiteId, false);
 
         return $this->asJson([
             'html' => \Craft::$app->getView()->renderTemplate('multi-translator/_translate/block.twig',
@@ -30,37 +31,15 @@ class BlockController extends BaseController
 
     public function actionTranslate(): Response
     {
-        $elementId = $this->request->post('blockId');
+        $this->requirePostRequest();
+
+        $elementId = (int) $this->request->getRequiredBodyParam('blockId');
         $elementType = Entry::class;
-        $sourceSiteId = $this->request->post('sourceSiteId');
-        $targetSiteId = $this->request->post('targetSiteId');
+        $sourceSiteId = (int) $this->request->getRequiredBodyParam('sourceSiteId');
+        $targetSiteId = $this->request->getRequiredBodyParam('targetSiteId');
 
-        if ($targetSiteId == 'all') {
-            $element = Entry::find()->siteId($sourceSiteId)->id($elementId)->one();
-            $currentUser = Craft::$app->getUser()->getIdentity();
-
-            // fallback return result
-            $result = $this->redirect($element->cpEditUrl);
-
-            $targetSiteIds = collect(\craft\helpers\ElementHelper::supportedSitesForElement($element))
-                ->filter(function (array $site) use ($currentUser) {
-                    return $currentUser->can('editSite:' . $site['siteUid']);
-                })
-                ->filter(function (array $site) use ($sourceSiteId) {
-                    return $site['siteId'] != $sourceSiteId;
-                })
-                ->pluck('siteId')
-                ->values()
-                ->all();
-
-            foreach ($targetSiteIds as $targetSiteId) {
-                // only last result will return
-                $result = $this->translateElement($elementId, $elementType, $sourceSiteId, $targetSiteId);
-            }
-            return $result;
-        } else {
-            return $this->translateElement($elementId, $elementType, $sourceSiteId, $targetSiteId);
-        }
+        // nested entries: only translate 'all' and groups to sites the block is already propagated to
+        return $this->translateElementToTarget($elementId, $elementType, $sourceSiteId, $targetSiteId, null, false);
     }
 
 }

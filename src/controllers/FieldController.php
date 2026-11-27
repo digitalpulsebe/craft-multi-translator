@@ -3,7 +3,6 @@
 namespace digitalpulsebe\craftmultitranslator\controllers;
 
 use Craft;
-use digitalpulsebe\craftmultitranslator\helpers\ElementHelper;
 use yii\web\Response;
 
 /**
@@ -23,12 +22,15 @@ class FieldController extends BaseController
      */
     public function actionReview(): Response
     {
-        $elementId    = $this->request->post('elementId');
-        $elementType  = $this->request->post('elementType');
-        $sourceSiteId = $this->request->post('sourceSiteId');
-        $fieldHandle  = $this->request->post('fieldHandle');
+        $this->requirePostRequest();
+        $this->requireAcceptsJson();
 
-        $element = ElementHelper::one($elementType, $elementId, $sourceSiteId);
+        $elementId    = (int) $this->request->getRequiredBodyParam('elementId');
+        $elementType  = (string) $this->request->getRequiredBodyParam('elementType');
+        $sourceSiteId = (int) $this->request->getRequiredBodyParam('sourceSiteId');
+        $fieldHandle  = (string) $this->request->getRequiredBodyParam('fieldHandle');
+
+        $element = $this->requireTranslatableElement($elementType, $elementId, $sourceSiteId, false);
 
         return $this->asJson([
             'html' => Craft::$app->getView()->renderTemplate('multi-translator/_translate/field.twig', [
@@ -43,13 +45,13 @@ class FieldController extends BaseController
     }
 
     /**
-     * Translate a single field on an element to one or all target sites.
+     * Translate a single field on an element to one or multiple target sites.
      *
      * Accepts POST params:
      *   - elementId    (int)
      *   - elementType  (string, FQCN)
      *   - sourceSiteId (int)
-     *   - targetSiteId (int|'all')  use 'all' to translate to every supported site
+     *   - targetSiteId (int|string) a site id, 'all' or 'group:<handle>'
      *   - fieldHandle  (string)     the single field to translate
      */
     public function actionTranslate(): Response
@@ -57,36 +59,11 @@ class FieldController extends BaseController
         $this->requirePostRequest();
 
         $elementId    = (int) $this->request->getRequiredBodyParam('elementId');
-        $elementType  = $this->request->getRequiredBodyParam('elementType');
+        $elementType  = (string) $this->request->getRequiredBodyParam('elementType');
         $sourceSiteId = (int) $this->request->getRequiredBodyParam('sourceSiteId');
         $targetSiteId = $this->request->getRequiredBodyParam('targetSiteId');
-        $fieldHandle  = $this->request->getRequiredBodyParam('fieldHandle');
+        $fieldHandle  = (string) $this->request->getRequiredBodyParam('fieldHandle');
 
-        $element = ElementHelper::one($elementType, $elementId, $sourceSiteId);
-
-        if (!$element) {
-            return $this->asFailure(Craft::t('multi-translator', 'Element not found.'));
-        }
-
-        if ($targetSiteId === 'all') {
-            $currentUser = Craft::$app->getUser()->getIdentity();
-
-            $result = $this->redirect($element->cpEditUrl);
-
-            $targetSiteIds = collect(\craft\helpers\ElementHelper::supportedSitesForElement($element))
-                ->filter(fn(array $site) => $currentUser->can('editSite:' . $site['siteUid']))
-                ->filter(fn(array $site) => $site['siteId'] != $sourceSiteId)
-                ->pluck('siteId')
-                ->values()
-                ->all();
-
-            foreach ($targetSiteIds as $siteId) {
-                $result = $this->translateElement($elementId, $elementType, $sourceSiteId, $siteId, [$fieldHandle]);
-            }
-
-            return $result;
-        }
-
-        return $this->translateElement($elementId, $elementType, $sourceSiteId, (int) $targetSiteId, [$fieldHandle]);
+        return $this->translateElementToTarget($elementId, $elementType, $sourceSiteId, $targetSiteId, [$fieldHandle], false);
     }
 }

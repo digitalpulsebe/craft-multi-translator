@@ -4,7 +4,7 @@ Translate your site content using Deepl, Google Translate or ChatGPT.
 
 ## Requirements
 
-This plugin requires Craft CMS 4 or Craft CMS 5.
+This plugin requires Craft CMS 5.6 or later.
 
 ## Installation
 
@@ -72,16 +72,27 @@ Configure options in the Craft control panel settings
 
 ![Screenshot](resources/img/screenshot_settings.png)
 
+### Translation targets
+
+- **Target sites**: switch off the sites that should never be overwritten by a translation, e.g. a site that only
+  holds the source content. Disabled sites are hidden in every target menu (sidebar, bulk action, block/field modals,
+  'More options...') and are skipped by 'All sites' and target groups. They can still be used as source.
+- **Target groups**: named sets of sites to translate to in one go. They are listed right below 'All sites' in the
+  target menus. Sites that are disabled as target, that the user cannot edit or that the element doesn't support are
+  skipped.
+
+  ![Screenshot](resources/img/screenshot_targetGroups.png)
+
 ## Permissions
 
 For non-admin users, enable permissions under the 'Multi Translator' section:
 
 - 'Manage settings'
-  - this will allow CMS users to enter an API key an edit general settings
+  - this will allow CMS users to enter an API key and edit general settings
 - 'Translate Content'
-  - enables the element actions to [translate one-by-one](#translate-one-by-one)
+  - enables the element actions to [translate one-by-one](#translate-one-by-one), [per field](#translate-a-single-field) and [per block](#translate-a-block)
 - 'Translate Content in bulk (element action)'
-  - enables the bulk actions to [translate one-by-one](#translate-in-bulk)
+  - enables the bulk actions to [translate in bulk](#translate-in-bulk)
 
 ## Supported field types
 
@@ -89,9 +100,13 @@ For non-admin users, enable permissions under the 'Multi Translator' section:
 - craft\fields\Table
 - craft\redactor\Field
 - craft\ckeditor\Field
+- abmat\tinymce\Field
 - craft\fields\Link
+- presseddigital\linkit\fields\LinkitField
+- verbb\doxter\fields\Doxter
 - verbb\vizy\fields\VizyField
 - craft\fields\Matrix (recursive)
+- craft\fields\ContentBlock (recursive)
 - benf\neo\Field (recursive)
 - verbb\supertable\fields\SuperTableField (recursive)
 - verbb\hyper\fields\HyperField
@@ -100,12 +115,12 @@ For non-admin users, enable permissions under the 'Multi Translator' section:
 
 ## Usage
 
-There are two ways to trigger a translation.
+There are several ways to trigger a translation.
 
 ### Translate one-by-one
 
 1. Navigate to the entry on the desired source site/language.
-2. Use the buttons in the sidebar and select the target language.
+2. Use the buttons in the sidebar and select the target language, 'All sites' or a [target group](#translation-targets).
 
 (you can reverse this flow by setting the default direction in the configuration)
 
@@ -115,10 +130,23 @@ There are two ways to trigger a translation.
 
 1. Navigate to overview of entries you want to get translated.
 2. Select the entries in the source language.
-3. Use the 'Translate to' dropdown in the actions bar and choose the target language
+3. Use the 'Translate to' dropdown in the actions bar and choose the target language, 'All sites' or a [target group](#translation-targets)
 4. A queue job will be started
 
 ![Screenshot](resources/img/screenshot_actions.png)
+
+### Translate a single field
+
+Use 'Translate field…' in the action menu of a field and pick the target site. Only that field is translated. Requires Craft 5.9+.
+
+![Screenshot](resources/img/screenshot_translateField.png)
+
+### Translate a block
+
+Use 'Translate to…' in the action menu of a Matrix block and pick the target site. If the block doesn't exist in the target
+site (e.g. propagation method "Only save entries to the site they were created in"), it is added as a new block.
+
+![Screenshot](resources/img/screenshot_translateBlock.png)
 
 ### Manage Glossaries
 

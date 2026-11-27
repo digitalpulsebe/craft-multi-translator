@@ -43,15 +43,10 @@
     {% set elementHelper = craft.multiTranslator.getElementHelper() %}
 
     {% set existingSiteIds = elementHelper.siteStatusesForElement(element)|keys %}
-    {% set supportedSiteIds = elementHelper.supportedSitesForElement(element, true)|map(site => site.siteId) %}
     {% set sites = craft.app.sites.allSites %}
 
     {% set existingSiteOptions = sites|filter(site => (site.id in existingSiteIds and currentUser.can('editSite:'~site.uid)))|map(site => {label: site.name, value: site.id}) %}
-    {% set supportedSiteOptions = [{label: '- select target -'|t('multi-translator'), value: ''}] %}
-    {% set supportedSiteOptions = supportedSiteOptions
-        |merge(sites|filter(site => site.id in supportedSiteIds)
-        |filter(site => currentUser.can('editSite:'~site.uid))
-        |map(site => {label: site.name, value: site.id})) %}
+    {% set supportedSiteOptions = craft.multiTranslator.targetSites.getTargetSelectOptions(element, sourceSiteId, true) %}
 
     <form method="post">
         <fieldset class="flex-fields">

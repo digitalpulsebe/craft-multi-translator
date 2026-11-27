@@ -277,4 +277,22 @@ return [
     'Write your own prompt. Make sure to include {source}, {target} and {text} tokens' => 'Write your own prompt. Make sure to include {source}, {target} and {text} tokens',
     'API temperature' => 'API temperature',
     'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.' => 'What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. Deprecated: not supported by GPT-5 models and will be ignored when a GPT-5 model is selected.',
+
+    // Translation targets
+    'Translating to {site} is disabled in the settings.' => 'Translating to {site} is disabled in the settings.',
+    'No target sites to translate to.' => 'No target sites to translate to.',
+    'Translate to {target}? Confirm your action.' => 'Translate to {target}? Confirm your action.',
+    'Translate to {target} with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.' => 'Translate to {target} with Save as draft enabled? This will create several drafts from the same all-site snapshot. Continue only if you will review and apply them one at a time.',
+    'Translating to this site is disabled in the settings.' => 'Translating to this site is disabled in the settings.',
+    'Sites' => 'Sites',
+    'Translation targets' => 'Translation targets',
+    'Target sites' => 'Target sites',
+    'All sites can be translated to by default. Switch off the sites that should never be overwritten by a translation, e.g. a site that only serves as source. Switched off sites are hidden in all target menus and skipped by \'All sites\' and target groups. They can still be used as source.' => 'All sites can be translated to by default. Switch off the sites that should never be overwritten by a translation, e.g. a site that only serves as source. Switched off sites are hidden in all target menus and skipped by \'All sites\' and target groups. They can still be used as source.',
+    'Site' => 'Site',
+    'Can be translated to' => 'Can be translated to',
+    'Handle' => 'Handle',
+    'Target groups' => 'Target groups',
+    'Groups of sites that are translated to in one go. They are listed below \'All sites\' in the target menus. Sites that are disabled as target or that the user cannot edit are skipped. The handle is generated from the name and used as target value `group:<handle>`.' => 'Groups of sites that are translated to in one go. They are listed below \'All sites\' in the target menus. Sites that are disabled as target or that the user cannot edit are skipped. The handle is generated from the name and used as target value `group:<handle>`.',
+    'Add a target group' => 'Add a target group',
+    'The owner of this block doesn\'t exist in the target site.' => 'The owner of this block doesn\'t exist in the target site.',
 ];

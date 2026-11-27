@@ -22,6 +22,7 @@ use craft\web\UrlManager;
 use digitalpulsebe\craftmultitranslator\elements\actions\Translate;
 use digitalpulsebe\craftmultitranslator\models\Settings;
 use digitalpulsebe\craftmultitranslator\services\SettingsService;
+use digitalpulsebe\craftmultitranslator\services\TargetSitesService;
 use digitalpulsebe\craftmultitranslator\services\TranslateService;
 use digitalpulsebe\craftmultitranslator\variables\Variable;
 use Monolog\Formatter\LineFormatter;
@@ -36,6 +37,7 @@ use yii\log\Logger;
  * @method Settings getSettings()
  * @property TranslateService $translate
  * @property SettingsService $settingsService
+ * @property TargetSitesService $targetSites
  * @author Digital Pulse nv <support@digitalpulse.be>
  * @copyright Digital Pulse nv
  * @license https://craftcms.github.io/license/ Craft License
@@ -53,6 +55,7 @@ class MultiTranslator extends Plugin
             'components' => [
                 'translate' => TranslateService::class,
                 'settingsService' => SettingsService::class,
+                'targetSites' => TargetSitesService::class,
             ],
         ];
     }
@@ -141,11 +144,7 @@ class MultiTranslator extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['multi-translator/glossaries/edit/<id:\d+>'] = 'multi-translator/glossaries/edit';
                 $event->rules['multi-translator/glossaries/new'] = 'multi-translator/glossaries/new';
-                $event->rules['multi-translator/glossaries/fetch'] = 'multi-translator/glossaries/fetch';
-                $event->rules['multi-translator/style-rules/fetch'] = 'multi-translator/style-rules/fetch';
                 $event->rules['multi-translator/translate/review'] = 'multi-translator/translate/review';
-                $event->rules['multi-translator/field/review'] = 'multi-translator/field/review';
-                $event->rules['multi-translator/field/translate'] = 'multi-translator/field/translate';
             }
         );
     }
@@ -299,8 +298,11 @@ JS;
     {
         $nav = parent::getCpNavItem();
         $nav['subnav']['dashboard'] = ['label' => Craft::t('multi-translator', 'Dashboard'), 'url' => 'multi-translator'];
-        $nav['subnav']['glossaries'] = ['label' => Craft::t('multi-translator', 'Glossaries'), 'url' => 'multi-translator/glossaries'];
-        $nav['subnav']['style-rules'] = ['label' => Craft::t('multi-translator', 'Style Rules'), 'url' => 'multi-translator/style-rules'];
+
+        if (Craft::$app->user->checkPermission('multiTranslateContent')) {
+            $nav['subnav']['glossaries'] = ['label' => Craft::t('multi-translator', 'Glossaries'), 'url' => 'multi-translator/glossaries'];
+            $nav['subnav']['style-rules'] = ['label' => Craft::t('multi-translator', 'Style Rules'), 'url' => 'multi-translator/style-rules'];
+        }
 
         if (Craft::$app->user->checkPermission('multiTranslateSettings')) {
             $nav['subnav']['settings'] = ['label' => Craft::t('multi-translator', 'Settings'), 'url' => 'multi-translator/settings'];

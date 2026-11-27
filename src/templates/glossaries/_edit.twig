@@ -1,3 +1,4 @@
+{% requirePermission 'multiTranslateContent' %}
 {% extends "_layouts/cp" %}
 
 {% set title = glossary.id ? 'Edit glossary'|t('multi-translator') : 'New glossary'|t('multi-translator') %}

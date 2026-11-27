@@ -1,13 +1,6 @@
 {% requirePermission 'multiTranslateContent' %}
 {% import '_includes/forms.twig' as forms %}
 
-{% set elementHelper = craft.multiTranslator.getElementHelper() %}
-{% set supportedSiteIds = elementHelper.supportedSitesForElement(element, true)|map(site => site.siteId) %}
-{% set targetSites = craft.app.sites.allSites
-    |filter(site => site.id in supportedSiteIds)
-    |filter(site => site.id != sourceSiteId)
-    |filter(site => currentUser.can('editSite:'~site.uid)) %}
-
 {% set field = element.fieldLayout.getFieldByHandle(fieldHandle) %}
 
 <form method="POST">
@@ -27,15 +20,7 @@
             label: 'Target site'|t('multi-translator'),
             id: "fieldTranslationTarget-#{elementId}",
             name: 'targetSiteId',
-            options: [
-                { label: '- select target -'|t('multi-translator'), value: '' },
-                { label: 'All sites'|t('multi-translator'), value: 'all' }
-            ]|merge(
-                targetSites|map(site => {
-                    label: "#{site.name} (#{site.locale})",
-                    value: site.id
-                })
-            ),
+            options: craft.multiTranslator.targetSites.getTargetSelectOptions(element, sourceSiteId, false, false),
             inputAttributes: {required: 1},
         }) }}
     </div>
