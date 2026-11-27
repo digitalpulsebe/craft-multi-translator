@@ -30,6 +30,23 @@ abstract class FieldSerializer
         return $value;
     }
 
+    /**
+     * The current value of this field on the target element, or null when the target doesn't have this field.
+     *
+     * Nested serializers (Content Block, Vizy, Matrix blocks without a counterpart on the target site)
+     * pass an element from the target site that doesn't necessarily own this field.
+     */
+    protected function getTargetFieldValue(Element $target): mixed
+    {
+        $targetField = $target->getFieldLayout()?->getFieldByHandle($this->field->handle);
+
+        if (!$targetField || $targetField->id !== $this->field->id) {
+            return null;
+        }
+
+        return $target->getFieldValue($this->field->handle);
+    }
+
     public function translateLinks(string $translatedValue, Site $sourceSite, Site $targetSite): string
     {
         if (!MultiTranslator::getInstance()->settingsService->getProviderSettings()->getUpdateInternalLinks()) {

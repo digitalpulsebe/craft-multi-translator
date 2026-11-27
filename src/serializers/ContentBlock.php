@@ -27,9 +27,15 @@ class ContentBlock extends FieldSerializer
             $serialized = ['fields' => []];
         }
 
+        // nested fields read their existing target values from the target's own content block
+        $targetContentBlock = $this->getTargetFieldValue($target);
+        if (!$targetContentBlock instanceof Element) {
+            $targetContentBlock = $target;
+        }
+
         $serialized['fields'] = array_merge(
             $serialized['fields'] ?? [],
-            MultiTranslator::getInstance()->translate->setElementFieldsTranslations($contentBlock, $target, $value['fields'] ?? [])
+            MultiTranslator::getInstance()->translate->setElementFieldsTranslations($contentBlock, $targetContentBlock, $value['fields'] ?? [])
         );
 
         return parent::setFieldData($source, $target, $serialized);
